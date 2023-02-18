@@ -35,6 +35,7 @@ public abstract class CursorBase : MonoBehaviour
     {
         m_cursor = Instantiate(m_cursorPrefab);
         m_cursor.SetActive(false);
+        m_cursor.transform.parent = transform;
         m_cursorRenderer = m_cursor.GetComponentInChildren<MeshRenderer>();
         m_camera = Camera.main; //keep it main please
     }

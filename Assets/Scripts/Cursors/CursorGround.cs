@@ -40,7 +40,13 @@ public class CursorGround : CursorBase
 
     protected override void OnLeftClick(int x, int y)
     {
-        //todo
+        if (WorldHolder.Instance() == null)
+            return;
+
+        if (ValidatePos(x, y) != CursorValidation.allowed)
+            return;
+
+        WorldHolder.Instance().SetGround(m_groundType, x, y);
     }
 
     protected override void OnRightClick(int x, int y)

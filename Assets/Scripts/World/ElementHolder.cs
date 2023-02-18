@@ -26,7 +26,7 @@ public class GroundDatas
     public GameObject inerCorner;
     public GameObject border;
     public GameObject doubleBorder;
-    public GameObject oneSize;
+    public GameObject oneSide;
 }
 
 [Serializable]

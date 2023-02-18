@@ -81,7 +81,7 @@ public class ResizableMatrix<T>
 
     public T Get(int x, int y)
     {
-        if (IsInGrid(x, y))
+        if (!IsInGrid(x, y))
             return m_defaultValue;
 
         int index = PosToIndex(x, y);

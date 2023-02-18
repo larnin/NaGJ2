@@ -154,7 +154,7 @@ public class WorldHolder : MonoBehaviour
                 var obj = Instantiate(prefab);
 
                 obj.transform.parent = transform;
-                obj.transform.position = GetElemPos(x, y);
+                obj.transform.position = GetElemPos(tX, tY);
                 obj.transform.rotation = rot;
                 elem.groundObject = obj;
             }

@@ -34,7 +34,7 @@ public class WorldHolder : MonoBehaviour
             pos -= transform.position;
             pos /= m_elementSize;
 
-            return new Vector2Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y));
+            return new Vector2Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.z));
         }
 
         return Vector2Int.zero;

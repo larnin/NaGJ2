@@ -19,6 +19,11 @@ public class WorldHolder : MonoBehaviour
         m_instance = this;
     }
 
+    public float GetElementSize()
+    {
+        return m_elementSize;
+    }
+
     public Vector2Int RayToPos(Ray ray)
     {
         Plane p = new Plane(new Vector3(0, 1, 0), transform.position);
@@ -202,5 +207,41 @@ public class WorldHolder : MonoBehaviour
         }
 
         return mat;
+    }
+
+    public RectInt GetBounds()
+    {
+        int minX = m_world.MinX();
+        int minY = m_world.MinY();
+        int maxX = m_world.MaxX();
+        int maxY = m_world.MaxY();
+
+        return new RectInt(minX, minY, maxX - minX + 1, maxY - minY + 1);
+    }
+
+    public List<Vector2Int> GetEmptyGroundSpaces()
+    {
+        List<Vector2Int> spaces = new List<Vector2Int>();
+
+        int minX = m_world.MinX() - 1;
+        int minY = m_world.MinY() - 1;
+        int maxX = m_world.MaxX() + 1;
+        int maxY = m_world.MaxY() + 1;
+
+        for(int i = minX; i <= maxX; i++)
+        {
+            for(int j = minY; j <= maxY; j++)
+            {
+                var mat = GetGroundNearMatrix(i, j);
+
+                if (mat.Get(0, 0))
+                    continue;
+
+                if (mat.Get(-1, 0) || mat.Get(0, -1) || mat.Get(1, 0) || mat.Get(0, 1))
+                    spaces.Add(new Vector2Int(i, j));
+            }
+        }
+
+        return spaces;
     }
 }

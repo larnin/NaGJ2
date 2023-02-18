@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class ResizableMatrix<T>
+public class ResizableMatrix<T>
 {
     int m_width = 0;
     int m_height = 0;

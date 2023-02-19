@@ -9,6 +9,7 @@ public class WorldElement
 {
     public GameObject groundObject;
     public GroundType groundType = GroundType.empty;
+    public float groundSetTime = 0;
 
     public GameObject buildingObject;
     public BuildingType buildingType = BuildingType.empty;

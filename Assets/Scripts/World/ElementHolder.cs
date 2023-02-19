@@ -8,12 +8,18 @@ using UnityEngine;
 public enum GroundType
 {
     empty,
+    deadly,
+    low,
     normal,
+    hight,
 }
 
 public enum BuildingType
 {
     empty,
+    house,
+    factory,
+    scienceLab,
 }
 
 public enum Rotation

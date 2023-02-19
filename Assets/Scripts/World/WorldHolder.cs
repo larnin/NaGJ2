@@ -57,6 +57,7 @@ public class WorldHolder : MonoBehaviour
                 return true;
             var elem = new WorldElement();
             elem.groundType = type;
+            elem.groundSetTime = Time.time;
             m_world.Set(elem, x, y);
             UpdateGroundAt(x, y);
             return true;
@@ -74,6 +75,7 @@ public class WorldHolder : MonoBehaviour
             if (elem.groundType != type)
             {
                 elem.groundType = type;
+                elem.groundSetTime = Time.time;
                 UpdateGroundAt(x, y);
             }
         }
@@ -110,6 +112,17 @@ public class WorldHolder : MonoBehaviour
         if (elem == null)
             return GroundType.empty;
         return elem.groundType;
+    }
+
+    public float GetGroundSetTimer(int x, int y)
+    {
+        if (!m_world.IsInGrid(x, y))
+            return 0;
+
+        var elem = m_world.Get(x, y);
+        if (elem == null)
+            return 0;
+        return elem.groundSetTime;
     }
 
     public BuildingType GetBuilding(int x, int y, out int level)
@@ -233,6 +246,32 @@ public class WorldHolder : MonoBehaviour
         return mat;
     }
 
+    public NearMatrix GetBuildingNearMatrix(int x, int y)
+    {
+        NearMatrix mat = new NearMatrix();
+
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                int tX = x + i;
+                int tY = y + j;
+
+                if (!m_world.IsInGrid(tX, tY))
+                    continue;
+
+                var elem = m_world.Get(tX, tY);
+                if (elem != null)
+                {
+                    bool valid = elem.buildingType == BuildingType.factory || elem.buildingType == BuildingType.house || elem.buildingType == BuildingType.scienceLab;
+                    mat.Set(valid, i, j);
+                }
+            }
+        }
+
+        return mat;
+    }
+
     public RectInt GetBounds()
     {
         int minX = m_world.MinX();
@@ -257,6 +296,45 @@ public class WorldHolder : MonoBehaviour
             for(int j = minY; j <= maxY; j++)
             {
                 var mat = GetGroundNearMatrix(i, j);
+
+                if (mat.Get(0, 0))
+                    continue;
+
+                if (mat.Get(-1, 0) || mat.Get(0, -1) || mat.Get(1, 0) || mat.Get(0, 1))
+                    spaces.Add(new Vector2Int(i, j));
+            }
+        }
+
+        return spaces;
+    }
+
+    public List<Vector2Int> GetEmptyBuildingSpaces(float minTimer)
+    {
+        List<Vector2Int> spaces = new List<Vector2Int>();
+
+        int minX = m_world.MinX();
+        int minY = m_world.MinY();
+        int maxX = m_world.MaxX();
+        int maxY = m_world.MaxY();
+
+        for (int i = minX; i <= maxX; i++)
+        {
+            for (int j = minY; j <= maxY; j++)
+            {
+                var elem = m_world.Get(i, j);
+                if (elem == null)
+                    continue;
+
+                if (elem.groundType == GroundType.deadly || elem.groundType == GroundType.empty)
+                    continue;
+
+                if (elem.buildingType != BuildingType.empty)
+                    continue;
+
+                if (Time.time - elem.groundSetTime < minTimer)
+                    continue;
+
+                var mat = GetBuildingNearMatrix(i, j);
 
                 if (mat.Get(0, 0))
                     continue;

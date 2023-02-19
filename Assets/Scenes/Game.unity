@@ -330,6 +330,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7002604c91e22f94bb7d190e5cab596f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_growTimer: 2
+  m_housePerFactory: 2
+  m_housePerLab: 20
+  m_minElemTimer: 5
 --- !u!4 &362635311
 Transform:
   m_ObjectHideFlags: 0
@@ -405,14 +409,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_grounds:
-  - groundType: 1
+  - groundType: 3
     alone: {fileID: 3141190363934217357, guid: 6e9f0034a12ce0b488b9d189068fbffd, type: 3}
     center: {fileID: 6258790059565142357, guid: ecb0acb733c29264f9ac5275afb66358, type: 3}
     corner: {fileID: 7552127786570162629, guid: 3b9ed36c7483a3f4e91db70d4af8ea25, type: 3}
     border: {fileID: 1504132598121554963, guid: a6064feb4a3de0a4393356e315872823, type: 3}
     doubleBorder: {fileID: 6525402060983440666, guid: 3c21e9ff66306574285c788f393694bc, type: 3}
     oneSide: {fileID: 1739121140680519932, guid: fb3f492886f84d5459de513aa4184a4a, type: 3}
-  m_buildings: []
+  m_buildings:
+  - buildingType: 1
+    building:
+    - {fileID: 5278700759636062873, guid: d7a3ed3978cf4924fb9f9c999233e988, type: 3}
+    - {fileID: 259625913936715800, guid: 2f6b1606e82e2ed41a1a5de2eb9b64f3, type: 3}
+    - {fileID: 6688355412831595256, guid: cd72da59874bfb0448f5e76a744abd3f, type: 3}
+  - buildingType: 2
+    building:
+    - {fileID: 8791007804821491074, guid: dff892b2a8f2e1647a037e342e94a4f4, type: 3}
+    - {fileID: 7362602726931635758, guid: 49349102545a437478f2c3dac5b22c40, type: 3}
+    - {fileID: 7406234432002567276, guid: 9c09eec421bd1e64c87f3f4d7dc92592, type: 3}
+  - buildingType: 3
+    building:
+    - {fileID: 2936186742703512198, guid: bd120cb88fcf50147b5fb185ffd98f98, type: 3}
 --- !u!1 &1659310536
 GameObject:
   m_ObjectHideFlags: 0

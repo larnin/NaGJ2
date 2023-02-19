@@ -80,7 +80,7 @@ public class WorldHolder : MonoBehaviour
         return true;
     }
 
-    public bool SetBuilding(BuildingType type, int x, int y)
+    public bool SetBuilding(BuildingType type, int level, int x, int y)
     {
         if (!m_world.IsInGrid(x, y))
             return type == BuildingType.empty;
@@ -92,9 +92,10 @@ public class WorldHolder : MonoBehaviour
         if (elem.groundType == GroundType.empty)
             return type == BuildingType.empty;
 
-        if(elem.buildingType != type)
+        if(elem.buildingType != type && elem.buildingLevel != level)
         {
             elem.buildingType = type;
+            elem.buildingLevel = level;
             UpdateBuildingAt(x, y);
         }
         return true;
@@ -111,6 +112,19 @@ public class WorldHolder : MonoBehaviour
         return elem.groundType;
     }
 
+    public BuildingType GetBuilding(int x, int y, out int level)
+    {
+        level = 0;
+        if (!m_world.IsInGrid(x, y))
+            return BuildingType.empty;
+
+        var elem = m_world.Get(x, y);
+        if (elem == null)
+            return BuildingType.empty;
+        level = elem.buildingLevel;
+        return elem.buildingType;
+    }
+
     public BuildingType GetBuilding(int x, int y)
     {
         if (!m_world.IsInGrid(x, y))
@@ -120,8 +134,18 @@ public class WorldHolder : MonoBehaviour
         if (elem == null)
             return BuildingType.empty;
         return elem.buildingType;
-    }   
+    }
     
+    public int GetBuildingLevel(int x, int y)
+    {
+        if (!m_world.IsInGrid(x, y))
+            return 0;
+
+        var elem = m_world.Get(x, y);
+        if (elem == null)
+            return 0;
+        return elem.buildingLevel;
+    }
 
     void UpdateGroundAt(int x, int y)
     {
@@ -146,7 +170,7 @@ public class WorldHolder : MonoBehaviour
                     continue;
 
                 var mat = GetGroundNearMatrix(tX, tY);
-                Quaternion rot = Quaternion.identity;
+                Rotation rot = Rotation.rot_0;
                 var prefab = ElementHolder.Instance().GetGround(elem.groundType, mat, out rot);
                 if (prefab == null)
                     continue;
@@ -155,7 +179,7 @@ public class WorldHolder : MonoBehaviour
 
                 obj.transform.parent = transform;
                 obj.transform.position = GetElemPos(tX, tY);
-                obj.transform.rotation = rot;
+                ApplyRotation(obj, rot);
                 elem.groundObject = obj;
             }
         }
@@ -172,7 +196,7 @@ public class WorldHolder : MonoBehaviour
 
         if (ElementHolder.Instance() == null)
             return;
-        var prefab = ElementHolder.Instance().GetBuilding(elem.buildingType);
+        var prefab = ElementHolder.Instance().GetBuilding(elem.buildingType, elem.buildingLevel);
         if (prefab == null)
             return;
 
@@ -181,8 +205,8 @@ public class WorldHolder : MonoBehaviour
         obj.transform.parent = transform;
         obj.transform.position = GetElemPos(x, y);
 
-        Quaternion rot = Quaternion.Euler(0, UnityEngine.Random.Range(0, 4) * 90, 0);
-        obj.transform.rotation = rot;
+        Rotation rot = (Rotation)UnityEngine.Random.Range(0, 4);
+        ApplyRotation(obj, rot);
         elem.buildingObject = obj;
     }     
 
@@ -243,5 +267,33 @@ public class WorldHolder : MonoBehaviour
         }
 
         return spaces;
+    }
+
+    void ApplyRotation(GameObject obj, Rotation rotation)
+    {
+        if (rotation == Rotation.rot_0)
+            return;
+        else if(rotation == Rotation.rot_90)
+        {
+            obj.transform.rotation = Quaternion.Euler(0, 90, 0);
+            var pos = obj.transform.position;
+            pos.z += m_elementSize;
+            obj.transform.position = pos;
+        }
+        else if(rotation == Rotation.rot_180)
+        {
+            obj.transform.rotation = Quaternion.Euler(0, 180, 0);
+            var pos = obj.transform.position;
+            pos.x += m_elementSize;
+            pos.z += m_elementSize;
+            obj.transform.position = pos;
+        }
+        else if(rotation == Rotation.rot_270)
+        {
+            obj.transform.rotation = Quaternion.Euler(0, 270, 0);
+            var pos = obj.transform.position;
+            pos.x += m_elementSize;
+            obj.transform.position = pos;
+        }
     }
 }

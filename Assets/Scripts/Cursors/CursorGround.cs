@@ -51,7 +51,11 @@ public class CursorGround : CursorBase
 
     protected override void OnRightClick(int x, int y)
     {
-        //todo
+        if (WorldHolder.Instance() == null)
+            return;
+
+        if (WorldHolder.Instance().GetGround(x, y) != GroundType.empty)
+            WorldHolder.Instance().SetGround(GroundType.empty, x, y);
     }
 
     protected override void OnMiddleClick(int x, int y)

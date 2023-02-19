@@ -23,7 +23,6 @@ public class GroundDatas
     public GameObject alone;
     public GameObject center;
     public GameObject corner;
-    public GameObject inerCorner;
     public GameObject border;
     public GameObject doubleBorder;
     public GameObject oneSide;

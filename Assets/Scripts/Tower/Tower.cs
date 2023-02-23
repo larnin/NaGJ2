@@ -160,14 +160,37 @@ public class Tower : MonoBehaviour
         m_fireTimer = m_fireDelay;
         m_recoilTimer = m_recoilTime;
 
+        if (m_firePoints.Count == 0)
+            return;
+
+        if (m_currentFirePoint >= m_firePoints.Count)
+            m_currentFirePoint = 0;
+
+        Transform currentTransform = m_firePoints[m_currentFirePoint]?.transform;
+        m_currentFirePoint++;
+        if (currentTransform == null)
+            return;
+
         if(m_projectilePrefab != null)
         {
-            //todo
+            GameObject obj = Instantiate(m_projectilePrefab);
+            obj.transform.position = currentTransform.position;
+            obj.transform.rotation = currentTransform.rotation;
+
+            var bullet = obj.GetComponent<BulletBase>();
+            if(bullet != null)
+            {
+                bullet.ennemyLayer = m_ennemyLayer;
+                bullet.target = m_currentTarget.transform;
+                //todo dmg & co
+            }
         }
 
         if(m_fireParticlesPrefab != null)
         {
-            //todo
+            GameObject obj = Instantiate(m_fireParticlesPrefab);
+            obj.transform.position = currentTransform.position;
+            obj.transform.rotation = currentTransform.rotation;
         }
     }
 }

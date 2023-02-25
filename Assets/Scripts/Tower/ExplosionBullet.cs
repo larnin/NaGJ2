@@ -62,5 +62,7 @@ public class ExplosionBullet : BulletBase
 
             obj.transform.position = transform.position;
         }
+
+        Destroy(gameObject);
     }
 }

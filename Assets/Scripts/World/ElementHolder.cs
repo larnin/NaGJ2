@@ -20,6 +20,9 @@ public enum BuildingType
     house,
     factory,
     scienceLab,
+    tower0,
+    tower1,
+    tower2
 }
 
 public enum Rotation
@@ -40,13 +43,22 @@ public class GroundDatas
     public GameObject border;
     public GameObject doubleBorder;
     public GameObject oneSide;
+    public int cost;
+}
+
+[Serializable]
+public class OneBuildingLevelData
+{
+    public int cost;
+    public int corruptCount;
+    public GameObject building;
 }
 
 [Serializable]
 public class BuildingData
 {
     public BuildingType buildingType;
-    public List<GameObject> building;
+    public List<OneBuildingLevelData> building;
 }
 
 public class ElementHolder : MonoBehaviour
@@ -147,6 +159,17 @@ public class ElementHolder : MonoBehaviour
         }
     }
 
+    public int GetGroundCost(GroundType type)
+    {
+        foreach (var g in m_grounds)
+        {
+            if (g.groundType == type)
+                return g.cost;
+        }
+
+        return 0;
+    }
+
     public int GetMaxBuildingLevel(BuildingType type)
     {
         foreach (var b in m_buildings)
@@ -168,10 +191,40 @@ public class ElementHolder : MonoBehaviour
             {
                 if (b.building.Count <= level)
                     return null;
-                return b.building[level];
+                return b.building[level].building;
             }
         }
 
         return null;
+    }
+
+    public int GetBuildingCost(BuildingType type, int level)
+    {
+        foreach (var b in m_buildings)
+        {
+            if (b.buildingType == type)
+            {
+                if (b.building.Count <= level)
+                    return 0;
+                return b.building[level].cost;
+            }
+        }
+
+        return 0;
+    }
+
+    public int GetBuildingCorruption(BuildingType type, int level)
+    {
+        foreach (var b in m_buildings)
+        {
+            if (b.buildingType == type)
+            {
+                if (b.building.Count <= level)
+                    return 0;
+                return b.building[level].corruptCount;
+            }
+        }
+
+        return 0;
     }
 }

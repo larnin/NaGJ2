@@ -2304,20 +2304,84 @@ MonoBehaviour:
     border: {fileID: 1504132598121554963, guid: a6064feb4a3de0a4393356e315872823, type: 3}
     doubleBorder: {fileID: 6525402060983440666, guid: 3c21e9ff66306574285c788f393694bc, type: 3}
     oneSide: {fileID: 1739121140680519932, guid: fb3f492886f84d5459de513aa4184a4a, type: 3}
+    cost: 10
+  - groundType: 1
+    alone: {fileID: 3141190363934217357, guid: 3a417f45b275b5d498075a960f05ad54, type: 3}
+    center: {fileID: 6258790059565142357, guid: 2d3f891e42d1421439f7be1eef61625f, type: 3}
+    corner: {fileID: 7552127786570162629, guid: 9a145fe4043a4b545baea8e116e34a53, type: 3}
+    border: {fileID: 1504132598121554963, guid: 1c6a2cf1278ba1145a0f6706b51a3559, type: 3}
+    doubleBorder: {fileID: 6525402060983440666, guid: d77415a78f9fa40479e3800e791fad22, type: 3}
+    oneSide: {fileID: 1739121140680519932, guid: bc3be56cd6b04cf4cbfe46a916495bb3, type: 3}
+    cost: 0
+  - groundType: 2
+    alone: {fileID: 3141190363934217357, guid: 4cc3f8ce82dd99c45ad78fe26da09ff0, type: 3}
+    center: {fileID: 6258790059565142357, guid: de748abe003fbf848aee643aba1f08bd, type: 3}
+    corner: {fileID: 7552127786570162629, guid: e304c7379c46b414c908167ccfa8acba, type: 3}
+    border: {fileID: 1504132598121554963, guid: 4d1f26e0da32fd1469c27b27ea54da60, type: 3}
+    doubleBorder: {fileID: 6525402060983440666, guid: 00d21ec0e094feb4795d2e56264f63db, type: 3}
+    oneSide: {fileID: 1739121140680519932, guid: e86cecc4764a2764290035809d466efc, type: 3}
+    cost: 0
   m_buildings:
   - buildingType: 1
     building:
-    - {fileID: 5278700759636062873, guid: d7a3ed3978cf4924fb9f9c999233e988, type: 3}
-    - {fileID: 259625913936715800, guid: 2f6b1606e82e2ed41a1a5de2eb9b64f3, type: 3}
-    - {fileID: 6688355412831595256, guid: cd72da59874bfb0448f5e76a744abd3f, type: 3}
+    - cost: 0
+      corruptCount: 0
+      building: {fileID: 5278700759636062873, guid: d7a3ed3978cf4924fb9f9c999233e988, type: 3}
+    - cost: 0
+      corruptCount: 0
+      building: {fileID: 259625913936715800, guid: 2f6b1606e82e2ed41a1a5de2eb9b64f3, type: 3}
+    - cost: 0
+      corruptCount: 0
+      building: {fileID: 6688355412831595256, guid: cd72da59874bfb0448f5e76a744abd3f, type: 3}
   - buildingType: 2
     building:
-    - {fileID: 8791007804821491074, guid: dff892b2a8f2e1647a037e342e94a4f4, type: 3}
-    - {fileID: 7362602726931635758, guid: 49349102545a437478f2c3dac5b22c40, type: 3}
-    - {fileID: 7406234432002567276, guid: 9c09eec421bd1e64c87f3f4d7dc92592, type: 3}
+    - cost: 0
+      corruptCount: 0
+      building: {fileID: 8791007804821491074, guid: dff892b2a8f2e1647a037e342e94a4f4, type: 3}
+    - cost: 0
+      corruptCount: 0
+      building: {fileID: 7362602726931635758, guid: 49349102545a437478f2c3dac5b22c40, type: 3}
+    - cost: 0
+      corruptCount: 0
+      building: {fileID: 7406234432002567276, guid: 9c09eec421bd1e64c87f3f4d7dc92592, type: 3}
   - buildingType: 3
     building:
-    - {fileID: 2936186742703512198, guid: bd120cb88fcf50147b5fb185ffd98f98, type: 3}
+    - cost: 0
+      corruptCount: 0
+      building: {fileID: 2936186742703512198, guid: bd120cb88fcf50147b5fb185ffd98f98, type: 3}
+  - buildingType: 4
+    building:
+    - cost: 20
+      corruptCount: 2
+      building: {fileID: 8129176872452091663, guid: 045eac363394fd64a83766755b24b6ba, type: 3}
+    - cost: 100
+      corruptCount: 3
+      building: {fileID: 551385827890651844, guid: a74fda9cc60bfc74fa52e82d9f2e751a, type: 3}
+    - cost: 500
+      corruptCount: 4
+      building: {fileID: 4356915555525036053, guid: 20b267936dc959c4faa7629dfc071a0c, type: 3}
+  - buildingType: 5
+    building:
+    - cost: 30
+      corruptCount: 2
+      building: {fileID: 1798297463076897813, guid: 1fd60a8618c06024abfb41a8377b1f25, type: 3}
+    - cost: 150
+      corruptCount: 3
+      building: {fileID: 8354678944801382212, guid: b8ffdca4e4af19546adfb56f792427f1, type: 3}
+    - cost: 750
+      corruptCount: 4
+      building: {fileID: 294685391568391565, guid: b592c0c7178e9bf4a9ee729fc0f10546, type: 3}
+  - buildingType: 6
+    building:
+    - cost: 40
+      corruptCount: 2
+      building: {fileID: 8537023529354501545, guid: f6adefcc1d4d63746b963bff03b2eedd, type: 3}
+    - cost: 200
+      corruptCount: 3
+      building: {fileID: 5742043589306741968, guid: fc6c37d5292585b4686af2e75a801f57, type: 3}
+    - cost: 1000
+      corruptCount: 4
+      building: {fileID: 4443154910664891833, guid: d05daf9e49a06aa45bf02006945712f3, type: 3}
 --- !u!1 &1158665076
 GameObject:
   m_ObjectHideFlags: 0

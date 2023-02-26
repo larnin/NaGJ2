@@ -24,7 +24,12 @@ public class GameUI : MonoBehaviour
         public TMP_Text cost;
     }
 
-    int currentButton = -1;
+    [SerializeField] CursorDefault m_defaultCursor;
+    [SerializeField] CursorGround m_groundCursor;
+    [SerializeField] CursorTower m_towerCursor;
+    [SerializeField] CursorDelete m_deleteCursor;
+
+    int m_currentButton = -1;
     ButtonInfo[] m_buttons;
 
     TMP_Text m_populationText;
@@ -33,7 +38,9 @@ public class GameUI : MonoBehaviour
     TMP_Text m_waveLabelText;
     TMP_Text m_waveDescriptionText;
 
-    private void Start()
+    bool m_pricesUpdated = false;
+
+    private void Awake()
     {
         //explore that shit of hierarchy !
 
@@ -78,11 +85,19 @@ public class GameUI : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        UpdateCursor();
+    }
+
     void OnClickGroundButton()
     {
         ResetAllButtons();
         m_buttons[(int)ButtonType.ground].button.interactable = false;
 
+        m_currentButton = (int)ButtonType.ground;
+
+        UpdateCursor();
     }
 
     void OnClickTower0Button()
@@ -90,7 +105,9 @@ public class GameUI : MonoBehaviour
         ResetAllButtons();
         m_buttons[(int)ButtonType.tower0].button.interactable = false;
 
+        m_currentButton = (int)ButtonType.tower0;
 
+        UpdateCursor();
     }
 
     void OnClickTower1Button()
@@ -98,7 +115,9 @@ public class GameUI : MonoBehaviour
         ResetAllButtons();
         m_buttons[(int)ButtonType.tower1].button.interactable = false;
 
+        m_currentButton = (int)ButtonType.tower1;
 
+        UpdateCursor();
     }
 
     void OnClickTower2Button()
@@ -106,7 +125,9 @@ public class GameUI : MonoBehaviour
         ResetAllButtons();
         m_buttons[(int)ButtonType.tower2].button.interactable = false;
 
+        m_currentButton = (int)ButtonType.tower2;
 
+        UpdateCursor();
     }
 
     void OnClickTrashBinButton()
@@ -114,7 +135,9 @@ public class GameUI : MonoBehaviour
         ResetAllButtons();
         m_buttons[(int)ButtonType.trashCan].button.interactable = false;
 
+        m_currentButton = (int)ButtonType.trashCan;
 
+        UpdateCursor();
     }
 
     void ResetAllButtons()
@@ -127,6 +150,16 @@ public class GameUI : MonoBehaviour
     {
         UpdatePopAndMoney();
         UpdateWave();
+
+        if (!m_pricesUpdated)
+            UpdatePrices();
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            m_currentButton = -1;
+            ResetAllButtons();
+            UpdateCursor();
+        }
     }
 
     void UpdatePopAndMoney()
@@ -140,6 +173,50 @@ public class GameUI : MonoBehaviour
 
     void UpdateWave()
     {
+        //todo
+    }
+
+    void UpdatePrices()
+    {
+        if (ElementHolder.Instance() == null)
+            return;
+
+        m_pricesUpdated = true;
+
+        int priceGround = ElementHolder.Instance().GetGroundCost(GroundType.normal);
+        int priceTower0 = ElementHolder.Instance().GetBuildingCost(BuildingType.tower0, 0);
+        int priceTower1 = ElementHolder.Instance().GetBuildingCost(BuildingType.tower1, 0);
+        int priceTower2 = ElementHolder.Instance().GetBuildingCost(BuildingType.tower2, 0);
+
+        m_buttons[(int)ButtonType.ground].cost.text = priceGround.ToString();
+        m_buttons[(int)ButtonType.tower0].cost.text = priceTower0.ToString();
+        m_buttons[(int)ButtonType.tower1].cost.text = priceTower1.ToString();
+        m_buttons[(int)ButtonType.tower2].cost.text = priceTower2.ToString();
+    }
+
+    void UpdateCursor()
+    {
+        m_defaultCursor.gameObject.SetActive(false);
+        m_groundCursor.gameObject.SetActive(false);
+        m_towerCursor.gameObject.SetActive(false);
+        m_deleteCursor.gameObject.SetActive(false);
+
+        if (m_currentButton == -1)
+            m_defaultCursor.gameObject.SetActive(true);
+        else if (m_currentButton == (int)ButtonType.ground)
+            m_groundCursor.gameObject.SetActive(true);
+        else if (m_currentButton == (int)ButtonType.trashCan)
+            m_deleteCursor.gameObject.SetActive(true);
+        else
+        {
+            m_towerCursor.gameObject.SetActive(true);
+            if (m_currentButton == (int)ButtonType.tower0)
+                m_towerCursor.SetBuilding(BuildingType.tower0);
+            else if (m_currentButton == (int)ButtonType.tower1)
+                m_towerCursor.SetBuilding(BuildingType.tower1);
+            else if (m_currentButton == (int)ButtonType.tower2)
+                m_towerCursor.SetBuilding(BuildingType.tower2);
+        }
 
     }
 }

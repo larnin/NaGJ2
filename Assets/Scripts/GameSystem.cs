@@ -124,6 +124,9 @@ class GameSystem : MonoBehaviour
                 m_nextWantedBuilding = BuildingType.scienceLab;
             else m_nextWantedBuilding = BuildingType.factory;
         }
+        if (m_workingPopulation <= 4)
+            m_nextWantedBuilding = BuildingType.factory;
+
 
         int validIndex = UnityEngine.Random.Range(0, validPos.Count);
 
@@ -305,7 +308,7 @@ class GameSystem : MonoBehaviour
             return;
 
         int cost = ElementHolder.Instance().GetGroundCost(GroundType.normal);
-        if (cost >= m_money)
+        if (cost > m_money)
             return;
 
         var groundType = WorldHolder.Instance().GetGround(x, y);

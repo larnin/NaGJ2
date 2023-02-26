@@ -7,18 +7,9 @@ using UnityEngine;
 
 public class CursorGround : CursorBase
 {
-    List<Vector2Int> m_validPos = new List<Vector2Int>();
-
-    GroundType m_groundType = GroundType.normal;
-
     private void OnEnable()
     {
-        UpdateValidPos();
-    }
 
-    public void SetGroundType(GroundType type)
-    {
-        m_groundType = type;
     }
 
     protected override CursorValidation ValidatePos(int x, int y)
@@ -26,10 +17,15 @@ public class CursorGround : CursorBase
         if (WorldHolder.Instance() == null)
             return CursorValidation.hidden;
 
-        if (m_groundType == GroundType.empty)
-        {
-            return CursorValidation.neutral;
-        }
+        if (ElementHolder.Instance() == null)
+            return CursorValidation.hidden;
+
+        int cost = ElementHolder.Instance().GetGroundCost(GroundType.normal);
+
+        GetPopulationAndMoneyEvent e = new GetPopulationAndMoneyEvent();
+        Event<GetPopulationAndMoneyEvent>.Broadcast(e);
+        if (e.money < cost)
+            return CursorValidation.warning;
 
         var mat = WorldHolder.Instance().GetGroundNearMatrix(x, y);
 
@@ -46,16 +42,18 @@ public class CursorGround : CursorBase
         if (ValidatePos(x, y) != CursorValidation.allowed)
             return;
 
-        WorldHolder.Instance().SetGround(m_groundType, x, y);
+        GameSystem.Instance().PlaceGround(x, y);
     }
 
     protected override void OnRightClick(int x, int y)
     {
-        if (WorldHolder.Instance() == null)
-            return;
+        //todo
 
-        if (WorldHolder.Instance().GetGround(x, y) != GroundType.empty)
-            WorldHolder.Instance().SetGround(GroundType.empty, x, y);
+        //if (WorldHolder.Instance() == null)
+        //    return;
+
+        //if (WorldHolder.Instance().GetGround(x, y) != GroundType.empty)
+        //    WorldHolder.Instance().SetGround(GroundType.empty, x, y);
     }
 
     protected override void OnMiddleClick(int x, int y)
@@ -66,17 +64,5 @@ public class CursorGround : CursorBase
     protected override void OnUpdate()
     {
         //todo
-    }
-
-    void UpdateValidPos()
-    {
-        if(m_groundType == GroundType.empty)
-        {
-            m_validPos.Clear();
-            return;
-        }
-
-        if (WorldHolder.Instance() != null)
-            WorldHolder.Instance().GetEmptyGroundSpaces();
     }
 }

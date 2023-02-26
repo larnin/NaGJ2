@@ -125,12 +125,17 @@ public class GameUI : MonoBehaviour
 
     private void Update()
     {
-        
+        UpdatePopAndMoney();
+        UpdateWave();
     }
 
     void UpdatePopAndMoney()
     {
+        GetPopulationAndMoneyEvent e = new GetPopulationAndMoneyEvent();
+        Event<GetPopulationAndMoneyEvent>.Broadcast(e);
 
+        m_populationText.text = e.population.ToString();
+        m_moneyText.text = e.money.ToString();
     }
 
     void UpdateWave()

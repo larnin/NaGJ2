@@ -31,13 +31,18 @@ public class WorldHolder : MonoBehaviour
         if(p.Raycast(ray, out enter))
         {
             Vector3 pos = ray.GetPoint(enter);
-            pos -= transform.position;
-            pos /= m_elementSize;
-
-            return new Vector2Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.z));
+            return ProjectPos(pos);
         }
 
         return Vector2Int.zero;
+    }
+
+    public Vector2Int ProjectPos(Vector3 pos)
+    {
+        pos -= transform.position;
+        pos /= m_elementSize;
+
+        return new Vector2Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.z));
     }
 
     public Vector3 GetElemPos(int x, int y)
@@ -70,7 +75,7 @@ public class WorldHolder : MonoBehaviour
                 elem = new WorldElement();
                 m_world.Set(elem, x, y);
             }
-            if (elem.buildingType != BuildingType.empty)
+            if (elem.buildingType != BuildingType.empty && type == GroundType.empty)
                 return false;
             if (elem.groundType != type)
             {
@@ -94,7 +99,7 @@ public class WorldHolder : MonoBehaviour
         if (elem.groundType == GroundType.empty)
             return type == BuildingType.empty;
 
-        if(elem.buildingType != type && elem.buildingLevel != level)
+        if(elem.buildingType != type || elem.buildingLevel != level)
         {
             elem.buildingType = type;
             elem.buildingLevel = level;

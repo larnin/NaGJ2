@@ -1058,9 +1058,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_growTimer: 1
-  m_housePerFactory: 2
-  m_housePerLab: 20
+  m_populationPerLab: 20
+  m_levelInfos:
+  - populationPerHouse: 1
+    populationPerFactory: 4
+    moneyPerHouse: 0.1
+    moneyPerFactory: 1
+  - populationPerHouse: 2
+    populationPerFactory: 5
+    moneyPerHouse: 0.2
+    moneyPerFactory: 2
+  - populationPerHouse: 3
+    populationPerFactory: 6
+    moneyPerHouse: 0.3
+    moneyPerFactory: 3
   m_minElemTimer: 2
+  m_labWeight: 0.1
+  m_initialMoney: 10
 --- !u!4 &362635311
 Transform:
   m_ObjectHideFlags: 0

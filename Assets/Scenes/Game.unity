@@ -1795,6 +1795,7 @@ MonoBehaviour:
   m_allowedColor: {r: 0, g: 1, b: 0, a: 1}
   m_disallowedColor: {r: 1, g: 0, b: 0, a: 1}
   m_warningColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_upgradeUIPrefab: {fileID: 4438815979197537689, guid: 87cf1a1fc54db4844aa6cbd8beae171e, type: 3}
 --- !u!1 &919597191
 GameObject:
   m_ObjectHideFlags: 0

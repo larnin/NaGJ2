@@ -173,7 +173,11 @@ public class GameUI : MonoBehaviour
 
     void UpdateWave()
     {
-        //todo
+        GetWaveTextEvent e = new GetWaveTextEvent();
+        Event<GetWaveTextEvent>.Broadcast(e);
+
+        m_waveLabelText.text = e.label;
+        m_waveDescriptionText.text = e.description;
     }
 
     void UpdatePrices()

@@ -21,3 +21,9 @@ public class GetNearestBuildingEvent
         currentPos = _currentPos;
     }
 }
+
+public class GetWaveTextEvent
+{
+    public string label = "";
+    public string description = "";
+}

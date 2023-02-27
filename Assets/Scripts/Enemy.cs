@@ -1,0 +1,109 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+
+class Enemy : MonoBehaviour
+{
+    [SerializeField] GameObject m_projectilePrefab;
+    [SerializeField] float m_fireRate = 1;
+    [SerializeField] float m_fireRange = 1;
+    [SerializeField] float m_moveSpeed = 1;
+    [SerializeField] bool m_explode = false;
+    [SerializeField] float m_explosionRadius = 1;
+
+    SubscriberList m_subscriberList = new SubscriberList();
+
+    Vector2Int m_targetBuiding = Vector2Int.zero;
+    Vector3 m_target = Vector3.zero;
+    float m_fireDelay = 0;
+
+    int m_playerLayer = 0;
+
+    float m_multiplier = 1;
+
+    public void SetMultiplier(float multiplier)
+    {
+        m_multiplier = multiplier;
+    }
+
+    private void Awake()
+    {
+        m_subscriberList.Add(new Event<DeathEvent>.Subscriber(OnDeath));
+        m_subscriberList.Subscribe();
+    }
+
+    private void OnDestroy()
+    {
+        m_subscriberList.Unsubscribe();
+    }
+
+    void OnDeath(DeathEvent e)
+    {
+        Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        m_playerLayer = LayerMask.NameToLayer("Player");
+
+        GetNearestBuildingEvent e = new GetNearestBuildingEvent(transform.position);
+        Event<GetNearestBuildingEvent>.Broadcast(e);
+
+        if (WorldHolder.Instance() != null)
+            m_target = WorldHolder.Instance().GetElemPos(e.buildingPos.x, e.buildingPos.y);
+        m_targetBuiding = e.buildingPos;
+    }
+
+    private void Update()
+    {
+        Vector3 targetMove = m_target;
+        targetMove.y = transform.position.y;
+
+        Vector3 dir = targetMove - transform.position;
+        float dist = dir.magnitude;
+
+        if(dist < m_fireRange)
+        {
+            m_fireDelay -= Time.deltaTime;
+            if (m_fireDelay <= 0)
+                Fire();
+        }
+        else
+        {
+            dir /= dist;
+
+            float d = m_moveSpeed * Time.deltaTime;
+            var newPos = transform.position + d * dir;
+            transform.position = newPos;
+        }
+    }
+
+    void Fire()
+    {
+        if(m_projectilePrefab != null)
+        {
+            var obj = Instantiate(m_projectilePrefab);
+
+            var bullet = obj.GetComponent<BulletBase>();
+            if (bullet != null)
+            {
+                bullet.ennemyLayer = m_playerLayer;
+                bullet.target = null;
+                bullet.damageMultiplier = m_multiplier;
+            }
+        }
+
+        if(m_explode)
+        {
+            var col = Physics.OverlapSphere(transform.position, m_explosionRadius, 1 << m_playerLayer);
+            foreach(var c in col)
+            {
+                HitEvent e = new HitEvent(m_multiplier);
+                Event<HitEvent>.Broadcast(e, c.gameObject);
+            }
+        }
+    }
+}

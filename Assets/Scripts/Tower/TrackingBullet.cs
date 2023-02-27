@@ -25,14 +25,14 @@ class TrackingBullet : BulletBase
 
         if (haveHit)
         {
-            OnHit();
+            OnHit(hit);
             return;
         }
 
         m_duration += Time.deltaTime;
         if (m_duration > m_maxDuration)
         {
-            OnHit();
+            OnHit(hit);
             return;
         }
 
@@ -63,8 +63,19 @@ class TrackingBullet : BulletBase
         transform.rotation = Quaternion.Slerp(transform.rotation, wantedRotation, deltaAngle / angle);
     }
 
-    void OnHit()
+    void OnHit(RaycastHit hit)
     {
+        if(hit.collider != null)
+            Event<HitEvent>.Broadcast(new HitEvent(m_damages * damageMultiplier), hit.collider.gameObject);
 
+        if (m_instantiateOnHit != null)
+        {
+            var obj = Instantiate(m_instantiateOnHit);
+
+            obj.transform.position = hit.point;
+            obj.transform.forward = hit.normal;
+        }
+
+        
     }
 }

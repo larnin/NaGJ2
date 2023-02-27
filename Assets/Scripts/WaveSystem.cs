@@ -207,7 +207,6 @@ public class WaveSystem : MonoBehaviour
     void SpawnOneEnemy()
     {
         float multiplier = Mathf.Pow(m_powerMultiplier, m_currentWave - 1);
-        //todo apply multiplier
 
         if (m_spawnPos.Count() == 0)
             return;
@@ -246,7 +245,9 @@ public class WaveSystem : MonoBehaviour
             var obj = Instantiate(data.prefab);
             obj.transform.position = pos;
 
-            //todo apply multiplier
+            var enemy = obj.GetComponent<Enemy>();
+            if (enemy != null)
+                enemy.SetMultiplier(multiplier);
         }
     }
 

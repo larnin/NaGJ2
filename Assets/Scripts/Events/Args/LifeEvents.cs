@@ -24,3 +24,13 @@ public class GetLifeEvent
     public float life = 0;
     public float maxLife = 1;
 }
+
+public class SetLifeMultiplierEvent
+{
+    public float multiplier = 1;
+
+    public SetLifeMultiplierEvent(float _multiplier)
+    {
+        multiplier = _multiplier;
+    }
+}

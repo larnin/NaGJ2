@@ -100,7 +100,7 @@ public class WaveSystem : MonoBehaviour
         m_timer -= Time.deltaTime;
 
         int nbSpawn = Mathf.CeilToInt((m_initialTimer - m_timer) / m_durationBetweenSpawn);
-        if (nbSpawn < m_spawnedEnemies)
+        if (nbSpawn > m_spawnedEnemies)
             SpawnOneEnemy();
 
         if (m_timer <= 0)
@@ -206,6 +206,15 @@ public class WaveSystem : MonoBehaviour
 
     void SpawnOneEnemy()
     {
+        int nbRemaining = 0;
+        foreach (var e in m_remainingEnemies)
+            nbRemaining += e;
+        if(nbRemaining <= 0)
+        {
+            m_spawnedEnemies++;
+            return;
+        }
+
         float multiplier = Mathf.Pow(m_powerMultiplier, m_currentWave - 1);
 
         if (m_spawnPos.Count() == 0)
@@ -302,6 +311,7 @@ public class WaveSystem : MonoBehaviour
             }
 
             Vector3 pos = WorldHolder.Instance().GetElemPos(x, y);
+            pos.y = 1.2f;
 
             m_spawnPos.Add(pos);
         }

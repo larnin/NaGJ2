@@ -27,11 +27,13 @@ class Enemy : MonoBehaviour
     public void SetMultiplier(float multiplier)
     {
         m_multiplier = multiplier;
+
+        Event<SetLifeMultiplierEvent>.Broadcast(new SetLifeMultiplierEvent(multiplier));
     }
 
     private void Awake()
     {
-        m_subscriberList.Add(new Event<DeathEvent>.Subscriber(OnDeath));
+        m_subscriberList.Add(new Event<DeathEvent>.LocalSubscriber(OnDeath, gameObject));
         m_subscriberList.Subscribe();
     }
 
@@ -83,9 +85,15 @@ class Enemy : MonoBehaviour
 
     void Fire()
     {
-        if(m_projectilePrefab != null)
+        m_fireDelay = 1 / m_fireRate;
+        if (m_projectilePrefab != null)
         {
             var obj = Instantiate(m_projectilePrefab);
+            obj.transform.position = transform.position;
+
+            Vector3 forward = m_target - transform.position;
+            Quaternion rot = Quaternion.LookRotation(forward, Vector3.up);
+            obj.transform.rotation = rot;
 
             var bullet = obj.GetComponent<BulletBase>();
             if (bullet != null)
@@ -104,6 +112,8 @@ class Enemy : MonoBehaviour
                 HitEvent e = new HitEvent(m_multiplier);
                 Event<HitEvent>.Broadcast(e, c.gameObject);
             }
+
+            Destroy(gameObject);
         }
     }
 }

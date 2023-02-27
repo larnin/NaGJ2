@@ -224,6 +224,8 @@ public class WorldHolder : MonoBehaviour
         obj.transform.position = GetElemPos(x, y);
 
         Rotation rot = (Rotation)UnityEngine.Random.Range(0, 4);
+        if (elem.buildingType == BuildingType.tower0 || elem.buildingType == BuildingType.tower1 || elem.buildingType == BuildingType.tower2)
+            rot = Rotation.rot_0;
         ApplyRotation(obj, rot);
         elem.buildingObject = obj;
     }     

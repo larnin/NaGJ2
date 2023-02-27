@@ -12,11 +12,13 @@ public class Life : MonoBehaviour
     SubscriberList m_subscriberList = new SubscriberList();
 
     float m_life = 0;
+    float m_lifeMultiplier = 1;
 
     private void Awake()
     {
         m_subscriberList.Add(new Event<HitEvent>.LocalSubscriber(OnHit, gameObject));
         m_subscriberList.Add(new Event<GetLifeEvent>.LocalSubscriber(GetLife, gameObject));
+        m_subscriberList.Add(new Event<SetLifeMultiplierEvent>.LocalSubscriber(SetMultiplier, gameObject));
         m_subscriberList.Subscribe();
 
         m_life = m_maxLife;
@@ -29,7 +31,7 @@ public class Life : MonoBehaviour
 
     void OnHit(HitEvent e)
     {
-        m_life -= e.damage;
+        m_life -= e.damage / m_lifeMultiplier;
         if(m_life <= 0)
         {
             m_life = 0;
@@ -39,7 +41,12 @@ public class Life : MonoBehaviour
 
     void GetLife(GetLifeEvent e)
     {
-        e.life = m_life;
-        e.maxLife = m_maxLife;
+        e.life = m_life * m_lifeMultiplier;
+        e.maxLife = m_maxLife * m_lifeMultiplier;
+    }
+
+    void SetMultiplier(SetLifeMultiplierEvent e)
+    {
+        m_lifeMultiplier = e.multiplier;
     }
 }

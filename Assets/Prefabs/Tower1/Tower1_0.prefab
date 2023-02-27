@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1130082942
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1130082943}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1130082943
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1130082942}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.504, y: 0.564, z: 1.061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1798297463076897812}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1798297462012043312
 GameObject:
   m_ObjectHideFlags: 0
@@ -58,14 +89,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1798297462038471820}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: -0.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1798297462012043315}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &1798297462038471808
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -237,6 +268,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1798297463076897812}
+  - component: {fileID: 1439927116}
   m_Layer: 0
   m_Name: Tower1_0
   m_TagString: Untagged
@@ -258,9 +290,31 @@ Transform:
   m_Children:
   - {fileID: 1798297463776322855}
   - {fileID: 1798297462012043315}
+  - {fileID: 1130082943}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1439927116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798297463076897813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9231f3f3ef9194d42a2863bcbe1d9906, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_firePoints:
+  - {fileID: 1130082942}
+  m_projectilePrefab: {fileID: 3100857695022313884, guid: 0e7b1da8748696b409f5dc5cd9996007, type: 3}
+  m_fireParticlesPrefab: {fileID: 3150156010007769173, guid: dc9cc9a163d975746bcbe15ece05cf11, type: 3}
+  m_recoil: 0.2
+  m_recoilTime: 0.5
+  m_rotationSpeed: 100
+  m_fireDistance: 6
+  m_fireDelay: 2
 --- !u!1 &1798297463776322852
 GameObject:
   m_ObjectHideFlags: 0

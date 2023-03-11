@@ -146,4 +146,4 @@ MonoBehaviour:
   m_speed: 2
   m_damages: 1
   m_radius: 1.5
-  m_instantiateOnExplosion: {fileID: 796988582907280655, guid: d299f9569dee09e4d87915db06234203, type: 3}
+  m_instantiateOnExplosion: {fileID: 7879075986828055580, guid: 445e34ebcb15e55408bc7f01a6602a40, type: 3}

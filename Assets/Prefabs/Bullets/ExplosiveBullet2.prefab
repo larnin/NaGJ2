@@ -48,7 +48,7 @@ MonoBehaviour:
   m_speed: 2
   m_damages: 1
   m_radius: 1
-  m_instantiateOnExplosion: {fileID: 421459806332200416, guid: 919add8cc98b4d94ca3434c7ec945dd9, type: 3}
+  m_instantiateOnExplosion: {fileID: 7879075986828055580, guid: 445e34ebcb15e55408bc7f01a6602a40, type: 3}
 --- !u!1 &9074655098529201362
 GameObject:
   m_ObjectHideFlags: 0

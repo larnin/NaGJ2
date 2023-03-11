@@ -17,6 +17,7 @@ public class Tower : MonoBehaviour
     [SerializeField] float m_rotationSpeed = 5;
     [SerializeField] float m_fireDistance = 5;
     [SerializeField] float m_fireDelay = 1;
+    [SerializeField] float m_minFireAngle = 2;
 
     int m_ennemyLayer;
     Transform m_tower = null;
@@ -115,7 +116,7 @@ public class Tower : MonoBehaviour
         if (m_fireTimer <= 0)
         {
             float angle = Quaternion.Angle(targetRotation, m_tower.rotation);
-            if (angle < 2)
+            if (angle < m_minFireAngle)
                 Fire();
         }
     }

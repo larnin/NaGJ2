@@ -61,6 +61,7 @@ public class ExplosionBullet : BulletBase
             var obj = Instantiate(m_instantiateOnExplosion);
 
             obj.transform.position = transform.position;
+            obj.transform.localScale = new Vector3(m_radius, m_radius, m_radius) * 2;
         }
 
         Destroy(gameObject);

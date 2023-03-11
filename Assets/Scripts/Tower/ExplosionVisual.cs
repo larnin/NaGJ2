@@ -38,6 +38,13 @@ public class ExplosionVisual : MonoBehaviour
         Destroy(gameObject, m_maxTime);
     }
 
+    private void Start()
+    {
+        var particles = GetComponentInChildren<ParticleSystem>();
+        if (particles != null)
+            particles.transform.localScale = transform.localScale;
+    }
+
     private void Update()
     {
         m_sphereTimer += Time.deltaTime;

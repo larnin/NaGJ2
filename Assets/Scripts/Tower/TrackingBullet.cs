@@ -72,10 +72,23 @@ class TrackingBullet : BulletBase
         {
             var obj = Instantiate(m_instantiateOnHit);
 
-            obj.transform.position = hit.point;
-            obj.transform.forward = hit.normal;
+            if (hit.collider != null)
+            {
+                obj.transform.position = hit.point;
+                obj.transform.forward = hit.normal;
+            }
+            else
+            {
+                obj.transform.position = transform.position;
+                obj.transform.forward = transform.forward;
+            }
         }
 
-        
+        var particles = GetComponentInChildren<ParticleSystem>();
+        particles.transform.parent = null;
+        particles.Stop();
+        Destroy(particles.gameObject, 2);
+
+        Destroy(gameObject);
     }
 }

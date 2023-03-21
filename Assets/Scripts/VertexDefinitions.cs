@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public struct GridVertexDefinition
+public struct NormalUVVertexDefinition
 {
     public Vector3 pos;
     public Vector3 normal;
     public Vector2 uv;
 }
 
-public static class GridMeshEx
+public static class MeshEx
 {
-    static public void SetGridMeshParams(Mesh mesh, int vertexNb, int indexNb)
+    static public void SetNormalUVMeshParams(Mesh mesh, int vertexNb, int indexNb)
     {
         var layout = new[]
         {

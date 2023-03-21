@@ -15,7 +15,7 @@ public class Grid : MonoBehaviour
     MeshFilter m_filter = null;
     Mesh m_mesh = null;
 
-    SimpleMeshParam<GridVertexDefinition> m_gridVertexs = new SimpleMeshParam<GridVertexDefinition>();
+    SimpleMeshParam<NormalUVVertexDefinition> m_gridVertexs = new SimpleMeshParam<NormalUVVertexDefinition>();
 
     private void Awake()
     {
@@ -68,7 +68,7 @@ public class Grid : MonoBehaviour
         if (m_mesh == null)
             m_mesh = new Mesh();
 
-        GridMeshEx.SetGridMeshParams(m_mesh, data.verticesSize, data.indexesSize);
+        MeshEx.SetNormalUVMeshParams(m_mesh, data.verticesSize, data.indexesSize);
 
         m_mesh.SetVertexBufferData(data.vertices, 0, 0, data.verticesSize);
         m_mesh.SetIndexBufferData(data.indexes, 0, 0, data.indexesSize);
@@ -89,7 +89,7 @@ public class Grid : MonoBehaviour
         return new Vector3(other.z, other.y, other.x);
     }
 
-    void DrawRect(MeshParamData<GridVertexDefinition> data, Rect bounds, float uvOffset)
+    void DrawRect(MeshParamData<NormalUVVertexDefinition> data, Rect bounds, float uvOffset)
     {
         Vector3 pos1 = new Vector3(bounds.x, 0, bounds.y);
         Vector3 pos2 = new Vector3(bounds.x + bounds.width, 0, bounds.y);

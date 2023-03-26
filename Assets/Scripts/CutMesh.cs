@@ -435,11 +435,11 @@ public static class CutMesh
             int vi3 = i < shape.GetNbPoints() - 1 ? vi2 + 1 : data.verticesSize;
 
             data.vertices[vi1].pos = p1 - center;
-            data.vertices[vi1].normal = new Vector3(0, 0, 0);
+            data.vertices[vi1].normal = new Vector3(0, 1, 0);
             data.vertices[vi1].uv = shape.ProjectInPlane(p1);
 
             data.vertices[vi2].pos = p2 - center;
-            data.vertices[vi2].normal = new Vector3(0, 0, 0);
+            data.vertices[vi2].normal = new Vector3(0, 1, 0);
             data.vertices[vi2].uv = shape.ProjectInPlane(p2);
 
             data.indexes[data.indexesSize + i * 9] = (ushort)(i);

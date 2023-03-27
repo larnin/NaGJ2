@@ -306,8 +306,6 @@ public static class CutMesh
         ConvexeShape shape = new ConvexeShape(plane);
         for(int i = 0; i < segments.Count; i++)
         {
-            Debug.DrawLine(segments[i].pos1, segments[i].pos2, Color.red);
-
             shape.AddPoint(segments[i].pos1);
             shape.AddPoint(segments[i].pos2);
         }

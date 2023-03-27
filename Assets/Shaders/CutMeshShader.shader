@@ -3,14 +3,13 @@ Shader "Unlit/CutMeshShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Tiling("Tiling", float) = 1
         _Color("Color", Color) = (1, 1, 1, 1)
         _LowColor("LowColor", Color) = (1, 1, 1, 1)
         _Speed1("Speed1", float) = 1
         _Speed2("Speed2", float) = 1
         _Speed3("Speed3", float) = 1
-        _Cutout("Cutout", float) = 0.5
-        _Ceil("Ceil", float) = 0.5
+        _Cutout("Cutout", range(0, 1)) = 0.5
+        _Ceil("Ceil", Range(0, 1)) = 0.5
     }
     SubShader
     {
@@ -74,7 +73,18 @@ Shader "Unlit/CutMeshShader"
                 float v = (col.r + col.g + col.b) / 3;
 
 
-                v *= i.normal.x;
+                if (i.normal.x < _Ceil)
+                {
+                    v *= i.normal.x / _Ceil;
+                }
+                else
+                {
+                    float minValue = i.normal.x - _Ceil;
+                    v *= (1 - minValue);
+                    v += minValue;
+                }
+
+                //v *= i.normal.x;
 
                 if (v < _Cutout)
                     return float4(0, 0, 0, 0);

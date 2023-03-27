@@ -59,9 +59,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
-    - _Ceil: 0.5
+    - _Ceil: 0.598
     - _Cutoff: 0.5
-    - _Cutout: 0.06
+    - _Cutout: 0.19
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1

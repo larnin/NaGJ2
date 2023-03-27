@@ -28,8 +28,6 @@ public class CutMeshTest : MonoBehaviour
 
             var p1 = shape.GetPoint(i);
             var p2 = shape.GetPoint(i2);
-
-            Debug.DrawLine(p1, p2, Color.green);
         }
 
         if(shape.GetNbPoints() < 3)

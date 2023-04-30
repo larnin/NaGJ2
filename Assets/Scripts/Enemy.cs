@@ -16,6 +16,7 @@ class Enemy : MonoBehaviour
 
     SubscriberList m_subscriberList = new SubscriberList();
 
+    bool m_haveTarget = false;
     Vector2Int m_targetBuiding = Vector2Int.zero;
     Vector3 m_target = Vector3.zero;
     float m_fireDelay = 0;
@@ -51,16 +52,16 @@ class Enemy : MonoBehaviour
     {
         m_playerLayer = LayerMask.NameToLayer("Player");
 
-        GetNearestBuildingEvent e = new GetNearestBuildingEvent(transform.position);
-        Event<GetNearestBuildingEvent>.Broadcast(e);
-
-        if (WorldHolder.Instance() != null)
-            m_target = WorldHolder.Instance().GetElemPos(e.buildingPos.x, e.buildingPos.y);
-        m_targetBuiding = e.buildingPos;
+        UpdateTarget();
     }
 
     private void Update()
     {
+        UpdateTarget();
+
+        if (!m_haveTarget)
+            return;
+
         Vector3 targetMove = m_target;
         targetMove.y = transform.position.y;
 
@@ -115,5 +116,19 @@ class Enemy : MonoBehaviour
 
             Destroy(gameObject);
         }
+    }
+
+    void UpdateTarget()
+    {
+        GetNearestBuildingEvent e = new GetNearestBuildingEvent(transform.position);
+        Event<GetNearestBuildingEvent>.Broadcast(e);
+
+        m_haveTarget = e.buildingFound;
+        m_target = Vector3.zero;
+        if (WorldHolder.Instance() != null)
+            m_target = WorldHolder.Instance().GetElemPos(e.buildingPos.x, e.buildingPos.y);
+        m_targetBuiding = e.buildingPos;
+        m_target.x += 0.5f;
+        m_target.z += 0.5f;
     }
 }

@@ -326,6 +326,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5742043589306741971}
   - component: {fileID: 7118435031276912989}
+  - component: {fileID: -1875313546430278629}
   m_Layer: 0
   m_Name: Tower2_1
   m_TagString: Untagged
@@ -379,6 +380,18 @@ MonoBehaviour:
   m_fireDistance: 12
   m_fireDelay: 0.4
   m_minFireAngle: 90
+--- !u!114 &-1875313546430278629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5742043589306741968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6996c51305d505646b99893b10d08b50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5742043589334847749
 GameObject:
   m_ObjectHideFlags: 0

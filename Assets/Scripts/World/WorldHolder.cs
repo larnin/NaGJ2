@@ -228,6 +228,8 @@ public class WorldHolder : MonoBehaviour
             rot = Rotation.rot_0;
         ApplyRotation(obj, rot);
         elem.buildingObject = obj;
+
+        Event<SetBuildingInfoEvent>.Broadcast(new SetBuildingInfoEvent(x, y), obj);
     }     
 
     public NearMatrix GetGroundNearMatrix(int x, int y)

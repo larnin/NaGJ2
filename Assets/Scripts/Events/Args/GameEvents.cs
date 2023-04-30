@@ -15,10 +15,13 @@ public class GetNearestBuildingEvent
 {
     public Vector3 currentPos;
     public Vector2Int buildingPos;
+    public bool buildingFound;
 
     public GetNearestBuildingEvent(Vector3 _currentPos)
     {
         currentPos = _currentPos;
+        buildingPos = Vector2Int.zero;
+        buildingFound = false;
     }
 }
 

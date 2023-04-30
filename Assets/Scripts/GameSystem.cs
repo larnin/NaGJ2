@@ -204,8 +204,10 @@ class GameSystem : MonoBehaviour
         }
     }
 
-    Vector2Int GetNearestBuilding(Vector3 pos)
+    Vector2Int GetNearestBuilding(Vector3 pos, out bool found)
     {
+        found = false;
+
         if (WorldHolder.Instance() == null)
             return Vector2Int.zero;
 
@@ -236,6 +238,9 @@ class GameSystem : MonoBehaviour
             }
         }
 
+        if (bestDist >= 0)
+            found = true;
+
         return bestPos;
     }
 
@@ -247,7 +252,7 @@ class GameSystem : MonoBehaviour
 
     void GetNearestBuilding(GetNearestBuildingEvent e)
     {
-        e.buildingPos = GetNearestBuilding(e.currentPos);
+        e.buildingPos = GetNearestBuilding(e.currentPos, out e.buildingFound);
     }
 
     public void PlaceTower(int x, int y, BuildingType type, int level)
@@ -330,6 +335,12 @@ class GameSystem : MonoBehaviour
         WorldHolder.Instance().SetGround(GroundType.empty, x, y);
 
         CountBuildings();
+    }
+
+    public void DestroyBuilding(int x, int y)
+    {
+        if(WorldHolder.Instance() != null)
+            WorldHolder.Instance().SetBuilding(BuildingType.empty, 0, x, y);
     }
 
     GroundType GetGroundType(int x, int y)

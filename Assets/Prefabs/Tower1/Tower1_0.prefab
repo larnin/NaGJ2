@@ -270,6 +270,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1798297463076897812}
   - component: {fileID: 1439927116}
+  - component: {fileID: 2292675637515753749}
   m_Layer: 0
   m_Name: Tower1_0
   m_TagString: Untagged
@@ -315,6 +316,19 @@ MonoBehaviour:
   m_rotationSpeed: 100
   m_fireDistance: 6
   m_fireDelay: 2
+  m_minFireAngle: 2
+--- !u!114 &2292675637515753749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798297463076897813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6996c51305d505646b99893b10d08b50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1798297463776322852
 GameObject:
   m_ObjectHideFlags: 0

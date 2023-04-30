@@ -298,7 +298,7 @@ MonoBehaviour:
     prefab: {fileID: 2678619925988939733, guid: f5e8a2a9d20772141bacac8f49d80c41, type: 3}
   - type: 4
     prefab: {fileID: 1642184474912788966, guid: 6458c128b5f7cad49b63200541a4846c, type: 3}
-  m_initialDelay: 120
+  m_initialDelay: 20
   m_waveDelay: 60
   m_initialEnemyCount: 2
   m_moreEnemyEachWave: 1
@@ -2287,7 +2287,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &1001098958
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3241,7 +3241,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1343497791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4206,7 +4206,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2074454390
 Transform:
   m_ObjectHideFlags: 0

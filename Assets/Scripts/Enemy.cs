@@ -57,6 +57,9 @@ class Enemy : MonoBehaviour
 
     private void Update()
     {
+        if (Gamestate.instance.paused)
+            return;
+
         UpdateTarget();
 
         if (!m_haveTarget)

@@ -16,7 +16,10 @@ public class FastBullet : BulletBase
 
     private void Update()
     {
-        if(m_distance >= m_maxDistance)
+        if (Gamestate.instance.paused)
+            return;
+
+        if (m_distance >= m_maxDistance)
         {
             Destroy(gameObject);
             return;

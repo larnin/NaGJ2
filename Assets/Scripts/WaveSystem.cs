@@ -49,6 +49,7 @@ public class WaveSystem : MonoBehaviour
     private void Awake()
     {
         m_subscriberList.Add(new Event<GetWaveTextEvent>.Subscriber(GetWaveText));
+        m_subscriberList.Add(new Event<GetMaxPopulationMoneyWaveEvent>.Subscriber(GetMax));
         m_subscriberList.Subscribe();
     }
 
@@ -81,6 +82,11 @@ public class WaveSystem : MonoBehaviour
             e.description = e.description.Remove(e.description.Length - 3);
     }
 
+    void GetMax(GetMaxPopulationMoneyWaveEvent e)
+    {
+        e.wave = m_currentWave;
+    }
+
     private void Start()
     {
         int nbType = Enum.GetValues(typeof(EnemyType)).Length;
@@ -97,6 +103,9 @@ public class WaveSystem : MonoBehaviour
 
     private void Update()
     {
+        if (Gamestate.instance.paused)
+            return;
+
         m_timer -= Time.deltaTime;
 
         int nbSpawn = Mathf.CeilToInt((m_initialTimer - m_timer) / m_durationBetweenSpawn);

@@ -40,6 +40,8 @@ public class GameUI : MonoBehaviour
 
     bool m_pricesUpdated = false;
 
+    SubscriberList m_subscriberList = new SubscriberList();
+
     private void Awake()
     {
         //explore that shit of hierarchy !
@@ -83,6 +85,14 @@ public class GameUI : MonoBehaviour
             m_waveLabelText = wave.Find("NextWaveLabel")?.GetComponent<TMP_Text>();
             m_waveDescriptionText = wave.Find("NextWaveText")?.GetComponent<TMP_Text>();
         }
+
+        m_subscriberList.Add(new Event<GetSelectedCursorButtonEvent>.Subscriber(GetCurrentButton));
+        m_subscriberList.Subscribe();
+    }
+
+    private void OnDestroy()
+    {
+        m_subscriberList.Unsubscribe();
     }
 
     private void Start()
@@ -222,5 +232,10 @@ public class GameUI : MonoBehaviour
                 m_towerCursor.SetBuilding(BuildingType.tower2);
         }
 
+    }
+
+    void GetCurrentButton(GetSelectedCursorButtonEvent e)
+    {
+        e.m_currentButton = m_currentButton;
     }
 }

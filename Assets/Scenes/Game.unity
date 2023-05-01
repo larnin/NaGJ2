@@ -1030,6 +1030,8 @@ MonoBehaviour:
   m_minElemTimer: 15
   m_labWeight: 0.1
   m_initialMoney: 100000
+  m_pauseMenu: {fileID: 1399398175102755117, guid: c63e1a86cf2b02242b70d0942880b7f9, type: 3}
+  m_gameOverMenu: {fileID: 1399398175102755117, guid: c63e1a86cf2b02242b70d0942880b7f9, type: 3}
 --- !u!4 &362635311
 Transform:
   m_ObjectHideFlags: 0

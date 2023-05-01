@@ -17,6 +17,9 @@ class TrackingBullet : BulletBase
 
     private void Update()
     {
+        if (Gamestate.instance.paused)
+            return;
+
         float dist = m_speed * speedMultiplier * Time.deltaTime;
 
         RaycastHit hit;

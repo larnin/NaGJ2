@@ -30,3 +30,14 @@ public class GetWaveTextEvent
     public string label = "";
     public string description = "";
 }
+public class GetMaxPopulationMoneyWaveEvent
+{
+    public int population = 0;
+    public int money = 0;
+    public int wave = 0;
+}
+
+public class GetSelectedCursorButtonEvent
+{
+    public int m_currentButton = -1;
+}

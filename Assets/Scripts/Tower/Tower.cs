@@ -39,6 +39,9 @@ public class Tower : MonoBehaviour
 
     private void Update()
     {
+        if (Gamestate.instance.paused)
+            return;
+
         if (m_tower == null)
             return;
 

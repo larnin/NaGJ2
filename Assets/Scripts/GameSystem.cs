@@ -34,6 +34,8 @@ class GameSystem : MonoBehaviour
     [SerializeField] float m_minElemTimer = 30;
     [SerializeField] float m_labWeight = 0.1f;
     [SerializeField] int m_initialMoney = 10;
+    [SerializeField] GameObject m_pauseMenu;
+    [SerializeField] GameObject m_gameOverMenu;
 
     List<CorruptionInfo> m_corruption = new List<CorruptionInfo>();
 
@@ -45,6 +47,9 @@ class GameSystem : MonoBehaviour
     int m_money;
     float m_moneyToAdd; //range[0;1]
     BuildingType m_nextWantedBuilding = BuildingType.empty;
+
+    int m_bestMoney = 0;
+    int m_bestPopulation = 0;
 
     float m_timer = 0;
 
@@ -63,6 +68,7 @@ class GameSystem : MonoBehaviour
 
         m_subscriberList.Add(new Event<GetPopulationAndMoneyEvent>.Subscriber(GetPopulationAndMoney));
         m_subscriberList.Add(new Event<GetNearestBuildingEvent>.Subscriber(GetNearestBuilding));
+        m_subscriberList.Add(new Event<GetMaxPopulationMoneyWaveEvent>.Subscriber(GetMax));
         m_subscriberList.Subscribe();
     }
 
@@ -93,6 +99,30 @@ class GameSystem : MonoBehaviour
         m_moneyToAdd += m_moneyGeneration * Time.deltaTime;
         m_money += Mathf.FloorToInt(m_moneyToAdd);
         m_moneyToAdd = m_moneyToAdd - MathF.Floor(m_moneyToAdd);
+
+        if (m_money > m_bestMoney)
+            m_bestMoney = m_money;
+        if (m_population > m_bestPopulation)
+            m_bestPopulation = m_population;
+
+        if(!Gamestate.instance.paused)
+        {
+            if(m_population <= 0)
+            {
+                Instantiate(m_gameOverMenu);
+            }
+            else
+            {
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    GetSelectedCursorButtonEvent e = new GetSelectedCursorButtonEvent();
+                    Event<GetSelectedCursorButtonEvent>.Broadcast(e);
+                    if (e.m_currentButton == -1)
+                        Instantiate(m_pauseMenu);
+                }
+                
+            }
+        }
     }   
     
     void SetInitialState()
@@ -255,6 +285,12 @@ class GameSystem : MonoBehaviour
         e.buildingPos = GetNearestBuilding(e.currentPos, out e.buildingFound);
     }
 
+    void GetMax(GetMaxPopulationMoneyWaveEvent e)
+    {
+        e.money = m_bestMoney;
+        e.population = m_bestPopulation;
+    }
+
     public void PlaceTower(int x, int y, BuildingType type, int level)
     {
         if (ElementHolder.Instance() == null)
@@ -324,6 +360,8 @@ class GameSystem : MonoBehaviour
 
         WorldHolder.Instance().SetGround(GetGroundType(x, y), x, y);
 
+        CountBuildings();
+
     }
 
     public void RemoveGround(int x, int y)
@@ -341,6 +379,8 @@ class GameSystem : MonoBehaviour
     {
         if(WorldHolder.Instance() != null)
             WorldHolder.Instance().SetBuilding(BuildingType.empty, 0, x, y);
+
+        CountBuildings();
     }
 
     GroundType GetGroundType(int x, int y)

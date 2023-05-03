@@ -54,6 +54,6 @@ public class FastBullet : BulletBase
             obj.transform.forward = hit.normal;
         }
 
-        Event<HitEvent>.Broadcast(new HitEvent(m_damages * damageMultiplier), hit.collider.gameObject);
+        Event<HitEvent>.Broadcast(new HitEvent(m_damages * damageMultiplier, hit.point, transform.forward), hit.collider.gameObject);
     }
 }

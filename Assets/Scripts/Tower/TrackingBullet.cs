@@ -69,7 +69,7 @@ class TrackingBullet : BulletBase
     void OnHit(RaycastHit hit)
     {
         if(hit.collider != null)
-            Event<HitEvent>.Broadcast(new HitEvent(m_damages * damageMultiplier), hit.collider.gameObject);
+            Event<HitEvent>.Broadcast(new HitEvent(m_damages * damageMultiplier, hit.point, transform.forward), hit.collider.gameObject);
 
         if (m_instantiateOnHit != null)
         {

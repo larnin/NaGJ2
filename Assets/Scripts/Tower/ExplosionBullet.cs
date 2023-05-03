@@ -57,7 +57,10 @@ public class ExplosionBullet : BulletBase
         var cols = Physics.OverlapSphere(transform.position, m_radius, ennemyLayer);
 
         for (int i = 0; i < cols.Length; i++)
-            Event<HitEvent>.Broadcast(new HitEvent(m_damages * damageMultiplier));
+        {
+            Vector3 hitDirection = (cols[i].transform.position - transform.position).normalized;
+            Event<HitEvent>.Broadcast(new HitEvent(m_damages * damageMultiplier, transform.position, hitDirection));
+        }
 
         if (m_instantiateOnExplosion != null)
         {

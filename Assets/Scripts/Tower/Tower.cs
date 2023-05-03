@@ -28,10 +28,14 @@ public class Tower : MonoBehaviour
     float m_recoilTimer = 0;
     float m_fireTimer = 0;
     int m_currentFirePoint = 0;
+    bool m_allowedToFire = true;
+
+    GameObject m_forcedTarget = null;
 
     private void Start()
     {
-        m_ennemyLayer = LayerMask.NameToLayer("Ennemy");
+        if(m_ennemyLayer == 0)
+            m_ennemyLayer = LayerMask.NameToLayer("Ennemy");
         m_tower = transform.Find("Tower");
         if (m_tower != null)
             m_initialPos = m_tower.localPosition;
@@ -60,6 +64,12 @@ public class Tower : MonoBehaviour
     void UpdateTarget()
     {
         m_updateTargetTimer = 0;
+
+        if (m_forcedTarget != null)
+        {
+            m_currentTarget = m_forcedTarget;
+            return;
+        }
 
         Vector3 p1 = transform.position + m_initialPos;
         Vector3 p2 = p1;
@@ -116,7 +126,7 @@ public class Tower : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(targetForward);
         RotateTower(targetRotation);
 
-        if (m_fireTimer <= 0)
+        if (m_fireTimer <= 0 && m_allowedToFire)
         {
             float angle = Quaternion.Angle(targetRotation, m_tower.rotation);
             if (angle < m_minFireAngle)
@@ -196,5 +206,20 @@ public class Tower : MonoBehaviour
             obj.transform.position = currentTransform.position;
             obj.transform.rotation = currentTransform.rotation;
         }
+    }
+
+    public void AllowFire(bool allowed)
+    {
+        m_allowedToFire = allowed;
+    }
+
+    public void OverrideRange(float newRange)
+    {
+        m_fireDistance = newRange;
+    }
+
+    public void ForceTarget(GameObject target)
+    {
+        m_forcedTarget = target;
     }
 }

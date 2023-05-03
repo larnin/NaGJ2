@@ -113,7 +113,8 @@ class Enemy : MonoBehaviour
             var col = Physics.OverlapSphere(transform.position, m_explosionRadius, 1 << m_playerLayer);
             foreach(var c in col)
             {
-                HitEvent e = new HitEvent(m_multiplier);
+                Vector3 hitDirection = (c.transform.position - transform.position).normalized;
+                HitEvent e = new HitEvent(m_multiplier, transform.position, hitDirection);
                 Event<HitEvent>.Broadcast(e, c.gameObject);
             }
 

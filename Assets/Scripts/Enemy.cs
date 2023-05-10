@@ -13,6 +13,7 @@ class Enemy : MonoBehaviour
     [SerializeField] float m_moveSpeed = 1;
     [SerializeField] bool m_explode = false;
     [SerializeField] float m_explosionRadius = 1;
+    [SerializeField] float m_rotationSpeed = 5;
 
     SubscriberList m_subscriberList = new SubscriberList();
 
@@ -41,6 +42,8 @@ class Enemy : MonoBehaviour
     private void OnDestroy()
     {
         m_subscriberList.Unsubscribe();
+
+        EntityList.Remove(gameObject);
     }
 
     void OnDeath(DeathEvent e)
@@ -52,7 +55,23 @@ class Enemy : MonoBehaviour
     {
         m_playerLayer = LayerMask.NameToLayer("Player");
 
-        UpdateTarget();
+        UpdateTarget(true);
+
+        Quaternion rot = transform.rotation;
+        transform.rotation = Quaternion.identity;
+        var collider = GetComponentInChildren<Collider>();
+        if (collider == null)
+            EntityList.Add(gameObject, 0.5f);
+        else
+        {
+            var bounds = collider.bounds;
+            Vector2 offset = new Vector2(bounds.center.x - transform.position.x, bounds.center.z - transform.position.z);
+            Vector2 extends = new Vector2(bounds.extents.x, bounds.extents.z);
+            float radius = offset.magnitude + extends.magnitude;
+
+            EntityList.Add(gameObject, radius);
+        }
+        transform.rotation = rot;
     }
 
     private void Update()
@@ -60,7 +79,7 @@ class Enemy : MonoBehaviour
         if (Gamestate.instance.paused)
             return;
 
-        UpdateTarget();
+        UpdateTarget(false);
 
         if (!m_haveTarget)
             return;
@@ -81,9 +100,28 @@ class Enemy : MonoBehaviour
         {
             dir /= dist;
 
-            float d = m_moveSpeed * Time.deltaTime;
-            var newPos = transform.position + d * dir;
-            transform.position = newPos;
+            Vector2 moveDir = EntityList.EvadeDirection(gameObject, new Vector2(dir.x, dir.z));
+            Vector2 forward = new Vector2(transform.forward.x, transform.forward.z);
+
+            float angle = Utility.Angle(forward);
+            float targetAngle = Utility.Angle(moveDir);
+
+            float deltaAngle = targetAngle - angle;
+            if (deltaAngle < -Mathf.PI)
+                deltaAngle += 2 * Mathf.PI;
+            if (deltaAngle > Mathf.PI)
+                deltaAngle -= 2 * Mathf.PI;
+
+            float moveAngle = m_rotationSpeed * Time.deltaTime;
+            if (moveAngle >= Mathf.Abs(deltaAngle))
+                moveAngle = Mathf.Abs(deltaAngle);
+
+            angle += moveAngle * Mathf.Sign(deltaAngle);
+            transform.forward = new Vector3(Mathf.Cos(angle), 0, Mathf.Sign(angle));
+
+            var pos = transform.position;
+            pos += transform.forward * m_moveSpeed * Time.deltaTime;
+            transform.position = pos;
         }
     }
 
@@ -122,7 +160,7 @@ class Enemy : MonoBehaviour
         }
     }
 
-    void UpdateTarget()
+    void UpdateTarget(bool forceRotation)
     {
         GetNearestBuildingEvent e = new GetNearestBuildingEvent(transform.position);
         Event<GetNearestBuildingEvent>.Broadcast(e);
@@ -134,5 +172,13 @@ class Enemy : MonoBehaviour
         m_targetBuiding = e.buildingPos;
         m_target.x += 0.5f;
         m_target.z += 0.5f;
+
+        if(m_haveTarget && forceRotation)
+        {
+            Vector2 dir = new Vector2(m_target.x - transform.position.x, m_target.z - transform.position.z);
+            dir.Normalize();
+
+            transform.forward = new Vector3(dir.x, 0, dir.y);
+        }
     }
 }

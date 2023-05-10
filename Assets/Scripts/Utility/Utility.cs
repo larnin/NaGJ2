@@ -11,7 +11,14 @@ public static class Utility
 {
     public static float Angle(Vector2 a, Vector2 b)
     {
-        return Mathf.Atan2(b.y, b.x) - Mathf.Atan2(a.y, a.x);
+        float angle = Mathf.Atan2(b.y, b.x) - Mathf.Atan2(a.y, a.x);
+
+        if (angle < -Mathf.PI)
+            angle += 2 * Mathf.PI;
+        if (angle > Mathf.PI)
+            angle -= 2 * Mathf.PI;
+
+        return angle;
     }
 
     public static float Angle(Vector2 vect)

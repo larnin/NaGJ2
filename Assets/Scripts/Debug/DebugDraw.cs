@@ -19,6 +19,11 @@ public static class DebugDraw
         else Debug.DrawLine(pos1, pos2, color, duration);
     }
 
+    public static void Ray(Vector3 pos, Vector3 dir, Color color, float duration = -1)
+    {
+        Line(pos, pos + dir, color, duration);
+    }
+
     public static void Circle(Vector3 pos, float radius, Color color, float duration = -1)
     {
         Circle(pos, radius, Quaternion.identity, color, duration);
@@ -187,6 +192,11 @@ public static class DebugDraw
         Line(pos1, pos2, color, duration);
         Line(pos2, pos3, color, duration);
         Line(pos3, pos1, color, duration);
+    }
+
+    public static void Bounds(Bounds bounds, Color color, float duration = -1)
+    {
+        CentredBox(bounds.center, bounds.size, color, duration);
     }
 
     public static void Box(Vector3 pos, Vector3 size, Color color, float duration = -1)

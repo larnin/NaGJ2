@@ -45,6 +45,8 @@ public static class EntityList
         StaticRandomGenerator<MT19937> rand = new StaticRandomGenerator<MT19937>();
         UniformVector2CircleDistribution d = new UniformVector2CircleDistribution(radius);
 
+        float avoidDistance = Global.instance.m_entityAvoidDistance;
+
         for (int i = 0; i < 20; i++)
         {
             Vector2 p = d.Next(rand);
@@ -55,9 +57,12 @@ public static class EntityList
 
             foreach (var e in m_entities)
             {
+                float dist = e.radius + avoidDistance;
+                dist *= dist;
+
                 Vector2 ePos = new Vector2(e.entity.transform.position.x, e.entity.transform.position.z);
                 float sqrDist = (ePos - p).sqrMagnitude;
-                if (sqrDist < e.radius * e.radius)
+                if (sqrDist < dist)
                 {
                     isValid = false;
                     break;
@@ -116,12 +121,12 @@ public static class EntityList
             float minDist = elem.radius + e.radius + avoidDistance;
             minDist *= minDist;
 
-            if(dist < minDist)
+            if (dist < minDist)
             {
                 Vector2 dirToTarget = entityPos - pos;
                 float distToTarget = dirToTarget.magnitude;
                 dirToTarget /= distToTarget;
-                Vector2 orthoDir = new Vector2(dirToTarget.y, -dirToTarget.y);
+                Vector2 orthoDir = new Vector2(dirToTarget.y, -dirToTarget.x);
 
                 Vector2 dirLeft = dirToTarget * distToTarget + orthoDir * (e.radius + elem.radius);
                 Vector2 dirRight = dirToTarget * distToTarget - orthoDir * (e.radius + elem.radius);
@@ -160,6 +165,7 @@ public static class EntityList
         }
 
         float angle = Mathf.Abs(rightAngle) < Mathf.Abs(leftAngle) ? rightAngle : leftAngle;
+        angle += Utility.Angle(wantedForward);
 
         return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
     }

@@ -14,6 +14,7 @@ class Enemy : MonoBehaviour
     [SerializeField] bool m_explode = false;
     [SerializeField] float m_explosionRadius = 1;
     [SerializeField] float m_rotationSpeed = 5;
+    [SerializeField] float m_evadeRadius = 1;
 
     SubscriberList m_subscriberList = new SubscriberList();
 
@@ -56,22 +57,7 @@ class Enemy : MonoBehaviour
         m_playerLayer = LayerMask.NameToLayer("Player");
 
         UpdateTarget(true);
-
-        Quaternion rot = transform.rotation;
-        transform.rotation = Quaternion.identity;
-        var collider = GetComponentInChildren<Collider>();
-        if (collider == null)
-            EntityList.Add(gameObject, 0.5f);
-        else
-        {
-            var bounds = collider.bounds;
-            Vector2 offset = new Vector2(bounds.center.x - transform.position.x, bounds.center.z - transform.position.z);
-            Vector2 extends = new Vector2(bounds.extents.x, bounds.extents.z);
-            float radius = offset.magnitude + extends.magnitude;
-
-            EntityList.Add(gameObject, radius);
-        }
-        transform.rotation = rot;
+        EntityList.Add(gameObject, m_evadeRadius);
     }
 
     private void Update()
@@ -117,7 +103,7 @@ class Enemy : MonoBehaviour
                 moveAngle = Mathf.Abs(deltaAngle);
 
             angle += moveAngle * Mathf.Sign(deltaAngle);
-            transform.forward = new Vector3(Mathf.Cos(angle), 0, Mathf.Sign(angle));
+            transform.forward = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
 
             var pos = transform.position;
             pos += transform.forward * m_moveSpeed * Time.deltaTime;

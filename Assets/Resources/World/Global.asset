@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b93af5f93c2ad564e838e50e19f417dc, type: 3}
   m_Name: Global
   m_EditorClassIdentifier: 
-  m_entityAvoidDistance: 1
+  m_entityAvoidDistance: 0.5

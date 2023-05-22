@@ -392,24 +392,62 @@ public static class CutMesh
     public static void MakeShape(Mesh mesh, ConvexeShape shape, Vector3 center, float thickness)
     {
         SimpleMeshParam<NormalUVVertexDefinition> vertices = new SimpleMeshParam<NormalUVVertexDefinition>();
+        AddShape(vertices, shape, center, thickness);
 
-        var data = vertices.Allocate(shape.GetNbPoints() * 3, (3 * shape.GetNbPoints() + shape.GetNbPoints() - 2) * 3);
+        MakeShape(mesh, vertices, center);
+    }
+
+    public static void MakeShape(Mesh mesh, SimpleMeshParam<NormalUVVertexDefinition> meshParams, Vector3 center)
+    {
+        var data = meshParams.GetMesh(0);
+
+        MeshEx.SetNormalUVMeshParams(mesh, data.verticesSize, data.indexesSize);
+
+        mesh.SetVertexBufferData(data.vertices, 0, 0, data.verticesSize);
+        mesh.SetIndexBufferData(data.indexes, 0, 0, data.indexesSize);
+
+        mesh.subMeshCount = 1;
+        mesh.SetSubMesh(0, new UnityEngine.Rendering.SubMeshDescriptor(0, data.indexesSize, MeshTopology.Triangles));
+
+        Bounds b = GetBounds(data);
+        b.center = b.center - center;
+
+        mesh.bounds = b;
+    }
+
+    static Bounds GetBounds(MeshParamData<NormalUVVertexDefinition> meshParams)
+    {
+        if (meshParams.verticesSize == 0)
+            return new Bounds();
+
+        Bounds b = new Bounds(meshParams.vertices[0].pos, Vector3.zero);
+        for(int i = 1; i < meshParams.verticesSize; i++)
+        {
+            b.Encapsulate(meshParams.vertices[i].pos);
+        }
+
+        return b;
+    }
+
+    public static void AddShape(SimpleMeshParam<NormalUVVertexDefinition> meshParams, ConvexeShape shape, Vector3 center, float thickness)
+    {
+        var data = meshParams.Allocate(shape.GetNbPoints() * 3, (3 * shape.GetNbPoints() + shape.GetNbPoints() - 2) * 3);
 
         // make center
-        for(int i = 0; i < shape.GetNbPoints(); i++)
+        for (int i = 0; i < shape.GetNbPoints(); i++)
         {
-            data.vertices[i].pos = shape.GetPoint(i) - center;
-            data.vertices[i].uv = shape.GetRawPoint(i);
-            data.vertices[i].normal = new Vector3(1, 0, 0);
+            data.vertices[data.verticesSize + i].pos = shape.GetPoint(i) - center;
+            data.vertices[data.verticesSize + i].uv = shape.GetRawPoint(i);
+            data.vertices[data.verticesSize + i].normal = new Vector3(1, 0, 0);
         }
-        data.verticesSize = shape.GetNbPoints();
+        data.verticesSize += shape.GetNbPoints();
 
         for (int i = 2; i < shape.GetNbPoints(); i++)
         {
             int index = i - 2;
-            data.indexes[index * 3] = 0;
-            data.indexes[index * 3 + 1] = (ushort)(i);
-            data.indexes[index * 3 + 2] = (ushort)(i - 1);
+            data.indexes[data.indexesSize + index * 3] = 0;
+            data.indexes[data.indexesSize + index * 3 + 1] = (ushort)(i);
+            data.indexes[data.indexesSize + index * 3 + 2] = (ushort)(i - 1);
         }
         data.indexesSize = (shape.GetNbPoints() - 2) * 3;
 
@@ -454,21 +492,6 @@ public static class CutMesh
         }
         data.verticesSize += shape.GetNbPoints() * 2;
         data.indexesSize += shape.GetNbPoints() * 3 * 3;
-
-        MeshEx.SetNormalUVMeshParams(mesh, data.verticesSize, data.indexesSize);
-
-        mesh.SetVertexBufferData(data.vertices, 0, 0, data.verticesSize);
-        mesh.SetIndexBufferData(data.indexes, 0, 0, data.indexesSize);
-
-        mesh.subMeshCount = 1;
-        mesh.SetSubMesh(0, new UnityEngine.Rendering.SubMeshDescriptor(0, data.indexesSize, MeshTopology.Triangles));
-
-        Bounds b = shape.GetBounds();
-        b.center = b.center - center;
-        b.Expand(thickness);
-
-        mesh.bounds = b;
-
     }
 }
 

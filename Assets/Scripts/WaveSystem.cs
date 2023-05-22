@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using NRand;
 
 public enum EnemyType
 {
@@ -24,6 +25,7 @@ public class EnemyData
 public class WaveSystem : MonoBehaviour
 {
     [SerializeField] List<EnemyData> m_enemies = new List<EnemyData>();
+    [SerializeField] GameObject m_spawnerPrefab;
     [SerializeField] float m_initialDelay = 120;
     [SerializeField] float m_waveDelay = 60;
     [SerializeField] int m_initialEnemyCount = 2;
@@ -40,11 +42,20 @@ public class WaveSystem : MonoBehaviour
     int m_currentWave = 0;
     float m_timer = 0;
     float m_initialTimer = 0;
-    List<Vector3> m_spawnPos = new List<Vector3>();
+    List<GameObject> m_spawnPos = new List<GameObject>();
     List<int> m_remainingEnemies = new List<int>();
     int m_spawnedEnemies = 0;
+    Status m_status = Status.Cooldown;
 
     List<int> m_nextWave = new List<int>();
+
+    enum Status
+    {
+        waitingSpawner,
+        Spawning,
+        DestroyingSpawner,
+        Cooldown,
+    }
 
     private void Awake()
     {
@@ -63,23 +74,39 @@ public class WaveSystem : MonoBehaviour
         e.label = "";
         e.description = "";
 
-        e.label += "Prochaine vague : ";
-        e.label += TimerToText(m_timer);
-
-        for(int i = 0; i < m_nextWave.Count; i++)
+        if(m_status == Status.Spawning)
         {
-            int w = m_nextWave[i];
+            e.label = "Spawning ...";
+            e.description = SetDescriptionFromWaves(m_remainingEnemies);
+        }
+        else
+        {
+            e.label += "Prochaine vague : ";
+            e.label += TimerToText(m_timer);
+            e.description = SetDescriptionFromWaves(m_nextWave);
+        }
+    }
+
+    string SetDescriptionFromWaves(List<int> wave)
+    {
+        string description = "";
+
+        for(int i = 0; i < wave.Count; i++)
+        {
+            int w = wave[i];
             if (w == 0)
                 continue;
 
-            e.description += GetName((EnemyType)i);
-            e.description += " : ";
-            e.description += w.ToString();
-            e.description += " - ";
+            description += GetName((EnemyType)i);
+            description += " : ";
+            description += w.ToString();
+            description += " - ";
         }
 
-        if (e.description.Length > 3)
-            e.description = e.description.Remove(e.description.Length - 3);
+        if (description.Length > 3)
+            description = description.Remove(description.Length - 3);
+
+        return description;
     }
 
     void GetMax(GetMaxPopulationMoneyWaveEvent e)
@@ -106,14 +133,38 @@ public class WaveSystem : MonoBehaviour
         if (Gamestate.instance.paused)
             return;
 
-        m_timer -= Time.deltaTime;
-
-        int nbSpawn = Mathf.CeilToInt((m_initialTimer - m_timer) / m_durationBetweenSpawn);
-        if (nbSpawn > m_spawnedEnemies)
-            SpawnOneEnemy();
-
-        if (m_timer <= 0)
-            StartNextWave();
+        switch(m_status)
+        {
+            case Status.Cooldown:
+                {
+                    m_timer -= Time.deltaTime;
+                    
+                    if (m_timer <= 0)
+                        StartNextWave();
+                    break;
+                }
+            case Status.waitingSpawner:
+                {
+                    if (WaitSpawners())
+                        m_status = Status.Spawning;
+                    break;
+                }
+            case Status.Spawning:
+                {
+                    m_timer -= Time.deltaTime;
+                    int nbSpawn = Mathf.CeilToInt((m_initialTimer - m_timer) / m_durationBetweenSpawn);
+                    if (nbSpawn > m_spawnedEnemies)
+                        SpawnOneEnemy();
+                    break;
+                }
+            case Status.DestroyingSpawner:
+                {
+                    m_timer -= Time.deltaTime;
+                    if (DestroySpawners())
+                        m_status = Status.Cooldown;
+                    break;
+                }
+        }
     }
 
     EnemyData GetEnemy(EnemyType type)
@@ -178,6 +229,8 @@ public class WaveSystem : MonoBehaviour
 
         GenerateSpawnPos();
 
+        m_status = Status.waitingSpawner;
+
         m_currentWave++;
 
         GenerateNextWave();
@@ -213,6 +266,50 @@ public class WaveSystem : MonoBehaviour
         }
     }
 
+    bool WaitSpawners()
+    {
+        foreach(var s in m_spawnPos)
+        {
+            var status = new SpawnerGetStatusEvent();
+            Event<SpawnerGetStatusEvent>.Broadcast(new SpawnerGetStatusEvent(), s);
+            if (!status.canSpawn)
+                return false;
+        }
+
+        return true;
+    }
+
+    void StartDestroySpawner()
+    {
+        m_status = Status.DestroyingSpawner;
+
+        foreach(var s in m_spawnPos)
+        {
+            Event<SpawnerStopEvent>.Broadcast(new SpawnerStopEvent(), s);
+        }
+
+    }
+
+    bool DestroySpawners()
+    {
+        foreach (var s in m_spawnPos)
+        {
+            var status = new SpawnerGetStatusEvent();
+            Event<SpawnerGetStatusEvent>.Broadcast(new SpawnerGetStatusEvent(), s);
+            if (!status.stopped)
+                return false;
+        }
+
+        foreach(var s in m_spawnPos)
+        {
+            Destroy(s);
+        }
+
+        m_spawnPos.Clear();
+
+        return true;
+    }
+
     void SpawnOneEnemy()
     {
         int nbRemaining = 0;
@@ -220,7 +317,7 @@ public class WaveSystem : MonoBehaviour
             nbRemaining += e;
         if(nbRemaining <= 0)
         {
-            m_spawnedEnemies++;
+            StartDestroySpawner();
             return;
         }
 
@@ -231,23 +328,17 @@ public class WaveSystem : MonoBehaviour
 
         int spawnIndex = m_spawnedEnemies % m_spawnPos.Count();
 
-        Vector3 pos = m_spawnPos[spawnIndex];
-
-        float distance = m_spawnRadius * UnityEngine.Random.value;
-        float angle = 2 * Mathf.PI * UnityEngine.Random.value;
-
-        pos.x += distance * Mathf.Cos(angle);
-        pos.z += distance * Mathf.Sin(angle);
-
         int nbEnemies = 0;
         foreach (var e in m_remainingEnemies)
             nbEnemies += e;
-        int currentEnemy = UnityEngine.Random.Range(0, nbEnemies);
+        StaticRandomGenerator<MT19937> rand = new StaticRandomGenerator<MT19937>();
+        UniformIntDistribution d = new UniformIntDistribution(0, nbEnemies);
+        int currentEnemy = d.Next(rand);
         EnemyType type = EnemyType.normal;
-        for(int i = 0; i < m_remainingEnemies.Count; i++)
+        for (int i = 0; i < m_remainingEnemies.Count; i++)
         {
             currentEnemy -= m_remainingEnemies[i];
-            if(i <= 0)
+            if (i <= 0)
             {
                 m_remainingEnemies[i]--;
                 type = (EnemyType)i;
@@ -258,15 +349,10 @@ public class WaveSystem : MonoBehaviour
         m_spawnedEnemies++;
 
         EnemyData data = GetEnemy(type);
-        if(data != null)
-        {
-            var obj = Instantiate(data.prefab);
-            obj.transform.position = pos;
+        if (data == null)
+            return;
 
-            var enemy = obj.GetComponent<Enemy>();
-            if (enemy != null)
-                enemy.SetMultiplier(multiplier);
-        }
+        Event<SpawnEntityEvent>.Broadcast(new SpawnEntityEvent(data.prefab));
     }
 
     void GenerateSpawnPos()
@@ -320,9 +406,12 @@ public class WaveSystem : MonoBehaviour
             }
 
             Vector3 pos = WorldHolder.Instance().GetElemPos(x, y);
-            pos.y = 1.2f;
+            pos.y += 1.2f;
 
-            m_spawnPos.Add(pos);
+            var spawner = Instantiate(m_spawnerPrefab);
+            spawner.transform.position = pos;
+
+            m_spawnPos.Add(spawner);
         }
     }
 

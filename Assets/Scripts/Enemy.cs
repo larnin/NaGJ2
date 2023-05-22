@@ -37,6 +37,7 @@ class Enemy : MonoBehaviour
     private void Awake()
     {
         m_subscriberList.Add(new Event<DeathEvent>.LocalSubscriber(OnDeath, gameObject));
+        m_subscriberList.Add(new Event<SetBehaviourEnabledEvent>.LocalSubscriber(SetEnabled, gameObject));
         m_subscriberList.Subscribe();
     }
 
@@ -166,5 +167,10 @@ class Enemy : MonoBehaviour
 
             transform.forward = new Vector3(dir.x, 0, dir.y);
         }
+    }
+
+    void SetEnabled(SetBehaviourEnabledEvent e)
+    {
+        enabled = e.enabled;
     }
 }

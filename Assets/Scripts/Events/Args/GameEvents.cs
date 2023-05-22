@@ -41,3 +41,31 @@ public class GetSelectedCursorButtonEvent
 {
     public int m_currentButton = -1;
 }
+
+public class SpawnerStopEvent { }
+
+public class SpawnerGetStatusEvent
+{
+    public bool canSpawn = false;
+    public bool stopped = false;
+}
+
+public class SpawnEntityEvent
+{
+    public GameObject prefab;
+
+    public SpawnEntityEvent(GameObject _prefab)
+    {
+        prefab = _prefab;
+    }
+}
+
+public class SetBehaviourEnabledEvent
+{
+    public bool enabled;
+
+    public SetBehaviourEnabledEvent(bool _enabled)
+    {
+        enabled = _enabled;
+    }
+}

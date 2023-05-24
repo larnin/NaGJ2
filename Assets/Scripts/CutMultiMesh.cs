@@ -39,13 +39,18 @@ public class CutMultiMesh : MonoBehaviour
 
     Mesh m_mesh;
 
-    void AddEntity(GameObject entity)
+    public void AddEntity(GameObject entity)
     {
         Event<SetBehaviourEnabledEvent>.Broadcast(new SetBehaviourEnabledEvent(false), entity);
 
         var data = new EntityData(entity, m_moveDistance, transform.position.y);
 
         m_entities.Add(data);
+    }
+
+    public bool HaveEntity()
+    {
+        return m_entities.Count > 0;
     }
 
     private void Update()

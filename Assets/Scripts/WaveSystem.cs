@@ -74,14 +74,14 @@ public class WaveSystem : MonoBehaviour
         e.label = "";
         e.description = "";
 
-        if(m_status == Status.Spawning)
+        if(m_status == Status.waitingSpawner || m_status == Status.Spawning)
         {
             e.label = "Spawning ...";
             e.description = SetDescriptionFromWaves(m_remainingEnemies);
         }
         else
         {
-            e.label += "Prochaine vague : ";
+            e.label = "Prochaine vague : ";
             e.label += TimerToText(m_timer);
             e.description = SetDescriptionFromWaves(m_nextWave);
         }
@@ -271,7 +271,7 @@ public class WaveSystem : MonoBehaviour
         foreach(var s in m_spawnPos)
         {
             var status = new SpawnerGetStatusEvent();
-            Event<SpawnerGetStatusEvent>.Broadcast(new SpawnerGetStatusEvent(), s);
+            Event<SpawnerGetStatusEvent>.Broadcast(status, s);
             if (!status.canSpawn)
                 return false;
         }
@@ -352,7 +352,7 @@ public class WaveSystem : MonoBehaviour
         if (data == null)
             return;
 
-        Event<SpawnEntityEvent>.Broadcast(new SpawnEntityEvent(data.prefab));
+        Event<SpawnEntityEvent>.Broadcast(new SpawnEntityEvent(data.prefab), m_spawnPos[spawnIndex]);
     }
 
     void GenerateSpawnPos()

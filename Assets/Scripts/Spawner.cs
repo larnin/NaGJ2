@@ -16,8 +16,10 @@ public class Spawner : MonoBehaviour
 
     Renderer m_renderer;
     Material m_material;
+    CutMultiMesh m_cutMesh;
 
     float m_timer = 0;
+    bool m_needDisappear = false;
     bool m_disappear = false;
 
     SubscriberList m_subscriberList = new SubscriberList();
@@ -38,6 +40,7 @@ public class Spawner : MonoBehaviour
 
     void Start()
     {
+        m_cutMesh = GetComponent<CutMultiMesh>();
         m_renderer = GetComponent<Renderer>();
         if (m_renderer != null)
         {
@@ -55,6 +58,16 @@ public class Spawner : MonoBehaviour
 
         m_timer += Time.deltaTime;
         UpdateHoleMat();
+
+        if(m_needDisappear)
+        {
+            if (m_cutMesh == null || !m_cutMesh.HaveEntity())
+            {
+                m_needDisappear = false;
+                m_disappear = true;
+                m_timer = 0;
+            }
+        }
     }
 
     void UpdateHoleMat()
@@ -62,6 +75,8 @@ public class Spawner : MonoBehaviour
         float percent = m_disappear ? 1 - (m_timer / m_disappearDuration) : m_timer / m_appearDuration;
         if (percent > 1)
             percent = 1;
+        if (percent < 0)
+            percent = 0;
 
         percent = DOVirtual.EasedValue(-1, 0.2f, percent, Ease.OutSine);
 
@@ -70,8 +85,7 @@ public class Spawner : MonoBehaviour
 
     void Stop(SpawnerStopEvent e)
     {
-        m_disappear = true;
-        m_timer = 0;
+        m_needDisappear = true;
     }
 
     void GetStatus(SpawnerGetStatusEvent e)
@@ -82,6 +96,17 @@ public class Spawner : MonoBehaviour
 
     void Spawn(SpawnEntityEvent e)
     {
+        GameObject obj = Instantiate(e.prefab);
 
+        Vector3 center = transform.position;
+        Vector3 pos = center;
+        bool found = EntityList.GetValidPos(center, m_radius, out pos);
+        if (!found)
+            pos = center;
+
+        obj.transform.position = pos;
+
+        if (m_cutMesh != null)
+            m_cutMesh.AddEntity(obj);
     }
 }

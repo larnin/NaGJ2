@@ -298,6 +298,7 @@ MonoBehaviour:
     prefab: {fileID: 2678619925988939733, guid: f5e8a2a9d20772141bacac8f49d80c41, type: 3}
   - type: 4
     prefab: {fileID: 1642184474912788966, guid: 6458c128b5f7cad49b63200541a4846c, type: 3}
+  m_spawnerPrefab: {fileID: 8079125268398055493, guid: 25dac21da31f6714088def24c21085ca, type: 3}
   m_initialDelay: 5
   m_waveDelay: 60
   m_initialEnemyCount: 2

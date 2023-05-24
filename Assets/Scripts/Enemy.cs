@@ -171,6 +171,8 @@ class Enemy : MonoBehaviour
 
     void SetEnabled(SetBehaviourEnabledEvent e)
     {
+        UpdateTarget(true);
+
         enabled = e.enabled;
     }
 }

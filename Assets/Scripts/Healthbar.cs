@@ -16,7 +16,7 @@ class Healthbar : MonoBehaviour
     {
         m_parent = transform.parent.gameObject;
 
-        var renderer = GetComponentInChildren<MeshRenderer>();
+        var renderer = GetComponentInChildren<MeshRenderer>(true);
         if(renderer != null)
         {
             m_meshObj = renderer.gameObject;

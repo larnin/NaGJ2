@@ -88,8 +88,15 @@ public class Tower : MonoBehaviour
         Vector3 currentPos = transform.position + m_initialPos;
         Vector3 forward = m_tower.forward;
 
+        CanBeTargetedEvent targeted = new CanBeTargetedEvent();
+
         for(int i = 0; i < cols.Length; i++)
         {
+            targeted.targetable = true;
+            Event<CanBeTargetedEvent>.Broadcast(targeted, cols[i].gameObject);
+            if (!targeted.targetable)
+                continue;
+
             Vector3 dir = currentPos - cols[i].transform.position;
             float dist = dir.magnitude;
             dir /= dist;

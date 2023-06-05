@@ -34,7 +34,6 @@ public class WaveSystem : MonoBehaviour
     [SerializeField] int m_maxTypeNb = 3;
     [SerializeField] float m_powerMultiplier = 1.3f;
     [SerializeField] float m_durationBetweenSpawn = 1;
-    [SerializeField] float m_spawnRadius = 2;
     [SerializeField] int m_spawnDistance = 5;
 
     SubscriberList m_subscriberList = new SubscriberList();
@@ -295,7 +294,7 @@ public class WaveSystem : MonoBehaviour
         foreach (var s in m_spawnPos)
         {
             var status = new SpawnerGetStatusEvent();
-            Event<SpawnerGetStatusEvent>.Broadcast(new SpawnerGetStatusEvent(), s);
+            Event<SpawnerGetStatusEvent>.Broadcast(status, s);
             if (!status.stopped)
                 return false;
         }
@@ -338,7 +337,7 @@ public class WaveSystem : MonoBehaviour
         for (int i = 0; i < m_remainingEnemies.Count; i++)
         {
             currentEnemy -= m_remainingEnemies[i];
-            if (i <= 0)
+            if (i > 0)
             {
                 m_remainingEnemies[i]--;
                 type = (EnemyType)i;
@@ -352,7 +351,7 @@ public class WaveSystem : MonoBehaviour
         if (data == null)
             return;
 
-        Event<SpawnEntityEvent>.Broadcast(new SpawnEntityEvent(data.prefab), m_spawnPos[spawnIndex]);
+        Event<SpawnEntityEvent>.Broadcast(new SpawnEntityEvent(data.prefab, multiplier), m_spawnPos[spawnIndex]);
     }
 
     void GenerateSpawnPos()

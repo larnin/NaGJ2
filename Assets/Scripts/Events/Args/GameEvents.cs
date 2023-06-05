@@ -53,10 +53,12 @@ public class SpawnerGetStatusEvent
 public class SpawnEntityEvent
 {
     public GameObject prefab;
+    public float multiplier;
 
-    public SpawnEntityEvent(GameObject _prefab)
+    public SpawnEntityEvent(GameObject _prefab, float _multiplier)
     {
         prefab = _prefab;
+        multiplier = _multiplier;
     }
 }
 
@@ -68,4 +70,9 @@ public class SetBehaviourEnabledEvent
     {
         enabled = _enabled;
     }
+}
+
+public class CanBeTargetedEvent
+{
+    public bool targetable = true;
 }

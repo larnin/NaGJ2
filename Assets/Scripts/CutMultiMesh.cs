@@ -70,6 +70,9 @@ public class CutMultiMesh : MonoBehaviour
 
     bool ProcessOneEntity(EntityData e)
     {
+        if (e.entity == null)
+            return false;
+
         e.timer += Time.deltaTime;
 
         float percent = e.timer / m_moveDuration;

@@ -106,6 +106,8 @@ public class Spawner : MonoBehaviour
 
         obj.transform.position = pos;
 
+        Event<SetLifeMultiplierEvent>.Broadcast(new SetLifeMultiplierEvent(e.multiplier), obj);
+
         if (m_cutMesh != null)
             m_cutMesh.AddEntity(obj);
     }

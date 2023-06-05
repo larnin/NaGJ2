@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using NRand;
+using DG.Tweening;
 
 public class MainMenu : MonoBehaviour
 {
@@ -12,8 +13,13 @@ public class MainMenu : MonoBehaviour
     [SerializeField] Transform m_towerPosition;
     [SerializeField] GameObject m_towerForcedTarget;
     [SerializeField] GameObject m_PlayButton;
+    [SerializeField] GameObject m_QuitButton;
+    [SerializeField] string m_gameLevel;
+    [SerializeField] float m_playDelay;
 
     Tower m_tower;
+
+    bool m_started = false;
 
     private void Start()
     {
@@ -39,6 +45,16 @@ public class MainMenu : MonoBehaviour
             var button = m_PlayButton.GetComponent<ButtonHit>();
             button?.onClick.AddListener(OnPlayClick);
         }
+
+        if(m_QuitButton != null)
+        {
+#if UNITY_WEBGL
+            Destroy(m_QuitButton);
+#else
+            var button = m_QuitButton.GetComponent<ButtonHit>();
+            button?.onClick.AddListener(OnQuitClick);
+#endif
+        }
     }
 
     private void Update()
@@ -50,11 +66,25 @@ public class MainMenu : MonoBehaviour
             if (!Input.GetMouseButton(0))
                 m_tower.AllowFire(false);
         }
-
     }
 
     void OnPlayClick()
     {
+        if (m_started)
+            return;
 
+        m_started = true;
+
+        DOVirtual.DelayedCall(m_playDelay, () => { SceneSystem.changeScene(m_gameLevel); });
+    }
+
+    void OnQuitClick()
+    {
+        if (m_started)
+            return;
+
+        m_started = true;
+
+        DOVirtual.DelayedCall(m_playDelay, () => { Application.Quit(); });
     }
 }

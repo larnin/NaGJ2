@@ -130,5 +130,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_maxDistance: 10
   m_speed: 10
-  m_damages: 1
+  m_damages: 1.5
   m_instantiateOnHit: {fileID: 5225563953267031619, guid: 148396cbb32933b4bb2140590204223e, type: 3}

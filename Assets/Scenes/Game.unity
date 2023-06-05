@@ -299,15 +299,14 @@ MonoBehaviour:
   - type: 4
     prefab: {fileID: 1642184474912788966, guid: 6458c128b5f7cad49b63200541a4846c, type: 3}
   m_spawnerPrefab: {fileID: 8079125268398055493, guid: 25dac21da31f6714088def24c21085ca, type: 3}
-  m_initialDelay: 5
-  m_waveDelay: 60
+  m_initialDelay: 60
+  m_waveDelay: 30
   m_initialEnemyCount: 2
   m_moreEnemyEachWave: 1
   m_waveToMoreType: 10
   m_maxTypeNb: 3
   m_powerMultiplier: 1.3
-  m_durationBetweenSpawn: 1
-  m_spawnRadius: 2
+  m_durationBetweenSpawn: 1.5
   m_spawnDistance: 5
 --- !u!4 &65054803
 Transform:
@@ -1030,7 +1029,7 @@ MonoBehaviour:
     moneyPerFactory: 3
   m_minElemTimer: 15
   m_labWeight: 0.1
-  m_initialMoney: 100000
+  m_initialMoney: 50
   m_pauseMenu: {fileID: 957364497694426492, guid: a8cea26c6df5ab746bfdded8edc2129d, type: 3}
   m_gameOverMenu: {fileID: 1399398175102755117, guid: c63e1a86cf2b02242b70d0942880b7f9, type: 3}
 --- !u!4 &362635311
@@ -2303,35 +2302,35 @@ MonoBehaviour:
   - buildingType: 4
     building:
     - cost: 20
-      corruptCount: 2
-      building: {fileID: 8129176872452091663, guid: 045eac363394fd64a83766755b24b6ba, type: 3}
-    - cost: 100
       corruptCount: 3
-      building: {fileID: 551385827890651844, guid: a74fda9cc60bfc74fa52e82d9f2e751a, type: 3}
+      building: {fileID: 8129176872452091663, guid: 045eac363394fd64a83766755b24b6ba, type: 3}
     - cost: 500
       corruptCount: 4
+      building: {fileID: 551385827890651844, guid: a74fda9cc60bfc74fa52e82d9f2e751a, type: 3}
+    - cost: 2000
+      corruptCount: 5
       building: {fileID: 4356915555525036053, guid: 20b267936dc959c4faa7629dfc071a0c, type: 3}
   - buildingType: 5
     building:
     - cost: 30
-      corruptCount: 2
-      building: {fileID: 1798297463076897813, guid: 1fd60a8618c06024abfb41a8377b1f25, type: 3}
-    - cost: 150
       corruptCount: 3
-      building: {fileID: 8354678944801382212, guid: b8ffdca4e4af19546adfb56f792427f1, type: 3}
+      building: {fileID: 1798297463076897813, guid: 1fd60a8618c06024abfb41a8377b1f25, type: 3}
     - cost: 750
       corruptCount: 4
+      building: {fileID: 8354678944801382212, guid: b8ffdca4e4af19546adfb56f792427f1, type: 3}
+    - cost: 3000
+      corruptCount: 5
       building: {fileID: 294685391568391565, guid: b592c0c7178e9bf4a9ee729fc0f10546, type: 3}
   - buildingType: 6
     building:
     - cost: 40
-      corruptCount: 2
-      building: {fileID: 8537023529354501545, guid: f6adefcc1d4d63746b963bff03b2eedd, type: 3}
-    - cost: 200
       corruptCount: 3
-      building: {fileID: 5742043589306741968, guid: fc6c37d5292585b4686af2e75a801f57, type: 3}
+      building: {fileID: 8537023529354501545, guid: f6adefcc1d4d63746b963bff03b2eedd, type: 3}
     - cost: 1000
       corruptCount: 4
+      building: {fileID: 5742043589306741968, guid: fc6c37d5292585b4686af2e75a801f57, type: 3}
+    - cost: 4000
+      corruptCount: 5
       building: {fileID: 4443154910664891833, guid: d05daf9e49a06aa45bf02006945712f3, type: 3}
 --- !u!1 &1158665076
 GameObject:

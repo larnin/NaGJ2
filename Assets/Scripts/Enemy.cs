@@ -38,6 +38,7 @@ class Enemy : MonoBehaviour
     {
         m_subscriberList.Add(new Event<DeathEvent>.LocalSubscriber(OnDeath, gameObject));
         m_subscriberList.Add(new Event<SetBehaviourEnabledEvent>.LocalSubscriber(SetEnabled, gameObject));
+        m_subscriberList.Add(new Event<CanBeTargetedEvent>.LocalSubscriber(CanBeTargeted, gameObject));
         m_subscriberList.Subscribe();
     }
 
@@ -174,5 +175,10 @@ class Enemy : MonoBehaviour
         UpdateTarget(true);
 
         enabled = e.enabled;
+    }
+
+    void CanBeTargeted(CanBeTargetedEvent e)
+    {
+        e.targetable = enabled;
     }
 }

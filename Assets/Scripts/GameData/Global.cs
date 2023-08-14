@@ -10,7 +10,11 @@ using UnityEngine;
 
 public class Global : ScriptableObject
 {
-    public float m_entityAvoidDistance = 1;
+    [SerializeField] float m_entityAvoidDistance = 1;
+    public float entityAvoidDistance { get { return m_entityAvoidDistance; } }
+
+    [SerializeField] AllBlocks m_allBlocks;
+    public AllBlocks allBlocks { get { return m_allBlocks; } }
 
     static Global m_instance;
 

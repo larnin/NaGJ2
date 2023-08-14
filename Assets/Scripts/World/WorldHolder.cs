@@ -232,9 +232,9 @@ public class WorldHolder : MonoBehaviour
         Event<SetBuildingInfoEvent>.Broadcast(new SetBuildingInfoEvent(x, y), obj);
     }     
 
-    public NearMatrix GetGroundNearMatrix(int x, int y)
+    public NearMatrix<bool> GetGroundNearMatrix(int x, int y)
     {
-        NearMatrix mat = new NearMatrix();
+        NearMatrix<bool> mat = new NearMatrix<bool>();
 
         for(int i = -1; i <= 1; i++)
         {
@@ -255,9 +255,9 @@ public class WorldHolder : MonoBehaviour
         return mat;
     }
 
-    public NearMatrix GetBuildingNearMatrix(int x, int y)
+    public NearMatrix<bool> GetBuildingNearMatrix(int x, int y)
     {
-        NearMatrix mat = new NearMatrix();
+        NearMatrix<bool> mat = new NearMatrix<bool>();
 
         for (int i = -1; i <= 1; i++)
         {

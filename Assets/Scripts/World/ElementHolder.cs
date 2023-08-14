@@ -74,7 +74,7 @@ public class ElementHolder : MonoBehaviour
         m_instance = this;
     }
 
-    public GameObject GetGround(GroundType type, NearMatrix matrix, out Rotation rotation)
+    public GameObject GetGround(GroundType type, NearMatrix<bool> matrix, out Rotation rotation)
     {
         foreach (var g in m_grounds)
         {
@@ -91,7 +91,7 @@ public class ElementHolder : MonoBehaviour
         return (Rotation)UnityEngine.Random.Range(0, 4);
     }
 
-    GameObject GetGround(GroundDatas data, NearMatrix matrix, out Rotation rotation)
+    GameObject GetGround(GroundDatas data, NearMatrix<bool> matrix, out Rotation rotation)
     {
         bool top = matrix.Get(0, -1);
         bool down = matrix.Get(0, 1);

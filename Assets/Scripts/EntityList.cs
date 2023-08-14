@@ -45,7 +45,7 @@ public static class EntityList
         StaticRandomGenerator<MT19937> rand = new StaticRandomGenerator<MT19937>();
         UniformVector2CircleDistribution d = new UniformVector2CircleDistribution(radius);
 
-        float avoidDistance = Global.instance.m_entityAvoidDistance;
+        float avoidDistance = Global.instance.entityAvoidDistance;
 
         for (int i = 0; i < 20; i++)
         {
@@ -106,7 +106,7 @@ public static class EntityList
         if(elem == null || Global.instance == null)
             return new Vector2(obj.transform.forward.x, obj.transform.forward.z);
 
-        float avoidDistance = Global.instance.m_entityAvoidDistance;
+        float avoidDistance = Global.instance.entityAvoidDistance;
 
         Vector2 pos = new Vector2(obj.transform.position.x, obj.transform.position.z);
 

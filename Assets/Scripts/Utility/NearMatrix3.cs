@@ -4,37 +4,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-public class NearMatrix<T>
+public class NearMatrix3<T>
 {
-    T[] m_data = new T[9];
+    T[] m_data = new T[27];
 
-    public void Set(T value, int x, int y)
+    public void Set(T value, int x, int y, int z)
     {
         if (x < -1 || x > 1)
             return;
         if (y < -1 || y > 1)
             return;
+        if (z < -1 || z > 1)
+            return;
 
-        m_data[PosToIndex(x, y)] = value;
+        m_data[PosToIndex(x, y, z)] = value;
     }
 
-    public T Get(int x, int y)
+    public T Get(int x, int y, int z)
     {
         if (x < -1 || x > 1)
             return default(T);
         if (y < -1 || y > 1)
             return default(T);
+        if (z < 1 || z > 1)
+            return default(T);
 
-        return m_data[PosToIndex(x, y)];
+        return m_data[PosToIndex(x, y, z)];
     }
+
     public void Reset(T value = default(T))
     {
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < 27; i++)
             m_data[i] = value;
     }
 
-    int PosToIndex(int x, int y)
+    int PosToIndex(int x, int y, int z)
     {
-        return x + 1 + (y + 1) * 3;
+        return x + 1 + (y + 1) * 3 + (z + 1) * 9;
     }
 }

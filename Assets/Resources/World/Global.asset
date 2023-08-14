@@ -13,3 +13,33 @@ MonoBehaviour:
   m_Name: Global
   m_EditorClassIdentifier: 
   m_entityAvoidDistance: 0.5
+  m_allBlocks:
+    ground:
+      solo:
+        solo: {fileID: 1541306317722475234, guid: b4d3aa51ad0319942b53a3f729d60f87, type: 3}
+        oneSide: {fileID: 4579488185178398769, guid: d890256c64b349d479e4967c170e0bce, type: 3}
+        corner: {fileID: 8624622470251796041, guid: e98b013d0a77218469e81264e12fd55a, type: 3}
+        line: {fileID: 8079012893363452067, guid: e9483490fa2d229488e16133355f6a33, type: 3}
+        treeSide: {fileID: 8882425255208225731, guid: 746aaa877ae60174cb7ade347cbbdf1a, type: 3}
+        full: {fileID: 7007301684908017005, guid: 4fdc1d99473483341a5bb77a1cdc3e33, type: 3}
+      top:
+        solo: {fileID: 950901291524510155, guid: 1cb1e8ac8577d1d4c9e02ab43d4a00bf, type: 3}
+        oneSide: {fileID: 9034477718114625286, guid: 89842bf7c36904c4891fb0df8d3b0024, type: 3}
+        corner: {fileID: 5780866980054007350, guid: d7ac8085ea36a1e45beab7fbd4e3a44a, type: 3}
+        line: {fileID: 698591299938805775, guid: 6d20e55932df04b469c7449f079c7f52, type: 3}
+        treeSide: {fileID: 9170578271525914356, guid: 314a6497af7cfb444840ce94f9b33df8, type: 3}
+        full: {fileID: 7007301684908017005, guid: 4fdc1d99473483341a5bb77a1cdc3e33, type: 3}
+      middle:
+        solo: {fileID: 2015709402928007508, guid: 2167e51faff1f8645973f32d276a58ef, type: 3}
+        oneSide: {fileID: 6429901192290639850, guid: df40593087f0be242b1b6690af648c9c, type: 3}
+        corner: {fileID: 1319718170334119733, guid: a1883fb21c1541247aa975c58abcb914, type: 3}
+        line: {fileID: 7285196867437652089, guid: 17a6f16dd1bd7a742a92248bc4140fd1, type: 3}
+        treeSide: {fileID: 5104220701858385585, guid: deb887b35cc37c846897c29da7369dfb, type: 3}
+        full: {fileID: 0}
+      bottom:
+        solo: {fileID: 1120304228376281480, guid: 52c6eefaf28bd7045a8b772aaf3e8106, type: 3}
+        oneSide: {fileID: 7899362130445460653, guid: 6965c80b88b3a574d8dc144a9e338db8, type: 3}
+        corner: {fileID: 1875062754007796578, guid: 39ba476435839fd48a60a752b4c7bd51, type: 3}
+        line: {fileID: 2748226503450804616, guid: 7a80d26ec8fbca1448907a561b920f66, type: 3}
+        treeSide: {fileID: 6145982102503155055, guid: 5023d511b6bd16f4fb00baab22d377f1, type: 3}
+        full: {fileID: 7007301684908017005, guid: 4fdc1d99473483341a5bb77a1cdc3e33, type: 3}

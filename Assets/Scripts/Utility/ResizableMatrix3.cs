@@ -87,7 +87,7 @@ public class ResizableMatrix3<T>
                 newOriginZ = OriginZ() + MinZ() - z;
                 newDepth += MinZ() - z;
             }
-            else if (y > MaxZ())
+            else if (z > MaxZ())
                 newDepth += z - MaxZ();
 
             RecreateGrid(newWidth, newHeight, newDepth, newOriginX, newOriginY, newOriginZ);
@@ -161,7 +161,7 @@ public class ResizableMatrix3<T>
         m_depth = newDepth;
         m_originX = newOriginX;
         m_originY = newOriginY;
-        m_originY = newOriginZ;
+        m_originZ = newOriginZ;
     }
 
     static int PosToIndex(int x, int y, int z, int width, int height, int depth, int originX, int originY, int originZ)

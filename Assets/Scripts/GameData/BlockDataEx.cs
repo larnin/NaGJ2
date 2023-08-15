@@ -7,7 +7,7 @@ using UnityEngine;
 
 public static class BlockDataEx
 {
-    public static void GetBlockInfo(BlockType type, Rotation rot, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    public static void GetBlockInfo(BlockType type, byte data, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
     {
         switch(type)
         {
@@ -31,7 +31,91 @@ public static class BlockDataEx
         }
 
         //todo !
-        prefab = grounds.solo.full;
+        prefab = grounds.solo.solo;
         outRot = Quaternion.identity;
+    }
+
+    // ---------------------------------------
+
+    public static bool GetValidPos(BlockType type, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    {
+        switch(type)
+        {
+            case BlockType.ground:
+                return GetValidPosGround(blockPos, pos, out outPos);
+            case BlockType.air:
+                return GetValidPosAir(blockPos, pos, out outPos);
+            default:
+                outPos = Vector3Int.zero;
+                return false;
+        }
+    }
+
+    static bool GetValidPosAir(Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    {
+        EditorGetBlockEvent b1 = new EditorGetBlockEvent(blockPos);
+        EditorGetBlockEvent b2 = new EditorGetBlockEvent(pos);
+
+        Event<EditorGetBlockEvent>.Broadcast(b1);
+        Event<EditorGetBlockEvent>.Broadcast(b2);
+
+        if(b2.type != BlockType.air)
+        {
+            outPos = pos;
+            return true;
+        }
+
+        if(b1.type != BlockType.air)
+        {
+            outPos = blockPos;
+            return true;
+        }
+
+        outPos = Vector3Int.zero;
+        return false;
+    }
+
+    static bool GetValidPosGround(Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    {
+        EditorGetBlockEvent b1 = new EditorGetBlockEvent(blockPos);
+        EditorGetBlockEvent b2 = new EditorGetBlockEvent(pos);
+
+        Event<EditorGetBlockEvent>.Broadcast(b1);
+        Event<EditorGetBlockEvent>.Broadcast(b2);
+
+        if(b1.type == BlockType.air)
+        {
+            outPos = blockPos;
+            return true;
+        }
+
+        if(b2.type != BlockType.ground)
+        {
+            outPos = pos;
+            return true;
+        }
+
+        outPos = Vector3Int.zero;
+        return false;
+    }
+
+    // ------------------------------------------
+
+    public static void SetBlock(BlockType type, Rotation rot, Vector3Int pos)
+    {
+        switch (type)
+        {
+            case BlockType.ground:
+            case BlockType.air:
+                SetSimpleBlock(type, pos);
+                break;
+            default:
+                break;
+        }
+    }
+
+    static void SetSimpleBlock(BlockType type, Vector3Int pos)
+    {
+        Event<EditorSetBlockEvent>.Broadcast(new EditorSetBlockEvent(pos, type));
     }
 }

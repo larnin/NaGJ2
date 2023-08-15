@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_entityAvoidDistance: 0.5
   m_allBlocks:
+    blockSize: {x: 1, y: 0.625, z: 1}
     ground:
       solo:
         solo: {fileID: 1541306317722475234, guid: b4d3aa51ad0319942b53a3f729d60f87, type: 3}

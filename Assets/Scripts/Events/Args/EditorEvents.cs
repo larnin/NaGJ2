@@ -30,14 +30,37 @@ public class EditorCursorClickEvent
 public class EditorSetBlockEvent
 {
     public BlockType type;
-    public Rotation rot;
+    public byte data;
     public Vector3Int pos;
 
-    public EditorSetBlockEvent(Vector3Int _pos, BlockType _type, Rotation _rot)
+    public EditorSetBlockEvent(Vector3Int _pos, BlockType _type, byte _data = 0)
     {
         type = _type;
-        rot = _rot;
+        data = _data;
         pos = _pos;
     }
+}
 
+public class EditorGetBlockEvent
+{
+    public BlockType type;
+    public byte data;
+    public Vector3Int pos;
+
+    public EditorGetBlockEvent(Vector3Int _pos)
+    {
+        type = BlockType.air;
+        data = 0;
+        pos = _pos;
+    }
+}
+
+public class EditorSetCursorBlockEvent
+{
+    public BlockType type;
+
+    public EditorSetCursorBlockEvent(BlockType _type)
+    {
+        type = _type;
+    }
 }

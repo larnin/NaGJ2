@@ -43,5 +43,6 @@ public class BlockFullData
 [Serializable]
 public class AllBlocks
 {
+    public Vector3 blockSize = Vector3.one;
     public BlockFullData ground;
 }

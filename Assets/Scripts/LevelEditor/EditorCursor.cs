@@ -27,6 +27,11 @@ public class EditorCursor : MonoBehaviour
         m_subscriberList.Unsubscribe();
     }
 
+    private void Start()
+    {
+        m_camera = Camera.main;
+    }
+
     private void Update()
     {
         if (m_camera == null)
@@ -38,6 +43,24 @@ public class EditorCursor : MonoBehaviour
         bool haveHit = Physics.Raycast(ray, out hit);
         if(haveHit)
             ProcessHit(ray, hit);
+        else
+        {
+            Plane p = new Plane(Vector3.up, Vector3.zero);
+            float enter;
+            if(p.Raycast(ray, out enter))
+            {
+                Vector3 pos = ray.GetPoint(enter);
+                Vector3Int posInt = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
+
+                m_pos = posInt + Vector3Int.up;
+                m_blockPos = posInt;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+            Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.leftClick));
+        if (Input.GetMouseButtonDown(1))
+            Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.rightClick));
     }
 
     void ProcessHit(Ray ray, RaycastHit hit)
@@ -56,11 +79,6 @@ public class EditorCursor : MonoBehaviour
 
         m_pos = posInt + offset;
         m_blockPos = posInt;
-
-        if (Input.GetMouseButtonDown(0))
-            Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.leftClick));
-        if (Input.GetMouseButtonDown(1))
-            Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.rightClick));
     }
 
     void GetStatus(EditorCurstorGetPosEvent e)

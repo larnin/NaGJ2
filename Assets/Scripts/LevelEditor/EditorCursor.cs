@@ -65,8 +65,16 @@ public class EditorCursor : MonoBehaviour
 
     void ProcessHit(Ray ray, RaycastHit hit)
     {
-        Vector3 pos = ray.GetPoint(hit.distance);
+        Vector3 blockSize = Global.instance.allBlocks.blockSize;
+        Vector3 hitOffset = new Vector3(0, 0.5f * blockSize.y, 0);
+        Vector3 pos = ray.GetPoint(hit.distance) + hitOffset;
+
         pos -= hit.normal * 0.2f;
+
+        //scale pos
+        pos.x /= blockSize.x;
+        pos.y /= blockSize.y;
+        pos.z /= blockSize.z;
 
         Vector3Int posInt = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
 

@@ -41,8 +41,12 @@ public class EditorCursorVisual : MonoBehaviour
         EditorCurstorGetPosEvent posData = new EditorCurstorGetPosEvent();
         Event<EditorCurstorGetPosEvent>.Broadcast(posData);
 
+        BlockType type = m_blockType;
+        if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+            type = BlockType.air;
+
         Vector3Int pos = Vector3Int.zero;
-        bool valid = BlockDataEx.GetValidPos(m_blockType, posData.blockPos, posData.pos, out pos);
+        bool valid = BlockDataEx.GetValidPos(type, posData.blockPos, posData.pos, out pos);
         if (valid)
             SetCursorPosition(pos, true);
         else SetCursorPosition(pos, false);

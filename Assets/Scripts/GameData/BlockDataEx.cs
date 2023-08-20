@@ -30,9 +30,95 @@ public static class BlockDataEx
             outRot = Quaternion.identity;
         }
 
-        //todo !
-        prefab = grounds.solo.solo;
+        BlockLayerData layer = grounds.solo;
+
+        if (IsBlockFull(mat.Get(0, 1, 0)))
+        {
+            if (IsBlockFull(mat.Get(0, -1, 0)))
+                layer = grounds.middle;
+            else layer = grounds.bottom;
+        }
+        else if (IsBlockFull(mat.Get(0, -1, 0)))
+            layer = grounds.top;
+
+        var layerMat = mat.GetLayerMatrix(0);
+
+        GetSolidBlockInfo(layerMat, layer, out prefab, out outRot);
+    }
+
+    static void GetSolidBlockInfo(NearMatrix<BlockType> mat, BlockLayerData layer, out GameObject prefab, out Quaternion outRot)
+    {
+        prefab = layer.solo;
         outRot = Quaternion.identity;
+
+        bool top = IsBlockFull(mat.Get(0, -1));
+        bool down = IsBlockFull(mat.Get(0, 1));
+        bool left = IsBlockFull(mat.Get(-1, 0));
+        bool right = IsBlockFull(mat.Get(1, 0));
+        int nb = (top ? 1 : 0) + (down ? 1 : 0) + (left ? 1 : 0) + (right ? 1 : 0);
+
+        Rotation rot = Rotation.rot_0;
+
+        if (nb == 4)
+        {
+            rot = RotationEx.RandomRotation();
+            prefab = layer.full;
+        }
+        else if (nb == 3)
+        {
+            if (!top)
+                rot = Rotation.rot_0;
+            else if (!right)
+                rot = Rotation.rot_270;
+            else if (!down)
+                rot = Rotation.rot_180;
+            else rot = Rotation.rot_90;
+            prefab = layer.treeSide;
+        }
+        else if (nb == 2)
+        {
+            if (!top && !down)
+            {
+                rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_0 : Rotation.rot_180;
+                prefab = layer.line;
+            }
+            else if (!left && !right)
+            {
+
+                rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_90 : Rotation.rot_270;
+                prefab = layer.line;
+            }
+            else
+            {
+                if (!left && !top)
+                    rot = Rotation.rot_90;
+                else if (!top && !right)
+                    rot = Rotation.rot_0;
+                else if (!right && !down)
+                    rot = Rotation.rot_270;
+                else rot = Rotation.rot_180;
+
+                prefab = layer.corner;
+            }
+        }
+        else if (nb == 1)
+        {
+            if (top)
+                rot = Rotation.rot_270;
+            else if (right)
+                rot = Rotation.rot_180;
+            else if (down)
+                rot = Rotation.rot_90;
+            else rot = Rotation.rot_0;
+            prefab = layer.oneSide;
+        }
+        else
+        {
+            rot = RotationEx.RandomRotation();
+            prefab = layer.solo;
+        }
+
+        outRot = RotationEx.ToQuaternion(rot);
     }
 
     // ---------------------------------------
@@ -117,5 +203,18 @@ public static class BlockDataEx
     static void SetSimpleBlock(BlockType type, Vector3Int pos)
     {
         Event<EditorSetBlockEvent>.Broadcast(new EditorSetBlockEvent(pos, type));
+    }
+
+    // ------------------------------------------
+
+    public static bool IsBlockFull(BlockType type)
+    {
+        switch(type)
+        {
+            case BlockType.ground:
+                return true;
+            default:
+                return false;
+        }
     }
 }

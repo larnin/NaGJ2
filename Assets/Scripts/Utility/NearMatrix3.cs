@@ -26,7 +26,7 @@ public class NearMatrix3<T>
             return default(T);
         if (y < -1 || y > 1)
             return default(T);
-        if (z < 1 || z > 1)
+        if (z < -1 || z > 1)
             return default(T);
 
         return m_data[PosToIndex(x, y, z)];
@@ -41,5 +41,22 @@ public class NearMatrix3<T>
     int PosToIndex(int x, int y, int z)
     {
         return x + 1 + (y + 1) * 3 + (z + 1) * 9;
+    }
+
+    public NearMatrix<T> GetLayerMatrix(int y)
+    {
+        NearMatrix<T> mat = new NearMatrix<T>();
+        if (y < -1 || y > 1)
+            return mat;
+
+        for(int x = -1; x <= 1; x++)
+        {
+            for(int z = -1; z <= 1; z++)
+            {
+                mat.Set(Get(x, y, z), x, z);
+            }
+        }
+
+        return mat;
     }
 }

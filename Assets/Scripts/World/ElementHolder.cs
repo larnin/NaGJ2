@@ -33,6 +33,25 @@ public enum Rotation
     rot_270,
 }
 
+public static class RotationEx
+{
+    public static Rotation RandomRotation()
+    {
+        return (Rotation)UnityEngine.Random.Range(0, 4);
+    }
+
+    public static Quaternion ToQuaternion(Rotation rot)
+    {
+        if (rot == Rotation.rot_0)
+            return Quaternion.identity;
+        else if (rot == Rotation.rot_90)
+            return Quaternion.Euler(0, 90, 0);
+        else if (rot == Rotation.rot_180)
+            return Quaternion.Euler(0, 180, 0);
+        else return Quaternion.Euler(0, 270, 0);
+    }
+}
+
 [Serializable]
 public class GroundDatas
 {

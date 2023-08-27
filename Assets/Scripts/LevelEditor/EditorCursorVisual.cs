@@ -10,6 +10,7 @@ public class EditorCursorVisual : MonoBehaviour
     [SerializeField] GameObject m_cursorPrefab = null;
 
     BlockType m_blockType = BlockType.air;
+    int m_blockData = 0;
     Rotation m_rotation = Rotation.rot_0;
 
     SubscriberList m_subscriberList = new SubscriberList();
@@ -20,6 +21,7 @@ public class EditorCursorVisual : MonoBehaviour
     {
         m_subscriberList.Add(new Event<EditorCursorClickEvent>.Subscriber(OnClick));
         m_subscriberList.Add(new Event<EditorSetCursorBlockEvent>.Subscriber(SetType));
+        m_subscriberList.Add(new Event<EditorGetCursorBlockEvent>.Subscriber(GetType));
 
         m_subscriberList.Subscribe();
     }
@@ -32,8 +34,6 @@ public class EditorCursorVisual : MonoBehaviour
     private void Start()
     {
         InitCursor();
-
-        SetType(new EditorSetCursorBlockEvent(BlockType.ground));
     }
 
     private void Update()
@@ -65,22 +65,30 @@ public class EditorCursorVisual : MonoBehaviour
             if (!valid)
                 return;
 
-            BlockDataEx.SetBlock(m_blockType, m_rotation, pos);
+            BlockDataEx.SetBlock(m_blockType, m_rotation, m_blockData, pos);
         }
         else if(e.clickType == EditorCursorClickType.rightClick)
         {
             bool valid = BlockDataEx.GetValidPos(BlockType.air, posData.blockPos, posData.pos, out pos);
             if (!valid)
                 return;
-            BlockDataEx.SetBlock(BlockType.air, Rotation.rot_0, pos);
+            BlockDataEx.SetBlock(BlockType.air, pos);
         }
     }
 
     void SetType(EditorSetCursorBlockEvent e)
     {
         m_blockType = e.type;
+        m_blockData = e.blockData;
 
         SetCursorPosition(Vector3Int.zero, false);
+    }
+
+    void GetType(EditorGetCursorBlockEvent e)
+    {
+        e.type = m_blockType;
+        e.blockData = m_blockData;
+        e.rotation = m_rotation;
     }
 
     void InitCursor()

@@ -187,22 +187,26 @@ public static class BlockDataEx
 
     // ------------------------------------------
 
-    public static void SetBlock(BlockType type, Rotation rot, Vector3Int pos)
+    public static void SetBlock(BlockType type, Vector3Int pos)
     {
-        switch (type)
-        {
-            case BlockType.ground:
-            case BlockType.air:
-                SetSimpleBlock(type, pos);
-                break;
-            default:
-                break;
-        }
+        SetBlock(type, (byte)0, pos);
     }
 
-    static void SetSimpleBlock(BlockType type, Vector3Int pos)
+    public static void SetBlock(BlockType type, Rotation rot, Vector3Int pos)
     {
-        Event<EditorSetBlockEvent>.Broadcast(new EditorSetBlockEvent(pos, type));
+        SetBlock(type, rot, pos);
+    }
+
+    public static void SetBlock(BlockType type, Rotation rot, int value, Vector3Int pos)
+    {
+        byte data = BlockDataEx.MakeData(rot, value);
+
+        SetBlock(type, data, pos);
+    }
+
+    public static void SetBlock(BlockType type, byte data, Vector3Int pos)
+    {
+        Event<EditorSetBlockEvent>.Broadcast(new EditorSetBlockEvent(pos, type, data));
     }
 
     // ------------------------------------------
@@ -216,5 +220,21 @@ public static class BlockDataEx
             default:
                 return false;
         }
+    }
+
+    public static Rotation ExtractDataRotation(byte data)
+    {
+        int value = data & 3;
+        return (Rotation)value;
+    }
+
+    public static int ExtractDataValue(byte data) //return value [0;63]
+    {
+        return data >> 2;
+    }
+
+    public static byte MakeData(Rotation rot, int value)
+    {
+        return (byte)((int)rot + value << 2);
     }
 }

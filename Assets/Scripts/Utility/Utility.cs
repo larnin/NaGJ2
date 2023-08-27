@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public static class Utility
 {
@@ -106,4 +107,9 @@ public static class Utility
             return (T)formatter.Deserialize(memory_stream);
         }
     }
+    public static bool MouseOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
 }

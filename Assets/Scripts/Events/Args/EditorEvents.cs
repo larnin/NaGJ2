@@ -58,9 +58,18 @@ public class EditorGetBlockEvent
 public class EditorSetCursorBlockEvent
 {
     public BlockType type;
+    public int blockData;
 
-    public EditorSetCursorBlockEvent(BlockType _type)
+    public EditorSetCursorBlockEvent(BlockType _type, int _blockData)
     {
         type = _type;
+        blockData = _blockData;
     }
+}
+
+public class EditorGetCursorBlockEvent
+{
+    public BlockType type;
+    public Rotation rotation;
+    public int blockData;
 }

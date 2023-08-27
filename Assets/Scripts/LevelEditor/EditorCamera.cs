@@ -26,7 +26,7 @@ public class EditorCamera : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetMouseButtonDown(2))
+        if(Input.GetMouseButtonDown(2) && !Utility.MouseOverUI())
         {
             m_oldMousePos = Input.mousePosition;
         }

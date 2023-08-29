@@ -88,3 +88,7 @@ MonoBehaviour:
       cross: {fileID: 0}
       slope: {fileID: 0}
       bridge: {fileID: 0}
+    grass:
+      variants:
+      - {fileID: 455439823602350376, guid: 3e5218aad8e22324fbab020a18ffcf5a, type: 3}
+      - {fileID: 1797872309044152712, guid: d15fd059907d78c4085e3ad1781f91ff, type: 3}

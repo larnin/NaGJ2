@@ -106,6 +106,12 @@ public class RoadBlockData
 }
 
 [Serializable]
+public class SimpleBlockData
+{
+    public List<GameObject> variants = new List<GameObject>();
+}
+
+[Serializable]
 public class AllBlocks
 {
     public Vector3 blockSize = Vector3.one;
@@ -114,4 +120,5 @@ public class AllBlocks
     public LakeBlockData lake;
     public RiverBlockData river;
     public RoadBlockData road;
+    public SimpleBlockData grass;
 }

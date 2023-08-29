@@ -20,6 +20,18 @@ public static class BlockDataEx
             case BlockType.lake:
                 GetBlockInfoLake(mat, out prefab, out outRot);
                 break;
+            case BlockType.river:
+                GetBlockInfoRiver(data, mat, out prefab, out outRot);
+                break;
+            case BlockType.waterfall:
+                GetBlockInfoWaterfall(data, mat, out prefab, out outRot);
+                break;
+            case BlockType.road:
+                GetBlockInfoRoad(mat, out prefab, out outRot);
+                break;
+            case BlockType.grass:
+                GetBlockInfoGrass(data, mat, out prefab, out outRot);
+                break;
             default:
                 prefab = null;
                 outRot = Quaternion.identity;
@@ -163,7 +175,39 @@ public static class BlockDataEx
         outRot = Quaternion.identity;
     }
 
-     // ---------------------------------------
+    static void GetBlockInfoRiver(byte data, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    {
+        prefab = Global.instance.allBlocks.river.line;
+        outRot = Quaternion.identity;
+    }
+
+    static void GetBlockInfoRoad(NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    {
+        prefab = Global.instance.allBlocks.road.single;
+        outRot = Quaternion.identity;
+    }
+
+    static void GetBlockInfoGrass(byte data, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    {
+        Rotation rot = ExtractDataRotation(data);
+        int value = ExtractDataValue(data);
+
+        outRot = RotationEx.ToQuaternion(rot);
+
+        var grassVariants = Global.instance.allBlocks.grass.variants;
+
+        if (value >= grassVariants.Count || value < 0)
+            prefab = null;
+        else prefab = grassVariants[value];
+    }
+
+    static void GetBlockInfoWaterfall(byte data, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    {
+        prefab = Global.instance.allBlocks.river.waterfallMiddle;
+        outRot = Quaternion.identity;
+    }
+
+    // ---------------------------------------
 
     public static bool GetValidPos(BlockType type, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
     {

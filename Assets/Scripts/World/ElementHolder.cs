@@ -25,33 +25,6 @@ public enum BuildingType
     tower2
 }
 
-public enum Rotation
-{
-    rot_0,
-    rot_90,
-    rot_180,
-    rot_270,
-}
-
-public static class RotationEx
-{
-    public static Rotation RandomRotation()
-    {
-        return (Rotation)UnityEngine.Random.Range(0, 4);
-    }
-
-    public static Quaternion ToQuaternion(Rotation rot)
-    {
-        if (rot == Rotation.rot_0)
-            return Quaternion.identity;
-        else if (rot == Rotation.rot_90)
-            return Quaternion.Euler(0, 90, 0);
-        else if (rot == Rotation.rot_180)
-            return Quaternion.Euler(0, 180, 0);
-        else return Quaternion.Euler(0, 270, 0);
-    }
-}
-
 [Serializable]
 public class GroundDatas
 {
@@ -105,11 +78,6 @@ public class ElementHolder : MonoBehaviour
         return null;
     }
 
-    Rotation RandomRotation()
-    {
-        return (Rotation)UnityEngine.Random.Range(0, 4);
-    }
-
     GameObject GetGround(GroundDatas data, NearMatrix<bool> matrix, out Rotation rotation)
     {
         bool top = matrix.Get(0, -1);
@@ -120,7 +88,7 @@ public class ElementHolder : MonoBehaviour
 
         if(nb == 4)
         {
-            rotation = RandomRotation();
+            rotation = RotationEx.RandomRotation();
             return data.center;
         }
         else if(nb == 3)
@@ -173,7 +141,7 @@ public class ElementHolder : MonoBehaviour
         }
         else
         {
-            rotation = RandomRotation();
+            rotation = RotationEx.RandomRotation();
             return data.alone;
         }
     }

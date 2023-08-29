@@ -14,6 +14,12 @@ public static class BlockDataEx
             case BlockType.ground:
                 GetBlockInfoGround(mat, out prefab, out outRot);
                 break;
+            case BlockType.groundSlope:
+                GetBlockInfoSlope(data, mat, out prefab, out outRot);
+                break;
+            case BlockType.lake:
+                GetBlockInfoLake(mat, out prefab, out outRot);
+                break;
             default:
                 prefab = null;
                 outRot = Quaternion.identity;
@@ -121,14 +127,57 @@ public static class BlockDataEx
         outRot = RotationEx.ToQuaternion(rot);
     }
 
-    // ---------------------------------------
+    static void GetBlockInfoSlope(byte data, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    {
+        var grounds = Global.instance.allBlocks?.groundSlope;
+        if (grounds == null)
+        {
+            prefab = null;
+            outRot = Quaternion.identity;
+        }
+
+        Rotation rot = ExtractDataRotation(data);
+
+        var offset = RotationEx.ToVectorInt(rot);
+        offset = RotationEx.Rotate(offset, Rotation.rot_90);
+
+        bool right = IsBlockFull(mat.Get(offset.x, 0, offset.y));
+        bool left = IsBlockFull(mat.Get(-offset.x, 0, -offset.y));
+
+        outRot = RotationEx.ToQuaternion(rot);
+
+        if (left && right)
+            prefab = grounds.center;
+        else if (left)
+            prefab = grounds.right;
+        else if (right)
+            prefab = grounds.left;
+        else prefab = grounds.single;
+
+    }
+
+    static void GetBlockInfoLake(NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    {
+
+        prefab = Global.instance.allBlocks.lake.single;
+        outRot = Quaternion.identity;
+    }
+
+     // ---------------------------------------
 
     public static bool GetValidPos(BlockType type, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
     {
         switch(type)
         {
             case BlockType.ground:
-                return GetValidPosGround(blockPos, pos, out outPos);
+            case BlockType.groundSlope:
+                return GetValidPosGround(type, blockPos, pos, out outPos);
+            case BlockType.river:
+            case BlockType.lake:
+                return GetValidPosPaint(type, blockPos, pos, out outPos);
+            case BlockType.grass:
+            case BlockType.road:
+                return GetValidPosDecoration(type, blockPos, pos, out outPos);
             case BlockType.air:
                 return GetValidPosAir(blockPos, pos, out outPos);
             default:
@@ -161,7 +210,7 @@ public static class BlockDataEx
         return false;
     }
 
-    static bool GetValidPosGround(Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    static bool GetValidPosGround(BlockType current, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
     {
         EditorGetBlockEvent b1 = new EditorGetBlockEvent(blockPos);
         EditorGetBlockEvent b2 = new EditorGetBlockEvent(pos);
@@ -175,7 +224,49 @@ public static class BlockDataEx
             return true;
         }
 
-        if(b2.type != BlockType.ground)
+        if(b2.type != current)
+        {
+            outPos = pos;
+            return true;
+        }
+
+        outPos = Vector3Int.zero;
+        return false;
+    }
+
+    static bool GetValidPosPaint(BlockType current, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    {
+        EditorGetBlockEvent b1 = new EditorGetBlockEvent(blockPos);
+        EditorGetBlockEvent b2 = new EditorGetBlockEvent(pos);
+
+        Event<EditorGetBlockEvent>.Broadcast(b1);
+        Event<EditorGetBlockEvent>.Broadcast(b2);
+
+        if ((IsBlockFull(b1.type) || b1.type == BlockType.air) && current != b1.type)
+        {
+            outPos = blockPos;
+            return true;
+        }
+
+        outPos = Vector3Int.zero;
+        return false;
+    }
+
+    static bool GetValidPosDecoration(BlockType current, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    {
+        EditorGetBlockEvent b1 = new EditorGetBlockEvent(blockPos);
+        EditorGetBlockEvent b2 = new EditorGetBlockEvent(pos);
+
+        Event<EditorGetBlockEvent>.Broadcast(b1);
+        Event<EditorGetBlockEvent>.Broadcast(b2);
+
+        if (!IsBlockFull(b1.type))
+        {
+            outPos = blockPos;
+            return true;
+        }
+
+        if (b2.type != current)
         {
             outPos = pos;
             return true;
@@ -216,6 +307,9 @@ public static class BlockDataEx
         switch(type)
         {
             case BlockType.ground:
+            case BlockType.groundSlope:
+            case BlockType.lake:
+            case BlockType.river:
                 return true;
             default:
                 return false;
@@ -235,6 +329,6 @@ public static class BlockDataEx
 
     public static byte MakeData(Rotation rot, int value)
     {
-        return (byte)((int)rot + value << 2);
+        return (byte)((int)rot + (value << 2));
     }
 }

@@ -50,6 +50,9 @@ public class EditorCursorVisual : MonoBehaviour
         if (valid)
             SetCursorPosition(pos, true);
         else SetCursorPosition(pos, false);
+
+        if (Input.GetKeyDown(KeyCode.R))
+            m_rotation = RotationEx.Add(m_rotation, Rotation.rot_90);
     }
 
     void OnClick(EditorCursorClickEvent e)

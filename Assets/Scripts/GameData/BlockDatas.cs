@@ -77,7 +77,7 @@ public class LakeBlockData
     public GameObject lakeOut;
 }
 
-[SerializeField]
+[Serializable]
 public class RiverBlockData
 {
     public GameObject line;
@@ -92,7 +92,7 @@ public class RiverBlockData
     public GameObject waterfallDown;
 }
 
-[SerializeField]
+[Serializable]
 public class RoadBlockData
 {
     public GameObject single;

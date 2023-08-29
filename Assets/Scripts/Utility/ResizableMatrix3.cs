@@ -135,7 +135,7 @@ public class ResizableMatrix3<T>
             int minZ = Mathf.Max(MinZ(), -newOriginZ);
             int maxX = Mathf.Min(MaxX(), newWidth - newOriginX - 1);
             int maxY = Mathf.Min(MaxY(), newHeight - newOriginY - 1);
-            int maxZ = Mathf.Min(MaxY(), newDepth - newOriginZ - 1);
+            int maxZ = Mathf.Min(MaxZ(), newDepth - newOriginZ - 1);
 
             if(maxX >= minX && maxY >= minY && maxZ >= minZ)
             {

@@ -44,3 +44,47 @@ MonoBehaviour:
         line: {fileID: 2748226503450804616, guid: 7a80d26ec8fbca1448907a561b920f66, type: 3}
         treeSide: {fileID: 6145982102503155055, guid: 5023d511b6bd16f4fb00baab22d377f1, type: 3}
         full: {fileID: 7007301684908017005, guid: 4fdc1d99473483341a5bb77a1cdc3e33, type: 3}
+    groundSlope:
+      single: {fileID: 2422801480280022577, guid: 1267fcf0f57779846bfbdf45554748fc, type: 3}
+      left: {fileID: 1625936375580345051, guid: aba1d5b94e6438447974e644eed9c5da, type: 3}
+      right: {fileID: 1625936375580345051, guid: 8e893f35a6feaa0459c268a648131cbc, type: 3}
+      center: {fileID: 9077495960246464690, guid: 2f53fd7d0a9430244ac0ddc9717823bf, type: 3}
+    lake:
+      single: {fileID: 0}
+      solo: {fileID: 0}
+      oneSide: {fileID: 0}
+      corner: {fileID: 0}
+      line: {fileID: 0}
+      treeSide: {fileID: 0}
+      full: {fileID: 0}
+      treeCorners: {fileID: 0}
+      twoCornersLine: {fileID: 0}
+      twoCornersOpposite: {fileID: 0}
+      oneCorner: {fileID: 0}
+      center: {fileID: 0}
+      cornerNoOpposite: {fileID: 0}
+      lineOneCornerLeft: {fileID: 0}
+      lineOneCornerRight: {fileID: 0}
+      lineOnly: {fileID: 0}
+      lakeIn: {fileID: 0}
+      lakeOut: {fileID: 0}
+    river:
+      line: {fileID: 0}
+      corner: {fileID: 0}
+      meetSide: {fileID: 0}
+      meetLineLeft: {fileID: 0}
+      meetLineRight: {fileID: 0}
+      waterfallStartTop: {fileID: 0}
+      waterfallStartSingle: {fileID: 0}
+      waterfallUp: {fileID: 0}
+      waterfallMiddle: {fileID: 0}
+      waterfallDown: {fileID: 0}
+    road:
+      single: {fileID: 0}
+      start: {fileID: 0}
+      line: {fileID: 0}
+      corner: {fileID: 0}
+      tShape: {fileID: 0}
+      cross: {fileID: 0}
+      slope: {fileID: 0}
+      bridge: {fileID: 0}

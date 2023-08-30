@@ -17,6 +17,20 @@ public enum BlockType
     grass,
 }
 
+public struct SimpleBlock
+{
+    public static readonly SimpleBlock defaultValue = new SimpleBlock(BlockType.air, 0);
+
+    public BlockType id;
+    public byte data;
+
+    SimpleBlock(BlockType _id, byte _data)
+    {
+        id = _id;
+        data = _data;
+    }
+}
+
 [Serializable]
 public class BlockLayerData
 {

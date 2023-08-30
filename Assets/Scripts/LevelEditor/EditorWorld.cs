@@ -7,8 +7,7 @@ using UnityEngine;
 
 struct EditorBlock
 {
-    public BlockType id;
-    public byte data;
+    public SimpleBlock block;
     public GameObject instance;
 }
 
@@ -18,7 +17,7 @@ public class EditorWorld : MonoBehaviour
 
     SubscriberList m_subscriberList = new SubscriberList();
 
-    NearMatrix3<BlockType> m_tempMatrix = new NearMatrix3<BlockType>();
+    NearMatrix3<SimpleBlock> m_tempMatrix = new NearMatrix3<SimpleBlock>();
 
     private void Awake()
     {
@@ -48,8 +47,8 @@ public class EditorWorld : MonoBehaviour
 
         var b = m_grid.Get(e.pos.x, e.pos.y, e.pos.z);
 
-        e.type = b.id;
-        e.data = b.data;
+        e.type = b.block.id;
+        e.data = b.block.data;
     }
 
     void SetBlock(Vector3Int pos, BlockType type, byte data)
@@ -57,8 +56,8 @@ public class EditorWorld : MonoBehaviour
         EditorBlock block = new EditorBlock();
         if (m_grid.IsInGrid(pos.x, pos.y, pos.z))
             block = m_grid.Get(pos.x, pos.y, pos.z);
-        block.id = type;
-        block.data = data;
+        block.block.id = type;
+        block.block.data = data;
 
         m_grid.Set(block, pos.x, pos.y, pos.z);
 
@@ -85,14 +84,14 @@ public class EditorWorld : MonoBehaviour
         if(element.instance != null)
             Destroy(element.instance);
 
-        if(element.id == BlockType.air)
+        if(element.block.id == BlockType.air)
             return;
 
         SetNearMatrix(pos, m_tempMatrix);
 
         GameObject prefab;
         Quaternion rot;
-        BlockDataEx.GetBlockInfo(element.id, element.data, m_tempMatrix, out prefab, out rot);
+        BlockDataEx.GetBlockInfo(element.block.id, element.block.data, m_tempMatrix, out prefab, out rot);
 
         if (prefab == null)
             return;
@@ -103,9 +102,9 @@ public class EditorWorld : MonoBehaviour
         m_grid.Set(element, pos.x, pos.y, pos.z);
     }
 
-    void SetNearMatrix(Vector3Int pos, NearMatrix3<BlockType> matrix)
+    void SetNearMatrix(Vector3Int pos, NearMatrix3<SimpleBlock> matrix)
     {
-        matrix.Reset(BlockType.air);
+        matrix.Reset(SimpleBlock.defaultValue);
 
         for(int i = -1; i <= 1; i++)
         {
@@ -118,11 +117,11 @@ public class EditorWorld : MonoBehaviour
                     int z = pos.z + k;
 
                     if (!m_grid.IsInGrid(x, y, z))
-                        matrix.Set(BlockType.air, i, j, k);
+                        matrix.Set(SimpleBlock.defaultValue, i, j, k);
                     else
                     {
                         var element = m_grid.Get(x, y, z);
-                        matrix.Set(element.id, i, j, k);
+                        matrix.Set(element.block, i, j, k);
                     }
                 }
             }

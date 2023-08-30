@@ -7,7 +7,7 @@ using UnityEngine;
 
 public static class BlockDataEx
 {
-    public static void GetBlockInfo(BlockType type, byte data, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    public static void GetBlockInfo(BlockType type, byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
         switch(type)
         {
@@ -39,7 +39,7 @@ public static class BlockDataEx
         }
     }
 
-    static void GetBlockInfoGround(NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    static void GetBlockInfoGround(NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
         var grounds = Global.instance.allBlocks?.ground;
         if(grounds == null)
@@ -50,13 +50,13 @@ public static class BlockDataEx
 
         BlockLayerData layer = grounds.solo;
 
-        if (IsBlockFull(mat.Get(0, 1, 0)))
+        if (IsBlockFull(mat.Get(0, 1, 0).id))
         {
-            if (IsBlockFull(mat.Get(0, -1, 0)))
+            if (IsBlockFull(mat.Get(0, -1, 0).id))
                 layer = grounds.middle;
             else layer = grounds.bottom;
         }
-        else if (IsBlockFull(mat.Get(0, -1, 0)))
+        else if (IsBlockFull(mat.Get(0, -1, 0).id))
             layer = grounds.top;
 
         var layerMat = mat.GetLayerMatrix(0);
@@ -64,15 +64,15 @@ public static class BlockDataEx
         GetSolidBlockInfo(layerMat, layer, out prefab, out outRot);
     }
 
-    static void GetSolidBlockInfo(NearMatrix<BlockType> mat, BlockLayerData layer, out GameObject prefab, out Quaternion outRot)
+    static void GetSolidBlockInfo(NearMatrix<SimpleBlock> mat, BlockLayerData layer, out GameObject prefab, out Quaternion outRot)
     {
         prefab = layer.solo;
         outRot = Quaternion.identity;
 
-        bool top = IsBlockFull(mat.Get(0, -1));
-        bool down = IsBlockFull(mat.Get(0, 1));
-        bool left = IsBlockFull(mat.Get(-1, 0));
-        bool right = IsBlockFull(mat.Get(1, 0));
+        bool top = IsBlockFull(mat.Get(0, -1).id);
+        bool down = IsBlockFull(mat.Get(0, 1).id);
+        bool left = IsBlockFull(mat.Get(-1, 0).id);
+        bool right = IsBlockFull(mat.Get(1, 0).id);
         int nb = (top ? 1 : 0) + (down ? 1 : 0) + (left ? 1 : 0) + (right ? 1 : 0);
 
         Rotation rot = Rotation.rot_0;
@@ -139,7 +139,7 @@ public static class BlockDataEx
         outRot = RotationEx.ToQuaternion(rot);
     }
 
-    static void GetBlockInfoSlope(byte data, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    static void GetBlockInfoSlope(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
         var grounds = Global.instance.allBlocks?.groundSlope;
         if (grounds == null)
@@ -153,8 +153,8 @@ public static class BlockDataEx
         var offset = RotationEx.ToVectorInt(rot);
         offset = RotationEx.Rotate(offset, Rotation.rot_90);
 
-        bool right = IsBlockFull(mat.Get(offset.x, 0, offset.y));
-        bool left = IsBlockFull(mat.Get(-offset.x, 0, -offset.y));
+        bool right = IsBlockFull(mat.Get(offset.x, 0, offset.y).id);
+        bool left = IsBlockFull(mat.Get(-offset.x, 0, -offset.y).id);
 
         outRot = RotationEx.ToQuaternion(rot);
 
@@ -168,26 +168,112 @@ public static class BlockDataEx
 
     }
 
-    static void GetBlockInfoLake(NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    static void GetBlockInfoLake(NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
 
         prefab = Global.instance.allBlocks.lake.single;
         outRot = Quaternion.identity;
     }
 
-    static void GetBlockInfoRiver(byte data, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    static void GetBlockInfoRiver(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
         prefab = Global.instance.allBlocks.river.line;
         outRot = Quaternion.identity;
     }
 
-    static void GetBlockInfoRoad(NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    static void GetBlockInfoRoad(NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
+        var roads = Global.instance.allBlocks.road;
+
         prefab = Global.instance.allBlocks.road.single;
-        outRot = Quaternion.identity;
+
+        Rotation rot = Rotation.rot_0;
+
+        var ground = mat.Get(0, -1, 0).id;
+        if(ground == BlockType.lake || ground == BlockType.river)
+        {
+            var left = mat.Get(-1, 0, 0).id;
+            var right = mat.Get(1, 0, 0).id;
+
+            prefab = roads.bridge;
+
+            if(left == BlockType.lake || left == BlockType.river || right == BlockType.river || right == BlockType.lake)
+                rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_0 : Rotation.rot_180;
+            else rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_90 : Rotation.rot_270;
+        }
+        else if(ground == BlockType.groundSlope)
+        {
+            prefab = roads.slope;
+
+            var groundData = mat.Get(0, -1, 0).data;
+            rot = ExtractDataRotation(groundData);
+        }
+        else
+        {
+            bool top = mat.Get(0, 0, -1).id == BlockType.road || mat.Get(0, 1, -1).id == BlockType.road || mat.Get(0, -1, -1).id == BlockType.road;
+            bool down = mat.Get(0, 0, 1).id == BlockType.road || mat.Get(0, 1, 1).id == BlockType.road || mat.Get(0, -1, 1).id == BlockType.road;
+            bool left = mat.Get(-1, 0, 0).id == BlockType.road || mat.Get(-1, 1, 0).id == BlockType.road || mat.Get(-1, -1, 0).id == BlockType.road;
+            bool right = mat.Get(1, 0, 0).id == BlockType.road || mat.Get(1, 1, 0).id == BlockType.road || mat.Get(1, -1, 0).id == BlockType.road;
+
+            int nb = (top ? 1 : 0) + (down ? 1 : 0) + (left ? 1 : 0) + (right ? 1 : 0);
+
+            if(nb == 4)
+            {
+                rot = RotationEx.RandomRotation();
+                prefab = roads.cross;
+            }
+            else if(nb == 3)
+            {
+                prefab = roads.tShape;
+                if (!right)
+                    rot = Rotation.rot_0;
+                else if (!top)
+                    rot = Rotation.rot_90;
+                else if (!left)
+                    rot = Rotation.rot_180;
+                else rot = Rotation.rot_270;
+            }
+            else if(nb == 2)
+            {
+                prefab = roads.line;
+                if(left && right)
+                    rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_0 : Rotation.rot_180;
+                else if(top && down)
+                    rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_90 : Rotation.rot_270;
+                else
+                {
+                    prefab = roads.corner;
+                    if (top && left)
+                        rot = Rotation.rot_0;
+                    else if (left && down)
+                        rot = Rotation.rot_90;
+                    else if (down && right)
+                        rot = Rotation.rot_180;
+                    else rot = Rotation.rot_270;
+                }
+            }
+            else if(nb == 1)
+            {
+                prefab = roads.start;
+                if (left)
+                    rot = Rotation.rot_0;
+                else if (down)
+                    rot = Rotation.rot_90;
+                else if (right)
+                    rot = Rotation.rot_180;
+                else rot = Rotation.rot_270;
+            }
+            else
+            {
+                rot = RotationEx.RandomRotation();
+                prefab = roads.single;
+            }
+        }
+
+        outRot = RotationEx.ToQuaternion(rot);
     }
 
-    static void GetBlockInfoGrass(byte data, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    static void GetBlockInfoGrass(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
         Rotation rot = ExtractDataRotation(data);
         int value = ExtractDataValue(data);
@@ -201,7 +287,7 @@ public static class BlockDataEx
         else prefab = grassVariants[value];
     }
 
-    static void GetBlockInfoWaterfall(byte data, NearMatrix3<BlockType> mat, out GameObject prefab, out Quaternion outRot)
+    static void GetBlockInfoWaterfall(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
         prefab = Global.instance.allBlocks.river.waterfallMiddle;
         outRot = Quaternion.identity;

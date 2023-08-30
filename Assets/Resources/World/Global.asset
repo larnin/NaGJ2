@@ -80,14 +80,14 @@ MonoBehaviour:
       waterfallMiddle: {fileID: 0}
       waterfallDown: {fileID: 0}
     road:
-      single: {fileID: 0}
-      start: {fileID: 0}
-      line: {fileID: 0}
-      corner: {fileID: 0}
-      tShape: {fileID: 0}
-      cross: {fileID: 0}
-      slope: {fileID: 0}
-      bridge: {fileID: 0}
+      single: {fileID: 2454492567947961080, guid: 41aa18aba4d08234087132585562d669, type: 3}
+      start: {fileID: 9053168988011746481, guid: 59409c37f1cf6344684683253f036f91, type: 3}
+      line: {fileID: 4274742122636363412, guid: f10b1083251a5c342b32d62b00488d99, type: 3}
+      corner: {fileID: 9093388581370980818, guid: cb04d68ef85fedd4792bc9cdc391390a, type: 3}
+      tShape: {fileID: 1357750029813356456, guid: 576560a3629577448a6995b5a3296b5e, type: 3}
+      cross: {fileID: 6507531961537146496, guid: d0c348aa10c4454448c1008eceda5c8f, type: 3}
+      slope: {fileID: 1251092583484978174, guid: 6a6c294370c96e741a6abfa6bcf1e9a8, type: 3}
+      bridge: {fileID: 8240620271064500968, guid: 4a0eb926019d4b948b129011a73c4aae, type: 3}
     grass:
       variants:
       - {fileID: 455439823602350376, guid: 3e5218aad8e22324fbab020a18ffcf5a, type: 3}

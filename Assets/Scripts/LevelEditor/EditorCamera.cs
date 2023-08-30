@@ -26,7 +26,7 @@ public class EditorCamera : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetMouseButtonDown(2) && !Utility.MouseOverUI())
+        if(Input.GetMouseButtonDown(2))
         {
             m_oldMousePos = Input.mousePosition;
         }
@@ -88,6 +88,7 @@ public class EditorCamera : MonoBehaviour
 
                     Vector3 offset = pos2 - pos1;
                     transform.position = transform.position + offset * m_moveSpeed;
+                    m_target = m_target + offset * m_moveSpeed;
                 }
             }
         }

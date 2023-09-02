@@ -103,6 +103,8 @@ public class RiverBlockData
     public GameObject waterfallUp;
     public GameObject waterfallMiddle;
     public GameObject waterfallDown;
+    public GameObject waterfallEnd;
+    public int waterfallSize = 5;
 }
 
 [Serializable]

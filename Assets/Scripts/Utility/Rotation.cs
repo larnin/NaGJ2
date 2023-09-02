@@ -25,10 +25,10 @@ public static class RotationEx
         if (rot == Rotation.rot_0)
             return Quaternion.identity;
         else if (rot == Rotation.rot_90)
-            return Quaternion.Euler(0, 90, 0);
+            return Quaternion.Euler(0, 270, 0);
         else if (rot == Rotation.rot_180)
             return Quaternion.Euler(0, 180, 0);
-        else return Quaternion.Euler(0, 270, 0);
+        else return Quaternion.Euler(0, 90, 0);
     }
 
     public static Rotation Add(Rotation rot, Rotation adding)
@@ -64,6 +64,12 @@ public static class RotationEx
         return new Vector2Int(0, -1);
     }
 
+    public static Vector3Int ToVector3Int(Rotation rot)
+    {
+        var dir = ToVectorInt(rot);
+        return new Vector3Int(dir.x, 0, dir.y);
+    }
+
     public static Vector2 ToVector(Rotation rot)
     {
         if (rot == Rotation.rot_0)
@@ -73,6 +79,12 @@ public static class RotationEx
         if (rot == Rotation.rot_180)
             return new Vector2(-1, 0);
         return new Vector2(0, -1);
+    }
+
+    public static Vector3 ToVector3(Rotation rot)
+    {
+        var dir = ToVector(rot);
+        return new Vector3(dir.x, 0, dir.y);
     }
 
     public static Rotation FromVector(Vector2Int dir)

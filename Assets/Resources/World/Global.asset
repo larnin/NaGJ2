@@ -75,9 +75,11 @@ MonoBehaviour:
       meetLineRight: {fileID: 7860834695968723312, guid: 40088ad40cf506342bc0719916c448ec, type: 3}
       waterfallStartTop: {fileID: 4879444669342762034, guid: 1193e63610d5b7c4f805bbd9c0dd8b5a, type: 3}
       waterfallStartSingle: {fileID: 4039977664586463084, guid: b17ee83b73986764cbdb4eefcdb133b1, type: 3}
-      waterfallUp: {fileID: 158168534056700215, guid: 70e64b97f2fe23940aacbfd301c647a1, type: 3}
-      waterfallMiddle: {fileID: 2650051348719927939, guid: 529d3b2fb58df774282590bab7cf8a22, type: 3}
-      waterfallDown: {fileID: 6017777074191711779, guid: d58cf2c1c196d9c4699d2c5b396de1ec, type: 3}
+      waterfallUp: {fileID: 5687578937194352967, guid: 70e64b97f2fe23940aacbfd301c647a1, type: 3}
+      waterfallMiddle: {fileID: 135059544161000317, guid: 529d3b2fb58df774282590bab7cf8a22, type: 3}
+      waterfallDown: {fileID: 6426643056748241952, guid: d58cf2c1c196d9c4699d2c5b396de1ec, type: 3}
+      waterfallEnd: {fileID: 6754256699760259838, guid: 4b36fe79b7fee6443b15c75597a62a9e, type: 3}
+      waterfallSize: 5
     road:
       single: {fileID: 2454492567947961080, guid: 41aa18aba4d08234087132585562d669, type: 3}
       start: {fileID: 9053168988011746481, guid: 59409c37f1cf6344684683253f036f91, type: 3}

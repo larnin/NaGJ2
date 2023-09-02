@@ -87,10 +87,10 @@ public static class BlockDataEx
             if (!top)
                 rot = Rotation.rot_0;
             else if (!right)
-                rot = Rotation.rot_270;
+                rot = Rotation.rot_90;
             else if (!down)
                 rot = Rotation.rot_180;
-            else rot = Rotation.rot_90;
+            else rot = Rotation.rot_270;
             prefab = layer.treeSide;
         }
         else if (nb == 2)
@@ -109,11 +109,11 @@ public static class BlockDataEx
             else
             {
                 if (!left && !top)
-                    rot = Rotation.rot_90;
+                    rot = Rotation.rot_270;
                 else if (!top && !right)
                     rot = Rotation.rot_0;
                 else if (!right && !down)
-                    rot = Rotation.rot_270;
+                    rot = Rotation.rot_90;
                 else rot = Rotation.rot_180;
 
                 prefab = layer.corner;
@@ -122,11 +122,11 @@ public static class BlockDataEx
         else if (nb == 1)
         {
             if (top)
-                rot = Rotation.rot_270;
+                rot = Rotation.rot_90;
             else if (right)
                 rot = Rotation.rot_180;
             else if (down)
-                rot = Rotation.rot_90;
+                rot = Rotation.rot_270;
             else rot = Rotation.rot_0;
             prefab = layer.oneSide;
         }
@@ -211,10 +211,10 @@ public static class BlockDataEx
                 if (!topLeft)
                     rot = Rotation.rot_180;
                 else if (!topRight)
-                    rot = Rotation.rot_90;
+                    rot = Rotation.rot_270;
                 else if (!downRight)
                     rot = Rotation.rot_0;
-                else rot = Rotation.rot_270;
+                else rot = Rotation.rot_90;
             }
             else if(nbCorner == 2)
             {
@@ -232,11 +232,11 @@ public static class BlockDataEx
                 {
                     prefab = lakes.twoCornersLine;
                     if (topLeft && topRight)
-                        rot = Rotation.rot_270;
+                        rot = Rotation.rot_90;
                     else if (topRight && downRight)
                         rot = Rotation.rot_180;
                     else if (downRight && downLeft)
-                        rot = Rotation.rot_90;
+                        rot = Rotation.rot_270;
                     else rot = Rotation.rot_0;
                 }
             }
@@ -244,11 +244,11 @@ public static class BlockDataEx
             {
                 prefab = lakes.treeCorners;
                 if (topLeft)
-                    rot = Rotation.rot_270;
+                    rot = Rotation.rot_90;
                 else if (topRight)
                     rot = Rotation.rot_180;
                 else if (downRight)
-                    rot = Rotation.rot_90;
+                    rot = Rotation.rot_270;
                 else rot = Rotation.rot_0;
             }
             else
@@ -264,7 +264,7 @@ public static class BlockDataEx
 
             if(!top)
             {
-                rot = Rotation.rot_90;
+                rot = Rotation.rot_270;
                 oppositeLeft = downLeft;
                 oppositeRight = downRight;
             }
@@ -276,7 +276,7 @@ public static class BlockDataEx
             }
             else if(!down)
             {
-                rot = Rotation.rot_270;
+                rot = Rotation.rot_90;
                 oppositeLeft = topRight;
                 oppositeRight = topLeft;
 
@@ -312,7 +312,7 @@ public static class BlockDataEx
             {
                 if (top && left)
                 {
-                    rot = Rotation.rot_90;
+                    rot = Rotation.rot_270;
                     prefab = topLeft ? lakes.cornerNoOpposite : lakes.corner;
                 }
                 else if (left && down)
@@ -322,7 +322,7 @@ public static class BlockDataEx
                 }    
                 else if(down && right)
                 {
-                    rot = Rotation.rot_270;
+                    rot = Rotation.rot_90;
                     prefab = downRight ? lakes.cornerNoOpposite : lakes.corner;
                 }
                 else
@@ -338,10 +338,10 @@ public static class BlockDataEx
             if (top)
                 rot = Rotation.rot_0;
             else if (right)
-                rot = Rotation.rot_270;
+                rot = Rotation.rot_90;
             else if (down)
                 rot = Rotation.rot_180;
-            else rot = Rotation.rot_90;
+            else rot = Rotation.rot_270;
         }
         else
         {
@@ -354,8 +354,10 @@ public static class BlockDataEx
 
     static void GetBlockInfoRiver(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
+        Rotation rot = ExtractDataRotation(data);
+
         prefab = Global.instance.allBlocks.river.line;
-        outRot = Quaternion.identity;
+        outRot = RotationEx.ToQuaternion(rot);
     }
 
     static void GetBlockInfoRoad(NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
@@ -405,10 +407,10 @@ public static class BlockDataEx
                 if (!right)
                     rot = Rotation.rot_0;
                 else if (!top)
-                    rot = Rotation.rot_90;
+                    rot = Rotation.rot_270;
                 else if (!left)
                     rot = Rotation.rot_180;
-                else rot = Rotation.rot_270;
+                else rot = Rotation.rot_90;
             }
             else if(nb == 2)
             {
@@ -423,10 +425,10 @@ public static class BlockDataEx
                     if (top && left)
                         rot = Rotation.rot_0;
                     else if (left && down)
-                        rot = Rotation.rot_90;
+                        rot = Rotation.rot_270;
                     else if (down && right)
                         rot = Rotation.rot_180;
-                    else rot = Rotation.rot_270;
+                    else rot = Rotation.rot_90;
                 }
             }
             else if(nb == 1)
@@ -435,10 +437,10 @@ public static class BlockDataEx
                 if (left)
                     rot = Rotation.rot_0;
                 else if (down)
-                    rot = Rotation.rot_90;
+                    rot = Rotation.rot_270;
                 else if (right)
                     rot = Rotation.rot_180;
-                else rot = Rotation.rot_270;
+                else rot = Rotation.rot_90;
             }
             else
             {
@@ -466,8 +468,24 @@ public static class BlockDataEx
 
     static void GetBlockInfoWaterfall(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
-        prefab = Global.instance.allBlocks.river.waterfallMiddle;
-        outRot = Quaternion.identity;
+        bool top = mat.Get(0, 1, 0).id == BlockType.waterfall;
+        bool bottom = mat.Get(0, -1, 0).id == BlockType.waterfall;
+        bool bottomFull = IsBlockFull(mat.Get(0, -1, 0).id);
+
+        var rivers = Global.instance.allBlocks.river;
+
+        Rotation rot = ExtractDataRotation(data);
+        int value = ExtractDataValue(data);
+
+        if (!bottom && !bottomFull)
+            prefab = rivers.waterfallEnd;
+        else if (top && bottom)
+            prefab = rivers.waterfallMiddle;
+        else if (top)
+            prefab = rivers.waterfallDown;
+        else prefab = rivers.waterfallUp;
+
+        outRot = RotationEx.ToQuaternion(rot);
     }
 
     // ---------------------------------------
@@ -604,7 +622,77 @@ public static class BlockDataEx
 
     public static void SetBlock(BlockType type, byte data, Vector3Int pos)
     {
+        RemoveCustomBlocksFrom(pos);
         Event<EditorSetBlockEvent>.Broadcast(new EditorSetBlockEvent(pos, type, data));
+        AddCustomBlocksFrom(pos);
+    }
+
+    // ------------------------------------------
+
+    public static void RemoveCustomBlocksFrom(Vector3Int pos)
+    {
+        EditorGetBlockEvent block = new EditorGetBlockEvent(pos);
+        Event<EditorGetBlockEvent>.Broadcast(block);
+
+        switch(block.type)
+        {
+            case BlockType.river:
+                RemoveCustomBlocksRiverFrom(pos, block.data);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static void RemoveCustomBlocksRiverFrom(Vector3Int pos, byte data)
+    {
+        Rotation rot = ExtractDataRotation(data);
+
+        Vector3Int front = RotationEx.ToVector3Int(rot) + pos;
+        EditorGetBlockEvent block = new EditorGetBlockEvent(front);
+        Event<EditorGetBlockEvent>.Broadcast(block);
+        EditorSetBlockEvent setBlock = new EditorSetBlockEvent(front, BlockType.air);
+        while(block.type == BlockType.waterfall)
+        {
+            setBlock.pos = block.pos;
+            Event<EditorSetBlockEvent>.Broadcast(setBlock);
+            block.pos.y--;
+            Event<EditorGetBlockEvent>.Broadcast(block);
+        }
+    }
+
+    public static void AddCustomBlocksFrom(Vector3Int pos)
+    {
+        EditorGetBlockEvent block = new EditorGetBlockEvent(pos);
+        Event<EditorGetBlockEvent>.Broadcast(block);
+
+        switch (block.type)
+        {
+            case BlockType.river:
+                AddCustomBlocksRiverFrom(pos, block.data);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static void AddCustomBlocksRiverFrom(Vector3Int pos, byte data)
+    {
+        Rotation rot = ExtractDataRotation(data);
+
+        Vector3Int front = RotationEx.ToVector3Int(rot) + pos;
+        EditorGetBlockEvent block = new EditorGetBlockEvent(front);
+        Event<EditorGetBlockEvent>.Broadcast(block);
+        EditorSetBlockEvent setBlock = new EditorSetBlockEvent(front, BlockType.waterfall, MakeData(rot, 0));
+        int nbMax = Global.instance.allBlocks.river.waterfallSize;
+
+        for(int i = 0; i < nbMax && block.type == BlockType.air; i++)
+        {
+            setBlock.pos = block.pos;
+            Event<EditorSetBlockEvent>.Broadcast(setBlock);
+            block.pos.y--;
+            Event<EditorGetBlockEvent>.Broadcast(block);
+        }
     }
 
     // ------------------------------------------

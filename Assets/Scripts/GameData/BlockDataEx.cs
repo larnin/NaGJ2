@@ -170,9 +170,186 @@ public static class BlockDataEx
 
     static void GetBlockInfoLake(NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
+        var lakes = Global.instance.allBlocks.lake;
 
-        prefab = Global.instance.allBlocks.lake.single;
-        outRot = Quaternion.identity;
+        prefab = lakes.single;
+
+        Rotation rot = Rotation.rot_0;
+
+        bool river = mat.Get(0, 0, -1).id == BlockType.river;
+        river |= mat.Get(0, 0, 1).id == BlockType.river;
+        river |= mat.Get(-1, 0, 0).id == BlockType.river;
+        river |= mat.Get(1, 0, 0).id == BlockType.river;
+
+        bool top = mat.Get(0, 0, -1).id == BlockType.lake;
+        bool down = mat.Get(0, 0, 1).id == BlockType.lake;
+        bool left = mat.Get(-1, 0, 0).id == BlockType.lake;
+        bool right = mat.Get(1, 0, 0).id == BlockType.lake;
+
+        bool topLeft = mat.Get(-1, 0, -1).id == BlockType.lake;
+        bool topRight = mat.Get(1, 0, -1).id == BlockType.lake;
+        bool downLeft = mat.Get(-1, 0, 1).id == BlockType.lake;
+        bool downRight = mat.Get(1, 0, 1).id == BlockType.lake;
+
+        int nb = (top ? 1 : 0) + (down ? 1 : 0) + (left ? 1 : 0) + (right ? 1 : 0);
+        int nbCorner = (topLeft ? 1 : 0) + (topRight ? 1 : 0) + (downLeft ? 1 : 0) + (downRight ? 1 : 0);
+
+        if(river)
+        {
+
+        }
+        else if(nb == 4)
+        {
+            if(nbCorner == 4)
+            {
+                rot = RotationEx.RandomRotation();
+                prefab = lakes.center;
+            }
+            else if(nbCorner == 3)
+            {
+                prefab = lakes.oneCorner;
+                if (!topLeft)
+                    rot = Rotation.rot_180;
+                else if (!topRight)
+                    rot = Rotation.rot_90;
+                else if (!downRight)
+                    rot = Rotation.rot_0;
+                else rot = Rotation.rot_270;
+            }
+            else if(nbCorner == 2)
+            {
+                if(topLeft && downRight)
+                {
+                    prefab = lakes.twoCornersOpposite;
+                    rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_90 : Rotation.rot_270;
+                }
+                else if(topRight && downLeft)
+                {
+                    prefab = lakes.twoCornersOpposite;
+                    rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_0 : Rotation.rot_180;
+                }
+                else
+                {
+                    prefab = lakes.twoCornersLine;
+                    if (topLeft && topRight)
+                        rot = Rotation.rot_270;
+                    else if (topRight && downRight)
+                        rot = Rotation.rot_180;
+                    else if (downRight && downLeft)
+                        rot = Rotation.rot_90;
+                    else rot = Rotation.rot_0;
+                }
+            }
+            else if(nbCorner == 1)
+            {
+                prefab = lakes.treeCorners;
+                if (topLeft)
+                    rot = Rotation.rot_270;
+                else if (topRight)
+                    rot = Rotation.rot_180;
+                else if (downRight)
+                    rot = Rotation.rot_90;
+                else rot = Rotation.rot_0;
+            }
+            else
+            {
+                rot = RotationEx.RandomRotation();
+                prefab = lakes.full;
+            }
+        }
+        else if(nb == 3)
+        {
+            bool oppositeLeft = false;
+            bool oppositeRight = false;
+
+            if(!top)
+            {
+                rot = Rotation.rot_90;
+                oppositeLeft = downLeft;
+                oppositeRight = downRight;
+            }
+            else if(!left)
+            {
+                rot = Rotation.rot_180;
+                oppositeLeft = downRight;
+                oppositeRight = topRight;
+            }
+            else if(!down)
+            {
+                rot = Rotation.rot_270;
+                oppositeLeft = topRight;
+                oppositeRight = topLeft;
+
+            }
+            else
+            {
+                rot = Rotation.rot_0;
+                oppositeLeft = topLeft;
+                oppositeRight = downLeft;
+            }
+
+            if (oppositeLeft && oppositeRight)
+                prefab = lakes.lineOnly;
+            else if (oppositeLeft)
+                prefab = lakes.lineOneCornerLeft;
+            else if (oppositeRight)
+                prefab = lakes.lineOneCornerRight;
+            else prefab = lakes.treeSide; 
+        }
+        else if(nb == 2)
+        {
+            if(top && down)
+            {
+                prefab = lakes.line;
+                rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_0 : Rotation.rot_180;
+            }
+            else if(left && right)
+            {
+                prefab = lakes.line;
+                rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_90 : Rotation.rot_270;
+            }
+            else
+            {
+                if (top && left)
+                {
+                    rot = Rotation.rot_90;
+                    prefab = topLeft ? lakes.cornerNoOpposite : lakes.corner;
+                }
+                else if (left && down)
+                {
+                    rot = Rotation.rot_180;
+                    prefab = downLeft ? lakes.cornerNoOpposite : lakes.corner;
+                }    
+                else if(down && right)
+                {
+                    rot = Rotation.rot_270;
+                    prefab = downRight ? lakes.cornerNoOpposite : lakes.corner;
+                }
+                else
+                {
+                    rot = Rotation.rot_0;
+                    prefab = topRight ? lakes.cornerNoOpposite : lakes.corner;
+                }
+            }
+        }
+        else if(nb == 1)
+        {
+            prefab = lakes.oneSide;
+            if (top)
+                rot = Rotation.rot_0;
+            else if (right)
+                rot = Rotation.rot_270;
+            else if (down)
+                rot = Rotation.rot_180;
+            else rot = Rotation.rot_90;
+        }
+        else
+        {
+            rot = RotationEx.RandomRotation();
+            prefab = lakes.single;
+        }
+
+        outRot = RotationEx.ToQuaternion(rot);
     }
 
     static void GetBlockInfoRiver(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
@@ -185,15 +362,15 @@ public static class BlockDataEx
     {
         var roads = Global.instance.allBlocks.road;
 
-        prefab = Global.instance.allBlocks.road.single;
+        prefab = roads.single;
 
         Rotation rot = Rotation.rot_0;
 
         var ground = mat.Get(0, -1, 0).id;
         if(ground == BlockType.lake || ground == BlockType.river)
         {
-            var left = mat.Get(-1, 0, 0).id;
-            var right = mat.Get(1, 0, 0).id;
+            var left = mat.Get(-1, -1, 0).id;
+            var right = mat.Get(1, -1, 0).id;
 
             prefab = roads.bridge;
 

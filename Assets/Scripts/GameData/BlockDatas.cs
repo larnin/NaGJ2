@@ -72,7 +72,6 @@ public class SlopeBlockData
 public class LakeBlockData
 {
     public GameObject single;
-    public GameObject solo;
     public GameObject oneSide;
     public GameObject corner;
     public GameObject line;

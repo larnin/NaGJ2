@@ -50,35 +50,34 @@ MonoBehaviour:
       right: {fileID: 1625936375580345051, guid: 8e893f35a6feaa0459c268a648131cbc, type: 3}
       center: {fileID: 9077495960246464690, guid: 2f53fd7d0a9430244ac0ddc9717823bf, type: 3}
     lake:
-      single: {fileID: 0}
-      solo: {fileID: 0}
-      oneSide: {fileID: 0}
-      corner: {fileID: 0}
-      line: {fileID: 0}
-      treeSide: {fileID: 0}
-      full: {fileID: 0}
-      treeCorners: {fileID: 0}
-      twoCornersLine: {fileID: 0}
-      twoCornersOpposite: {fileID: 0}
-      oneCorner: {fileID: 0}
-      center: {fileID: 0}
-      cornerNoOpposite: {fileID: 0}
-      lineOneCornerLeft: {fileID: 0}
-      lineOneCornerRight: {fileID: 0}
-      lineOnly: {fileID: 0}
-      lakeIn: {fileID: 0}
-      lakeOut: {fileID: 0}
+      single: {fileID: 4816340819082946688, guid: 01913a0958390494e9faf3ad710e7350, type: 3}
+      oneSide: {fileID: 5837140008063463356, guid: 09b85c263ce9e714e9f3a5dee42ba83e, type: 3}
+      corner: {fileID: 6064298899372580847, guid: 4afb07e1bcf97d44fafe3f75d5183440, type: 3}
+      line: {fileID: 4706010610862211004, guid: 215f1e151b6425448a15ff952b8e5984, type: 3}
+      treeSide: {fileID: 6992775625563209281, guid: 8925b9da0aac5ae4a9c149c95d1a93f7, type: 3}
+      full: {fileID: 7709223810386884127, guid: c465ec280b0c86545b296051586881f0, type: 3}
+      treeCorners: {fileID: 943692970218264741, guid: 0dc3c3b31a8276943bba05bb9435e946, type: 3}
+      twoCornersLine: {fileID: 2680752436739973843, guid: 148df8baf23b5024da6711c944a7ac5b, type: 3}
+      twoCornersOpposite: {fileID: 1174086202102934344, guid: 637366e2e0bb2e246b2250f02000d123, type: 3}
+      oneCorner: {fileID: 3015256820896030872, guid: 499e4378e7271c749a399269b349cdf9, type: 3}
+      center: {fileID: 6407914652864801665, guid: 6805434c6e08e7746acdf02e35002d19, type: 3}
+      cornerNoOpposite: {fileID: 6635958821371690139, guid: 62b524ef7a387924485fc033ef4e6ef3, type: 3}
+      lineOneCornerLeft: {fileID: 9064594858669001968, guid: f8d1c54cb961ee74bb48fac63e75ba20, type: 3}
+      lineOneCornerRight: {fileID: 8721979309814539888, guid: 33599ac078ffaf44ab428b67165d9b45, type: 3}
+      lineOnly: {fileID: 1607730873128676241, guid: 843cccc223c405440a991bce400b679a, type: 3}
+      lakeIn: {fileID: 3680626247911190041, guid: f7e1bcfc2bd9e0c42b6bc36107186516, type: 3}
+      lakeOut: {fileID: 64746744192597758, guid: 6a4f7a28c24da6b4696b54b50616584a, type: 3}
     river:
-      line: {fileID: 0}
-      corner: {fileID: 0}
-      meetSide: {fileID: 0}
-      meetLineLeft: {fileID: 0}
-      meetLineRight: {fileID: 0}
-      waterfallStartTop: {fileID: 0}
-      waterfallStartSingle: {fileID: 0}
-      waterfallUp: {fileID: 0}
-      waterfallMiddle: {fileID: 0}
-      waterfallDown: {fileID: 0}
+      line: {fileID: 155886409593271626, guid: 285a91a4e3a13674589a8ec9ce21832b, type: 3}
+      corner: {fileID: 5446240698692234166, guid: 2a9a1b1f41c4ec84484173a4a97551d9, type: 3}
+      meetSide: {fileID: 2154632925026263750, guid: 6947cf561115cbf4e98c76792b43b72f, type: 3}
+      meetLineLeft: {fileID: 4995051275029427687, guid: 64d80198ab68a70469f6815f65cc18da, type: 3}
+      meetLineRight: {fileID: 7860834695968723312, guid: 40088ad40cf506342bc0719916c448ec, type: 3}
+      waterfallStartTop: {fileID: 4879444669342762034, guid: 1193e63610d5b7c4f805bbd9c0dd8b5a, type: 3}
+      waterfallStartSingle: {fileID: 4039977664586463084, guid: b17ee83b73986764cbdb4eefcdb133b1, type: 3}
+      waterfallUp: {fileID: 158168534056700215, guid: 70e64b97f2fe23940aacbfd301c647a1, type: 3}
+      waterfallMiddle: {fileID: 2650051348719927939, guid: 529d3b2fb58df774282590bab7cf8a22, type: 3}
+      waterfallDown: {fileID: 6017777074191711779, guid: d58cf2c1c196d9c4699d2c5b396de1ec, type: 3}
     road:
       single: {fileID: 2454492567947961080, guid: 41aa18aba4d08234087132585562d669, type: 3}
       start: {fileID: 9053168988011746481, guid: 59409c37f1cf6344684683253f036f91, type: 3}

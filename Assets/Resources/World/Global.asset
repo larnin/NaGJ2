@@ -36,7 +36,7 @@ MonoBehaviour:
         corner: {fileID: 1319718170334119733, guid: a1883fb21c1541247aa975c58abcb914, type: 3}
         line: {fileID: 7285196867437652089, guid: 17a6f16dd1bd7a742a92248bc4140fd1, type: 3}
         treeSide: {fileID: 5104220701858385585, guid: deb887b35cc37c846897c29da7369dfb, type: 3}
-        full: {fileID: 0}
+        full: {fileID: 5104220701858385585, guid: deb887b35cc37c846897c29da7369dfb, type: 3}
       bottom:
         solo: {fileID: 1120304228376281480, guid: 52c6eefaf28bd7045a8b772aaf3e8106, type: 3}
         oneSide: {fileID: 7899362130445460653, guid: 6965c80b88b3a574d8dc144a9e338db8, type: 3}

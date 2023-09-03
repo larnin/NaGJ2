@@ -176,11 +176,6 @@ public static class BlockDataEx
 
         Rotation rot = Rotation.rot_0;
 
-        bool river = mat.Get(0, 0, -1).id == BlockType.river;
-        river |= mat.Get(0, 0, 1).id == BlockType.river;
-        river |= mat.Get(-1, 0, 0).id == BlockType.river;
-        river |= mat.Get(1, 0, 0).id == BlockType.river;
-
         bool top = mat.Get(0, 0, -1).id == BlockType.lake;
         bool down = mat.Get(0, 0, 1).id == BlockType.lake;
         bool left = mat.Get(-1, 0, 0).id == BlockType.lake;
@@ -194,159 +189,187 @@ public static class BlockDataEx
         int nb = (top ? 1 : 0) + (down ? 1 : 0) + (left ? 1 : 0) + (right ? 1 : 0);
         int nbCorner = (topLeft ? 1 : 0) + (topRight ? 1 : 0) + (downLeft ? 1 : 0) + (downRight ? 1 : 0);
 
-        if(river)
-        {
+        Vector3Int[] posArray = new Vector3Int[] { new Vector3Int(-1, 0, 0), new Vector3Int(1, 0, 0), new Vector3Int(0, 0, -1), new Vector3Int(0, 0, 1) };
 
-        }
-        else if(nb == 4)
+        bool placedRiver = false;
+        foreach(var pos in posArray)
         {
-            if(nbCorner == 4)
+            var block = mat.Get(pos.x, pos.y, pos.z);
+            if (block.id != BlockType.river)
+                continue;
+
+            Rotation riverRot = ExtractDataRotation(block.data);
+            var offset = RotationEx.ToVector3Int(riverRot);
+
+            if (offset != pos && offset != -pos)
+                continue;
+
+            placedRiver = true;
+
+            if(offset == pos)
             {
-                rot = RotationEx.RandomRotation();
-                prefab = lakes.center;
+                prefab = lakes.lakeOut;
+                rot = RotationEx.Add(riverRot, Rotation.rot_180); 
             }
-            else if(nbCorner == 3)
+            else
             {
-                prefab = lakes.oneCorner;
-                if (!topLeft)
-                    rot = Rotation.rot_180;
-                else if (!topRight)
-                    rot = Rotation.rot_270;
-                else if (!downRight)
-                    rot = Rotation.rot_0;
-                else rot = Rotation.rot_90;
+                prefab = lakes.lakeIn;
+                rot = riverRot;
             }
-            else if(nbCorner == 2)
+        }
+
+        if (!placedRiver)
+        {
+            if (nb == 4)
             {
-                if(topLeft && downRight)
+                if (nbCorner == 4)
                 {
-                    prefab = lakes.twoCornersOpposite;
-                    rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_90 : Rotation.rot_270;
+                    rot = RotationEx.RandomRotation();
+                    prefab = lakes.center;
                 }
-                else if(topRight && downLeft)
+                else if (nbCorner == 3)
                 {
-                    prefab = lakes.twoCornersOpposite;
-                    rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_0 : Rotation.rot_180;
-                }
-                else
-                {
-                    prefab = lakes.twoCornersLine;
-                    if (topLeft && topRight)
-                        rot = Rotation.rot_90;
-                    else if (topRight && downRight)
+                    prefab = lakes.oneCorner;
+                    if (!topLeft)
                         rot = Rotation.rot_180;
-                    else if (downRight && downLeft)
+                    else if (!topRight)
+                        rot = Rotation.rot_270;
+                    else if (!downRight)
+                        rot = Rotation.rot_0;
+                    else rot = Rotation.rot_90;
+                }
+                else if (nbCorner == 2)
+                {
+                    if (topLeft && downRight)
+                    {
+                        prefab = lakes.twoCornersOpposite;
+                        rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_90 : Rotation.rot_270;
+                    }
+                    else if (topRight && downLeft)
+                    {
+                        prefab = lakes.twoCornersOpposite;
+                        rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_0 : Rotation.rot_180;
+                    }
+                    else
+                    {
+                        prefab = lakes.twoCornersLine;
+                        if (topLeft && topRight)
+                            rot = Rotation.rot_90;
+                        else if (topRight && downRight)
+                            rot = Rotation.rot_180;
+                        else if (downRight && downLeft)
+                            rot = Rotation.rot_270;
+                        else rot = Rotation.rot_0;
+                    }
+                }
+                else if (nbCorner == 1)
+                {
+                    prefab = lakes.treeCorners;
+                    if (topLeft)
+                        rot = Rotation.rot_90;
+                    else if (topRight)
+                        rot = Rotation.rot_180;
+                    else if (downRight)
                         rot = Rotation.rot_270;
                     else rot = Rotation.rot_0;
                 }
-            }
-            else if(nbCorner == 1)
-            {
-                prefab = lakes.treeCorners;
-                if (topLeft)
-                    rot = Rotation.rot_90;
-                else if (topRight)
-                    rot = Rotation.rot_180;
-                else if (downRight)
-                    rot = Rotation.rot_270;
-                else rot = Rotation.rot_0;
-            }
-            else
-            {
-                rot = RotationEx.RandomRotation();
-                prefab = lakes.full;
-            }
-        }
-        else if(nb == 3)
-        {
-            bool oppositeLeft = false;
-            bool oppositeRight = false;
-
-            if(!top)
-            {
-                rot = Rotation.rot_270;
-                oppositeLeft = downLeft;
-                oppositeRight = downRight;
-            }
-            else if(!left)
-            {
-                rot = Rotation.rot_180;
-                oppositeLeft = downRight;
-                oppositeRight = topRight;
-            }
-            else if(!down)
-            {
-                rot = Rotation.rot_90;
-                oppositeLeft = topRight;
-                oppositeRight = topLeft;
-
-            }
-            else
-            {
-                rot = Rotation.rot_0;
-                oppositeLeft = topLeft;
-                oppositeRight = downLeft;
-            }
-
-            if (oppositeLeft && oppositeRight)
-                prefab = lakes.lineOnly;
-            else if (oppositeLeft)
-                prefab = lakes.lineOneCornerLeft;
-            else if (oppositeRight)
-                prefab = lakes.lineOneCornerRight;
-            else prefab = lakes.treeSide; 
-        }
-        else if(nb == 2)
-        {
-            if(top && down)
-            {
-                prefab = lakes.line;
-                rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_0 : Rotation.rot_180;
-            }
-            else if(left && right)
-            {
-                prefab = lakes.line;
-                rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_90 : Rotation.rot_270;
-            }
-            else
-            {
-                if (top && left)
+                else
                 {
-                    rot = Rotation.rot_270;
-                    prefab = topLeft ? lakes.cornerNoOpposite : lakes.corner;
+                    rot = RotationEx.RandomRotation();
+                    prefab = lakes.full;
                 }
-                else if (left && down)
+            }
+            else if (nb == 3)
+            {
+                bool oppositeLeft = false;
+                bool oppositeRight = false;
+
+                if (!top)
+                {
+                    rot = Rotation.rot_270;
+                    oppositeLeft = downLeft;
+                    oppositeRight = downRight;
+                }
+                else if (!left)
                 {
                     rot = Rotation.rot_180;
-                    prefab = downLeft ? lakes.cornerNoOpposite : lakes.corner;
-                }    
-                else if(down && right)
+                    oppositeLeft = downRight;
+                    oppositeRight = topRight;
+                }
+                else if (!down)
                 {
                     rot = Rotation.rot_90;
-                    prefab = downRight ? lakes.cornerNoOpposite : lakes.corner;
+                    oppositeLeft = topRight;
+                    oppositeRight = topLeft;
+
                 }
                 else
                 {
                     rot = Rotation.rot_0;
-                    prefab = topRight ? lakes.cornerNoOpposite : lakes.corner;
+                    oppositeLeft = topLeft;
+                    oppositeRight = downLeft;
+                }
+
+                if (oppositeLeft && oppositeRight)
+                    prefab = lakes.lineOnly;
+                else if (oppositeLeft)
+                    prefab = lakes.lineOneCornerLeft;
+                else if (oppositeRight)
+                    prefab = lakes.lineOneCornerRight;
+                else prefab = lakes.treeSide;
+            }
+            else if (nb == 2)
+            {
+                if (top && down)
+                {
+                    prefab = lakes.line;
+                    rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_0 : Rotation.rot_180;
+                }
+                else if (left && right)
+                {
+                    prefab = lakes.line;
+                    rot = UnityEngine.Random.Range(0, 2) == 0 ? Rotation.rot_90 : Rotation.rot_270;
+                }
+                else
+                {
+                    if (top && left)
+                    {
+                        rot = Rotation.rot_270;
+                        prefab = topLeft ? lakes.cornerNoOpposite : lakes.corner;
+                    }
+                    else if (left && down)
+                    {
+                        rot = Rotation.rot_180;
+                        prefab = downLeft ? lakes.cornerNoOpposite : lakes.corner;
+                    }
+                    else if (down && right)
+                    {
+                        rot = Rotation.rot_90;
+                        prefab = downRight ? lakes.cornerNoOpposite : lakes.corner;
+                    }
+                    else
+                    {
+                        rot = Rotation.rot_0;
+                        prefab = topRight ? lakes.cornerNoOpposite : lakes.corner;
+                    }
                 }
             }
-        }
-        else if(nb == 1)
-        {
-            prefab = lakes.oneSide;
-            if (top)
-                rot = Rotation.rot_0;
-            else if (right)
-                rot = Rotation.rot_90;
-            else if (down)
-                rot = Rotation.rot_180;
-            else rot = Rotation.rot_270;
-        }
-        else
-        {
-            rot = RotationEx.RandomRotation();
-            prefab = lakes.single;
+            else if (nb == 1)
+            {
+                prefab = lakes.oneSide;
+                if (top)
+                    rot = Rotation.rot_0;
+                else if (right)
+                    rot = Rotation.rot_90;
+                else if (down)
+                    rot = Rotation.rot_180;
+                else rot = Rotation.rot_270;
+            }
+            else
+            {
+                rot = RotationEx.RandomRotation();
+                prefab = lakes.single;
+            }
         }
 
         outRot = RotationEx.ToQuaternion(rot);
@@ -354,9 +377,77 @@ public static class BlockDataEx
 
     static void GetBlockInfoRiver(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
+        var rivers = Global.instance.allBlocks.river;
+
+        prefab = rivers.line;
+
         Rotation rot = ExtractDataRotation(data);
 
-        prefab = Global.instance.allBlocks.river.line;
+        Vector3Int offset = RotationEx.ToVector3Int(rot);
+        Vector3Int orthoOffset = RotationEx.Rotate(offset, Rotation.rot_90);
+
+        var front = mat.Get(offset.x, offset.y, offset.z).id;
+        var back = mat.Get(-offset.x, -offset.y, -offset.z).id;
+        var left = mat.Get(orthoOffset.x, orthoOffset.y, orthoOffset.z).id;
+        var right = mat.Get(-orthoOffset.x, -orthoOffset.y, -orthoOffset.z).id;
+
+        if(!IsBlockFull(front))
+        {
+            var down = IsBlockFull(mat.Get(0, -1, 0).id);
+            if (down)
+                prefab = rivers.waterfallStartTop;
+            else prefab = rivers.waterfallStartSingle;
+        }
+        else
+        {
+            bool frontWater = front == BlockType.river || front == BlockType.lake;
+            bool backWater = back == BlockType.river || back == BlockType.lake;
+            bool leftWater = left == BlockType.river || left == BlockType.lake;
+            bool rightWater = right == BlockType.river || right == BlockType.lake;
+
+            if (frontWater)
+            {
+                if (backWater)
+                {
+                    if (leftWater)
+                        prefab = rivers.meetLineLeft;
+                    else if (rightWater)
+                        prefab = rivers.meetLineRight;
+                    else prefab = rivers.line;
+                }
+                else if (leftWater && rightWater)
+                    prefab = rivers.meetSide;
+                else if (leftWater)
+                    prefab = rivers.cornerLeft;
+                else if (rightWater)
+                    prefab = rivers.cornerRight;
+                else prefab = rivers.line;
+            }
+            else
+            {
+                if (!backWater)
+                {
+                    if (leftWater && rightWater)
+                        prefab = rivers.meetSide;
+                    else if (leftWater)
+                        prefab = rivers.cornerLeft;
+                    else if (rightWater)
+                        prefab = rivers.cornerRight;
+                    else prefab = rivers.line;
+                }
+                else if(leftWater)
+                {
+                    prefab = rivers.cornerLeft;
+                    rot = RotationEx.Add(rot, Rotation.rot_90);
+                }
+                else 
+                {
+                    prefab = rivers.cornerRight;
+                    rot = RotationEx.Sub(rot, Rotation.rot_90);
+                }
+            }
+        }
+
         outRot = RotationEx.ToQuaternion(rot);
     }
 
@@ -567,7 +658,7 @@ public static class BlockDataEx
         Event<EditorGetBlockEvent>.Broadcast(b1);
         Event<EditorGetBlockEvent>.Broadcast(b2);
 
-        if ((IsBlockFull(b1.type) || b1.type == BlockType.air) && current != b1.type)
+        if ((IsBlockFull(b1.type) || b1.type == BlockType.air || b1.type == BlockType.waterfall) && current != b1.type)
         {
             outPos = blockPos;
             return true;
@@ -639,6 +730,9 @@ public static class BlockDataEx
             case BlockType.river:
                 RemoveCustomBlocksRiverFrom(pos, block.data);
                 break;
+            case BlockType.waterfall:
+                RemoveCustomBlockWaterfallFrom(pos);
+                break;
             default:
                 break;
         }
@@ -653,6 +747,20 @@ public static class BlockDataEx
         Event<EditorGetBlockEvent>.Broadcast(block);
         EditorSetBlockEvent setBlock = new EditorSetBlockEvent(front, BlockType.air);
         while(block.type == BlockType.waterfall)
+        {
+            setBlock.pos = block.pos;
+            Event<EditorSetBlockEvent>.Broadcast(setBlock);
+            block.pos.y--;
+            Event<EditorGetBlockEvent>.Broadcast(block);
+        }
+    }
+
+    public static void RemoveCustomBlockWaterfallFrom(Vector3Int pos)
+    {
+        EditorGetBlockEvent block = new EditorGetBlockEvent(pos);
+        Event<EditorGetBlockEvent>.Broadcast(block);
+        EditorSetBlockEvent setBlock = new EditorSetBlockEvent(pos, BlockType.air);
+        while (block.type == BlockType.waterfall)
         {
             setBlock.pos = block.pos;
             Event<EditorSetBlockEvent>.Broadcast(setBlock);

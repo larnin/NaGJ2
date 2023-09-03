@@ -94,7 +94,8 @@ public class LakeBlockData
 public class RiverBlockData
 {
     public GameObject line;
-    public GameObject corner;
+    public GameObject cornerRight;
+    public GameObject cornerLeft;
     public GameObject meetSide;
     public GameObject meetLineLeft;
     public GameObject meetLineRight;

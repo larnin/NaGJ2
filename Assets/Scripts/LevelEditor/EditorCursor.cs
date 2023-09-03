@@ -69,7 +69,7 @@ public class EditorCursor : MonoBehaviour
         Vector3 hitOffset = new Vector3(0, 0.5f * blockSize.y, 0);
         Vector3 pos = ray.GetPoint(hit.distance) + hitOffset;
 
-        pos -= hit.normal * 0.2f;
+        pos -= hit.normal * 0.01f;
 
         //scale pos
         pos.x /= blockSize.x;

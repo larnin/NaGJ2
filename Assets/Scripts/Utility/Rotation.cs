@@ -140,4 +140,28 @@ public static class RotationEx
         }
         return dir;
     }
+
+    public static Vector3Int Rotate(Vector3Int dir, Rotation rot)
+    {
+        int count = (int)rot;
+        for (int i = 0; i < count; i++)
+        {
+            int temp = dir.x;
+            dir.x = -dir.z;
+            dir.z = temp;
+        }
+        return dir;
+    }
+
+    public static Vector3 Rotate(Vector3 dir, Rotation rot)
+    {
+        int count = (int)rot;
+        for (int i = 0; i < count; i++)
+        {
+            float temp = dir.x;
+            dir.x = -dir.z;
+            dir.z = dir.x;
+        }
+        return dir;
+    }
 }

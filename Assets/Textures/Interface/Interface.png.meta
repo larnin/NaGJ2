@@ -6,7 +6,7 @@ TextureImporter:
   serializedVersion: 12
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -295,14 +295,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Interface_2: -1256769601
       Interface_0: 369313717
-      Interface_4: -2405441
-      Interface_7: 2122740932
-      Interface_5: 1759790696
-      Interface_3: -1624178447
       Interface_1: -90209381
+      Interface_2: -1256769601
+      Interface_3: -1624178447
+      Interface_4: -2405441
+      Interface_5: 1759790696
       Interface_6: -558704936
+      Interface_7: 2122740932
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

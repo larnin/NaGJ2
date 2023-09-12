@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,12 +20,17 @@ public class EditorInterface : MonoBehaviour
     [SerializeField] List<GameObject> m_itemLists = new List<GameObject>();
     [SerializeField] List<EditorBlockData> m_blocks = new List<EditorBlockData>();
     [SerializeField] Image m_currentElementImage = null;
+    [SerializeField] TMP_Text m_filename;
+    [SerializeField] string menuName;
 
+    bool m_clicked = false;
     int m_currentList = -1;
+    string m_currentPath = "";
 
     private void Start()
     {
         OnOpenListClick(-1);
+        UpdateFilename();
     }
 
     private void Update()
@@ -58,6 +64,27 @@ public class EditorInterface : MonoBehaviour
         }
     }
 
+    void UpdateFilename()
+    {
+        if (m_currentPath.Length == 0)
+        {
+            m_filename.text = "New Level";
+            return;
+        }
+
+        string filename = "";
+        int posSlash = m_currentPath.LastIndexOfAny(new char[] { '/', '\\' });
+        if (posSlash >= 0)
+            filename = m_currentPath.Substring(posSlash + 1);
+        else String.Copy(m_currentPath);
+
+        int posDot = m_currentPath.LastIndexOf('.');
+        if (posDot > 0)
+            filename = filename.Substring(0, posDot);
+
+        m_filename.text = filename;
+    }
+
     public void OnOpenListClick(int listIndex)
     {
         foreach (var g in m_itemLists)
@@ -83,5 +110,36 @@ public class EditorInterface : MonoBehaviour
 
             Event<EditorSetCursorBlockEvent>.Broadcast(new EditorSetCursorBlockEvent(b.block, b.additionalData));
         }
+    }
+
+    public void OnSave()
+    {
+        if (m_currentPath.Length == 0)
+        {
+            OnSaveAs();
+            return;
+        }
+    }
+
+    public void OnSaveAs()
+    {
+
+
+        UpdateFilename();
+    }
+
+    public void OnLoad()
+    {
+
+        UpdateFilename();
+    }
+
+    public void OnQuit()
+    {
+        if (m_clicked)
+            return;
+
+        m_clicked = true;
+        SceneSystem.changeScene(menuName);
     }
 }

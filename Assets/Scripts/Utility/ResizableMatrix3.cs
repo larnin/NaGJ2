@@ -21,11 +21,20 @@ public class ResizableMatrix3<T>
 
     public ResizableMatrix3(int width, int height, int depth, T defaultValue = default(T))
     {
-        m_defaultValue = defaultValue;
-        RecreateGrid(width, height, depth, 0, 0, 0);
+        Reset(width, height, depth, defaultValue);
     }
 
     public ResizableMatrix3(int width, int height, int depth, int originX, int originY, int originZ, T defaultValue = default(T))
+    {
+        Reset(width, height, depth, originX, originY, originZ, defaultValue);
+    }
+
+    public void Reset(int width, int height, int depth, T defaultValue = default(T))
+    {
+        Reset(width, height, depth, 0, 0, 0, defaultValue);
+    }
+
+    public void Reset(int width, int height, int depth, int originX, int originY, int originZ, T defaultValue = default(T))
     {
         m_defaultValue = defaultValue;
         RecreateGrid(width, height, depth, originX, originY, originZ);

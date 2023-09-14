@@ -78,7 +78,7 @@ public class EditorInterface : MonoBehaviour
             filename = m_currentPath.Substring(posSlash + 1);
         else String.Copy(m_currentPath);
 
-        int posDot = m_currentPath.LastIndexOf('.');
+        int posDot = filename.LastIndexOf('.');
         if (posDot > 0)
             filename = filename.Substring(0, posDot);
 
@@ -112,6 +112,14 @@ public class EditorInterface : MonoBehaviour
         }
     }
 
+    public void OnNew()
+    {
+        m_currentPath = "";
+        UpdateFilename();
+
+        Event<NewLevelEvent>.Broadcast(new NewLevelEvent());
+    }
+
     public void OnSave()
     {
         if (m_currentPath.Length == 0)
@@ -119,19 +127,43 @@ public class EditorInterface : MonoBehaviour
             OnSaveAs();
             return;
         }
+
+        JsonDocument doc = new JsonDocument();
+        doc.SetRoot(new JsonObject());
+
+        SaveEvent e = new SaveEvent(doc);
+        Event<SaveEvent>.Broadcast(e);
+
+        Json.WriteToFile(m_currentPath, doc);
     }
 
     public void OnSaveAs()
     {
+        string path = SaveEx.GetSaveFilePath("Save world", m_currentPath, "lvl");
+        if (path.Length == 0)
+            return;
 
+        m_currentPath = path;
 
         UpdateFilename();
+
+        OnSave();
     }
 
     public void OnLoad()
     {
+        string path = SaveEx.GetLoadFiltPath("Load world", m_currentPath, "lvl");
+        if (path.Length == 0)
+            return;
+
+        m_currentPath = path;
 
         UpdateFilename();
+
+        JsonDocument doc = Json.ReadFromFile(m_currentPath);
+
+        LoadEvent e = new LoadEvent(doc);
+        Event<LoadEvent>.Broadcast(e);
     }
 
     public void OnQuit()

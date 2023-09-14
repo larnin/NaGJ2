@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+public class NewLevelEvent { }
+
 public class SaveEvent
 {
     public JsonDocument document; 

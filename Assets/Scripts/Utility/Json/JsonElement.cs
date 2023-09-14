@@ -102,7 +102,7 @@ public abstract class JsonElement
 
 public class JsonArray : JsonElement, IEnumerable<JsonElement>
 {
-    List<JsonElement> m_elements;
+    List<JsonElement> m_elements = new List<JsonElement>();
 
     public JsonArray() : base(JsonType.JsonArray) { }
 
@@ -152,6 +152,8 @@ public class JsonArray : JsonElement, IEnumerable<JsonElement>
             if (element == null)
                 return;
 
+            element.Read(reader);
+
             m_elements.Add(element);
 
             if (!reader.Read())
@@ -174,7 +176,7 @@ public class JsonArray : JsonElement, IEnumerable<JsonElement>
 
 public class JsonObject : JsonElement, IEnumerable<KeyValuePair<string, JsonElement>>
 {
-    Dictionary<string, JsonElement> m_elements;
+    Dictionary<string, JsonElement> m_elements = new Dictionary<string, JsonElement>();
 
     public JsonObject() : base(JsonType.JsonObject) { }
 
@@ -228,6 +230,7 @@ public class JsonObject : JsonElement, IEnumerable<KeyValuePair<string, JsonElem
             var element = JsonTools.ReadNextElement(reader, readNext);
             if (element == null)
                 return;
+            element.Read(reader);
 
             m_elements.Add(property, element);
 

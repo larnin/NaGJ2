@@ -69,15 +69,5 @@ public static class SaveEx
 
         return asset.text;
     }
-
-    public static string SaveToString()
-    {
-        return "";
-    }
-
-    public static void LoadFromString(string data)
-    {
-
-    }
 }
 

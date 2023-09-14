@@ -25,6 +25,7 @@ public class EditorWorld : MonoBehaviour
         m_subscriberList.Add(new Event<EditorGetBlockEvent>.Subscriber(GetBlock));
         m_subscriberList.Add(new Event<SaveEvent>.Subscriber(OnSave));
         m_subscriberList.Add(new Event<LoadEvent>.Subscriber(OnLoad));
+        m_subscriberList.Add(new Event<NewLevelEvent>.Subscriber(OnNew));
         m_subscriberList.Subscribe();
     }
 
@@ -144,6 +145,24 @@ public class EditorWorld : MonoBehaviour
         return obj;
     }
 
+    void OnNew(NewLevelEvent e)
+    {
+        for (int i = m_grid.MinX(); i <= m_grid.MaxX(); i++)
+        {
+            for (int j = m_grid.MinY(); j <= m_grid.MaxY(); j++)
+            {
+                for (int k = m_grid.MinZ(); k <= m_grid.MaxZ(); k++)
+                {
+                    var item = m_grid.Get(i, j, k);
+                    if (item.instance != null)
+                        Destroy(item.instance);
+                }
+            }
+        }
+
+        m_grid.Reset(1, 1, 1);
+    }
+
     void OnSave(SaveEvent e)
     {
         var root = e.document.GetRoot();
@@ -257,6 +276,17 @@ public class EditorWorld : MonoBehaviour
                             }
                         }
                     }
+                }
+            }
+        }
+
+        for (int i = m_grid.MinX(); i <= m_grid.MaxX(); i++)
+        {
+            for (int j = m_grid.MinY(); j <= m_grid.MaxY(); j++)
+            {
+                for (int k = m_grid.MinZ(); k <= m_grid.MaxZ(); k++)
+                {
+                    UpdateBlock(new Vector3Int(i, j, k));
                 }
             }
         }

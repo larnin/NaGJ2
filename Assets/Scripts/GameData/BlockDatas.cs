@@ -15,6 +15,10 @@ public enum BlockType
     waterfall,
     road,
     grass,
+    ironOre,
+    copperOre,
+    crystal,
+    Tree
 }
 
 public struct SimpleBlock
@@ -137,4 +141,8 @@ public class AllBlocks
     public RiverBlockData river;
     public RoadBlockData road;
     public SimpleBlockData grass;
+    public SimpleBlockData ironOre;
+    public SimpleBlockData copperOre;
+    public SimpleBlockData crystal;
+    public SimpleBlockData tree;
 }

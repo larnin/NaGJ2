@@ -94,3 +94,18 @@ MonoBehaviour:
       variants:
       - {fileID: 455439823602350376, guid: 3e5218aad8e22324fbab020a18ffcf5a, type: 3}
       - {fileID: 1797872309044152712, guid: d15fd059907d78c4085e3ad1781f91ff, type: 3}
+    ironOre:
+      variants:
+      - {fileID: 1053624260744082883, guid: fc79ae251a8b8bf44bb664b9681a6efe, type: 3}
+    copperOre:
+      variants:
+      - {fileID: 1927427942470581613, guid: 67309c9b86577e241be1bd635f412585, type: 3}
+    crystal:
+      variants:
+      - {fileID: 2529202727124458788, guid: 39da2dba811005348835c7909ecd0d08, type: 3}
+      - {fileID: 5884493882779455304, guid: f5b1ffb94762e814392d65806a9222fa, type: 3}
+    tree:
+      variants:
+      - {fileID: 3566894212013922056, guid: 267ed8446dd3683458dd3a6600b447ff, type: 3}
+      - {fileID: 8958695042441432280, guid: 35ead6a65afd48f4193226ed4e3e5e80, type: 3}
+      - {fileID: 9116754217208307827, guid: ded4cb87c36d19b489eb182a79da18ac, type: 3}

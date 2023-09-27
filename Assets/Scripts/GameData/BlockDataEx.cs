@@ -32,6 +32,18 @@ public static class BlockDataEx
             case BlockType.grass:
                 GetBlockInfoGrass(data, mat, out prefab, out outRot);
                 break;
+            case BlockType.ironOre:
+                GetBlockInfoIronOre(data, mat, out prefab, out outRot);
+                break;
+            case BlockType.copperOre:
+                GetBlockInfoCopperOre(data, mat, out prefab, out outRot);
+                break;
+            case BlockType.crystal:
+                GetBlockInfoCrystal(data, mat, out prefab, out outRot);
+                break;
+            case BlockType.Tree:
+                GetBlockInfoTree(data, mat, out prefab, out outRot);
+                break;
             default:
                 prefab = null;
                 outRot = Quaternion.identity;
@@ -543,18 +555,41 @@ public static class BlockDataEx
         outRot = RotationEx.ToQuaternion(rot);
     }
 
-    static void GetBlockInfoGrass(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
+    static void GetBlockInfoVariants(List<GameObject> variants, byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
         Rotation rot = ExtractDataRotation(data);
         int value = ExtractDataValue(data);
 
         outRot = RotationEx.ToQuaternion(rot);
 
-        var grassVariants = Global.instance.allBlocks.grass.variants;
-
-        if (value >= grassVariants.Count || value < 0)
+        if (variants == null || value >= variants.Count || value < 0)
             prefab = null;
-        else prefab = grassVariants[value];
+        else prefab = variants[value];
+    }
+
+    static void GetBlockInfoGrass(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
+    {
+        GetBlockInfoVariants(Global.instance.allBlocks.grass.variants, data, mat, out prefab, out outRot);
+    }
+
+    static void GetBlockInfoIronOre(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
+    {
+        GetBlockInfoVariants(Global.instance.allBlocks.ironOre.variants, data, mat, out prefab, out outRot);
+    }
+
+    static void GetBlockInfoCopperOre(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
+    {
+        GetBlockInfoVariants(Global.instance.allBlocks.copperOre.variants, data, mat, out prefab, out outRot);
+    }
+
+    static void GetBlockInfoCrystal(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
+    {
+        GetBlockInfoVariants(Global.instance.allBlocks.crystal.variants, data, mat, out prefab, out outRot);
+    }
+
+    static void GetBlockInfoTree(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
+    {
+        GetBlockInfoVariants(Global.instance.allBlocks.tree.variants, data, mat, out prefab, out outRot);
     }
 
     static void GetBlockInfoWaterfall(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
@@ -593,6 +628,10 @@ public static class BlockDataEx
                 return GetValidPosPaint(type, blockPos, pos, out outPos);
             case BlockType.grass:
             case BlockType.road:
+            case BlockType.ironOre:
+            case BlockType.copperOre:
+            case BlockType.crystal:
+            case BlockType.Tree:
                 return GetValidPosDecoration(type, blockPos, pos, out outPos);
             case BlockType.air:
                 return GetValidPosAir(blockPos, pos, out outPos);

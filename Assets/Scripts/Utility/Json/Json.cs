@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public static class Json
 {
@@ -48,6 +49,24 @@ public static class Json
         }
 
         return builder.ToString();
+    }
+
+    public static Byte[] LoadBinaryFile(string path)
+    {
+        try
+        {
+            if (!File.Exists(path))
+                return null;
+
+            return File.ReadAllBytes(path);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Unable to read file " + path);
+            Debug.LogError(e.Message);
+        }
+
+        return null;
     }
 }
 

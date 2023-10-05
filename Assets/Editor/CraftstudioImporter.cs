@@ -14,7 +14,9 @@ public class CraftstudioImporter : OdinEditorWindow
     string m_path;
     string m_projectName;
     string m_projectDescription;
+    Vector2 m_scrollEntity;
     List<CraftstudioEntityInfo> m_entities;
+    CraftstudioEntityTree m_modelTree;
 
     [MenuItem("Game/Craftstudio Importer")]
     public static void OpenWindow()
@@ -32,14 +34,18 @@ public class CraftstudioImporter : OdinEditorWindow
 
     void OnOpenGUI()
     {
+        bool browse = false;
         GUILayout.BeginHorizontal();
         GUILayout.Label("Path", GUILayout.MaxWidth(40));
         m_path = GUILayout.TextField(m_path);
         if (GUILayout.Button("...", GUILayout.MaxWidth(30)))
-            OnOpenBrowse();
+            browse = true;
         GUILayout.EndHorizontal();
         if (GUILayout.Button("Open", GUILayout.MaxWidth(100)))
             OnOpen();
+
+        if(browse)
+            OnOpenBrowse();
     }
 
     void OnOpenBrowse()
@@ -78,11 +84,155 @@ public class CraftstudioImporter : OdinEditorWindow
             if (entity != null)
                 m_entities.Add(entity);
         }
+
+        m_modelTree = MakeEntityTree(CraftstudioEntityType.Model);
+    }
+
+    CraftstudioEntityTree MakeEntityTree(CraftstudioEntityType type)
+    {
+        CraftstudioEntityTree root = new CraftstudioEntityTree();
+        root.folded = true;
+        root.entityIndex = -1;
+
+        bool somethingChanged = false;
+        int deep = 0;
+        bool[] addedOnTree = new bool[m_entities.Count];
+        do
+        {
+            deep++;
+            somethingChanged = false;
+
+            for(int i = 0; i < m_entities.Count; i++)
+            {
+                var entity = m_entities[i];
+                if (!entity.isFolder && entity.type != type)
+                    continue;
+                if (entity.isTrashed)
+                    continue;
+                if (addedOnTree[i])
+                    continue;
+
+                if (AddOnTree(root, i))
+                {
+                    somethingChanged = true;
+                    addedOnTree[i] = true;
+                }
+            }    
+
+        } while (somethingChanged && deep < 20);
+
+        OptimizeEntityTree(root);
+        return root;
+    }
+
+    bool AddOnTree(CraftstudioEntityTree tree, int entityIndex)
+    {
+        var currentEntity = tree.entityIndex >= 0 ? m_entities[tree.entityIndex] : null;
+        var newEntity = m_entities[entityIndex];
+
+        bool add = false;
+        if (newEntity.parentID == CraftstudioEntityInfo.invalidID && currentEntity == null)
+            add = true;
+        else if (currentEntity != null && currentEntity.entryID == newEntity.parentID)
+            add = true;
+
+        if(add)
+        {
+            CraftstudioEntityTree child = new CraftstudioEntityTree();
+            child.entityIndex = entityIndex;
+            tree.childrens.Add(child);
+            return true;
+        }
+
+        foreach(var child in tree.childrens)
+        {
+            if (AddOnTree(child, entityIndex))
+                return true;
+        }
+
+        return false;
+    }
+
+    bool OptimizeEntityTree(CraftstudioEntityTree tree) // true if can be optimized
+    {
+        for(int i = 0; i < tree.childrens.Count; i++)
+        {
+            if(OptimizeEntityTree(tree.childrens[i]))
+            {
+                tree.childrens.RemoveAt(i);
+                i--;
+            }
+        }
+
+        if(tree.childrens.Count == 0)
+        {
+            if (tree.entityIndex >= 0)
+            {
+                var entity = m_entities[tree.entityIndex];
+                if (entity.isFolder)
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     void OnEntityListGUI()
     {
-        GUILayout.Label("Found !");
+        GUILayout.BeginHorizontal();
+        GUILayout.BeginVertical(GUILayout.MaxWidth(200));
+        OnEntityListDrawGUI();
+        GUILayout.EndVertical();
+        GUILayout.EndHorizontal();
+    }
+
+    void OnEntityListDrawGUI()
+    {
+        m_scrollEntity = GUILayout.BeginScrollView(m_scrollEntity);
+
+        OnDrawTreeGUI(m_modelTree, 0);
+
+        GUILayout.EndScrollView();
+    }
+
+    void OnDrawTreeGUI(CraftstudioEntityTree tree, int deep)
+    {
+        if(tree.entityIndex >= 0)
+        {
+            var entity = m_entities[tree.entityIndex];
+
+            if(deep > 0)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(deep * 10);
+            }
+
+            if (entity.isFolder)
+            {
+                tree.folded = EditorGUILayout.BeginFoldoutHeaderGroup(tree.folded, entity.name);
+                EditorGUILayout.EndFoldoutHeaderGroup();
+            }
+            else
+            {
+                if (GUILayout.Button(entity.name))
+                    OnOpenEntity(tree.entityIndex);
+            }
+
+
+            if (deep > 0)
+                GUILayout.EndHorizontal();
+        }
+
+        if (tree.folded)
+        {
+            foreach (var child in tree.childrens)
+                OnDrawTreeGUI(child, deep + 1);
+        }
+    }
+
+    void OnOpenEntity(int entityIndex)
+    {
+
     }
 
     int MoveToEntities(byte[] data)
@@ -200,6 +350,8 @@ public enum CraftstudioEntityType
 
 class CraftstudioEntityInfo
 {
+    public const UInt16 invalidID = 0xFFFF;
+
     public bool isFolder;
     public UInt16 entryID;
     public UInt16 parentID;
@@ -213,4 +365,11 @@ class CraftstudioEntityRevisionInfo
 {
     public UInt16 revisionID;
     public string name;
+}
+
+class CraftstudioEntityTree
+{
+    public int entityIndex;
+    public bool folded = false;
+    public List<CraftstudioEntityTree> childrens = new List<CraftstudioEntityTree>();
 }

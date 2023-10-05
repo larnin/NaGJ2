@@ -18,6 +18,16 @@ public class CraftstudioImporter : OdinEditorWindow
     List<CraftstudioEntityInfo> m_entities;
     CraftstudioEntityTree m_modelTree;
 
+    int m_currentIndex;
+    CraftstudioModel m_currentModel;
+    List<int> m_currentAnimationsIndex = new List<int>();
+    List<CraftstudioModelAnimation> m_currentModelAnimations = new List<CraftstudioModelAnimation>();
+    int m_currentTool = 0;
+    int m_currentPreview = 0;
+    Vector2 m_scrollBlocks;
+    Vector2 m_scrollAnimations;
+    int m_submeshNb;
+
     [MenuItem("Game/Craftstudio Importer")]
     public static void OpenWindow()
     {
@@ -183,9 +193,13 @@ public class CraftstudioImporter : OdinEditorWindow
         GUILayout.BeginVertical(GUILayout.MaxWidth(200));
         OnEntityListDrawGUI();
         GUILayout.EndVertical();
+
+        GUILayout.BeginVertical();
+        if (m_currentModel != null)
+            OnDrawCurrentModelGUI();
+        GUILayout.EndVertical();
         GUILayout.EndHorizontal();
     }
-
     void OnEntityListDrawGUI()
     {
         m_scrollEntity = GUILayout.BeginScrollView(m_scrollEntity);
@@ -230,9 +244,121 @@ public class CraftstudioImporter : OdinEditorWindow
         }
     }
 
-    void OnOpenEntity(int entityIndex)
+    void OnDrawCurrentModelGUI()
+    {
+        if (m_currentModel == null)
+            return;
+
+        GUILayout.Label(GetEntityPath(m_currentIndex));
+
+        m_currentTool = GUILayout.Toolbar(m_currentTool, new string[] { "Model", "Export" });
+
+        if (m_currentTool == 0)
+            OnDrawCurrentModelDisplayGUI();
+        else if (m_currentTool == 1)
+            OnDrawCurrentModelExportGUI();
+    }
+
+    void OnDrawCurrentModelDisplayGUI()
+    {
+        GUILayout.BeginHorizontal();
+        GUILayout.BeginVertical();
+        OnDrawCurrentModelPreviewGUI();
+        GUILayout.EndVertical();
+        GUILayout.BeginVertical(GUILayout.MaxWidth(200));
+        OnDrawSubmeshGUI();
+        GUILayout.Label("Blocks");
+        OnDrawBlockListGUI();
+        GUILayout.Label("Animations");
+        OnDrawAnimationListGUI();
+        GUILayout.EndVertical();
+        GUILayout.EndHorizontal();
+    }
+
+    void OnDrawCurrentModelPreviewGUI()
+    {
+        m_currentPreview = GUILayout.Toolbar(m_currentPreview, new string[] { "Textured", "Submesh", "Texture" });
+        if (m_currentPreview == 0)
+            OnDrawCurrentModelPreviewTexturedGUI();
+        else if (m_currentPreview == 1)
+            OnDrawCurrentModelPreviewSubmeshGUI();
+        else if (m_currentPreview == 2)
+            OnDrawCurrentModelPreviewTextureGUI();
+    }
+
+    void OnDrawCurrentModelPreviewTexturedGUI()
     {
 
+    }
+
+    void OnDrawCurrentModelPreviewSubmeshGUI()
+    {
+
+    }
+
+    void OnDrawCurrentModelPreviewTextureGUI()
+    {
+        GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+
+        GUI.DrawTexture(GUILayoutUtility.GetLastRect(), m_currentModel.texture, ScaleMode.ScaleToFit);
+    }
+
+    void OnDrawSubmeshGUI()
+    {
+        GUILayout.BeginHorizontal();
+        m_submeshNb = EditorGUILayout.IntField("Submesh", m_submeshNb);
+        if (m_submeshNb < 1)
+            m_submeshNb = 1;
+        if (m_submeshNb > 64)
+            m_submeshNb = 64;
+        GUILayout.EndHorizontal();
+    }
+
+    void OnDrawBlockListGUI()
+    {
+        m_scrollBlocks = GUILayout.BeginScrollView(m_scrollBlocks);
+
+        GUILayout.EndScrollView();
+    }
+
+    void OnDrawAnimationListGUI()
+    {
+        m_scrollAnimations = GUILayout.BeginScrollView(m_scrollAnimations, GUILayout.MaxHeight(200));
+
+        for(int i = 0; i < m_currentAnimationsIndex.Count; i++)
+        {
+            var entity = m_entities[m_currentAnimationsIndex[i]];
+            GUILayout.Label(entity.name);
+        }
+
+        GUILayout.EndScrollView();
+    }
+
+    void OnDrawCurrentModelExportGUI()
+    {
+
+    }
+
+    string GetEntityPath(int index)
+    {
+        var entity = m_entities[index];
+        string path = entity.name;
+        while(entity.parentID != CraftstudioEntityInfo.invalidID)
+        {
+            int nextIndex = GetEntityIndexFromID(entity.parentID);
+            if (nextIndex <= 0)
+                break;
+
+            entity = m_entities[nextIndex];
+            path = entity.name + "/" + path;
+        }
+
+        return path;
+    }
+
+    void OnOpenEntity(int entityIndex)
+    {
+        LoadModel(entityIndex);
     }
 
     int MoveToEntities(byte[] data)
@@ -333,6 +459,311 @@ public class CraftstudioImporter : OdinEditorWindow
 
         return index;
     }
+
+    int GetEntityIndexFromID(UInt16 ID)
+    {
+        for(int i = 0; i < m_entities.Count; i++)
+        {
+            if (m_entities[i].entryID == ID)
+                return i;
+        }
+
+        return -1;
+    }
+
+    void LoadModel(int modelIndex)
+    {
+        var entity = m_entities[modelIndex];
+
+        string path = m_path + "/Assets/Models/" + entity.entryID + "/Current.csmodel";
+        m_currentIndex = modelIndex;
+        m_currentModel = LoadModel(path);
+
+        m_currentModelAnimations.Clear();
+        m_currentAnimationsIndex.Clear();
+
+        if (m_currentModel != null)
+        {
+            foreach(var anim in m_currentModel.animations)
+            {
+                int index = GetEntityIndexFromID(anim);
+                if (index < 0)
+                    continue;
+
+                string pathAnim = m_path + "/Assets/ModelAnimations/" + anim + "/Current.csmodelanim";
+                var animation = LoadAnimation(pathAnim);
+                if (animation != null)
+                {
+                    m_currentModelAnimations.Add(animation);
+                    m_currentAnimationsIndex.Add(index);
+                }
+            }
+        }
+
+    }
+
+    CraftstudioModel LoadModel(string path)
+    {
+        var data = Json.LoadBinaryFile(path);
+        if(data == null)
+        {
+            Debug.LogError("Unable to load model " + path);
+            return null;
+        }
+
+        int index = 0;
+
+        CraftstudioModel model = new CraftstudioModel();
+
+        index += 5; //1 Asset type (always 0 for Models)
+                    //2 Format version(currently 5)
+                    //2 Next unused node ID
+
+        int nbNodes = BitConverter.ToUInt16(data, index);
+        index += 2;
+        for(int i = 0; i < nbNodes; i++)
+        {
+            CraftstudioModelNode node;
+            index = ReadNode(data, index, out node);
+            if (node != null)
+                model.nodes.Add(node);
+        }
+
+        index = ReadTexture(data, index, out model.texture);
+
+        int nbAnim = BitConverter.ToUInt16(data, index);
+        index += 2;
+
+        for(int i = 0; i < nbAnim; i++)
+        {
+            model.animations.Add(BitConverter.ToUInt16(data, index));
+            index += 2;
+        }
+
+        return model;
+    }
+
+    int ReadNode(byte[] data, int index, out CraftstudioModelNode node)
+    {
+        node = new CraftstudioModelNode();
+
+        node.ID = BitConverter.ToUInt16(data, index);
+        index += 2;
+
+        node.parentID = BitConverter.ToUInt16(data, index);
+        index += 2;
+
+        index = ExtractString(data, index, out node.name);
+
+        for(int i = 0; i < 3; i++)
+        {
+            node.pos[i] = BitConverter.ToSingle(data, index);
+            index += 4;
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            node.offset[i] = BitConverter.ToSingle(data, index);
+            index += 4;
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            node.scale[i] = BitConverter.ToSingle(data, index);
+            index += 4;
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            node.rot[i] = BitConverter.ToSingle(data, index);
+            index += 4;
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            node.size[i] = BitConverter.ToInt16(data, index);
+            index += 2;
+        }
+
+        node.unwrapMode = (CraftstudioModelCubeUnwrap)data[index];
+        index++;
+
+        for(int i = 0; i < 6; i++)
+        {
+            node.unwrapOffsetQuads[i].x = BitConverter.ToInt32(data, index);
+            index += 4;
+            node.unwrapOffsetQuads[i].y = BitConverter.ToInt32(data, index);
+            index += 4;
+        }
+
+        for(int i = 0; i < 6; i++)
+        {
+            node.unwrapFlags[i] = data[index];
+            index++;
+        }
+
+        return index;
+    }
+
+    int ReadTexture(byte[] data, int index, out Texture texture)
+    {
+        int size = BitConverter.ToInt32(data, index);
+        index += 4;
+
+        byte[] textureData = new byte[size];
+        Array.Copy(data, index, textureData, 0, size);
+
+        Texture2D newTexture = new Texture2D(2, 2);
+        if (!ImageConversion.LoadImage(newTexture, textureData))
+            Debug.LogError("Error when loading texture");
+
+        texture = newTexture;
+        texture.filterMode = FilterMode.Point;
+
+        return index + size;
+    }
+
+    CraftstudioModelAnimation LoadAnimation(string path)
+    {
+        var data = Json.LoadBinaryFile(path);
+        if (data == null)
+        {
+            Debug.LogError("Unable to load model animation " + path);
+            return null;
+        }
+
+        CraftstudioModelAnimation animation = new CraftstudioModelAnimation();
+
+        int index = 0;
+
+        index += 3; //1 Asset type(always 6 for Model Animations)
+                    //2 Format version(currently 3)
+
+        animation.duration = BitConverter.ToUInt16(data, index);
+        index += 2;
+
+        animation.holdLastKey = BitConverter.ToBoolean(data, index);
+        index++;
+
+        int nbNode = BitConverter.ToInt16(data, index);
+        index += 2;
+        for(int i = 0; i < nbNode; i++)
+        {
+            CraftstudioModelAnimationNode node;
+            index = ReadAnimationNode(data, index, out node);
+            if (node != null)
+                animation.nodes.Add(node);
+        }
+
+        return animation;
+    }
+
+    int ReadAnimationNode(byte[] data, int index, out CraftstudioModelAnimationNode node)
+    {
+        node = new CraftstudioModelAnimationNode();
+
+        index = ExtractString(data, index, out node.name);
+
+        int nbKeyPos = BitConverter.ToUInt16(data, index);
+        index += 2;
+        for(int i = 0; i < nbKeyPos; i++)
+        {
+            CraftstudioModelAnimationNodeVector3 nodePos;
+            index = ReadAnimationNodeVector3(data, index, out nodePos);
+            if (nodePos != null)
+                node.pos.Add(nodePos);
+        }
+
+        int nbKeyRot = BitConverter.ToUInt16(data, index);
+        index += 2;
+        for(int i = 0; i < nbKeyRot; i++)
+        {
+            CraftstudioModelAnimationNodeQuaternion nodeRot;
+            index = ReadAnimationNodeQuaternion(data, index, out nodeRot);
+            if (nodeRot != null)
+                node.rot.Add(nodeRot);
+        }
+
+        int nbKeySize = BitConverter.ToUInt16(data, index);
+        index += 2;
+        for(int i = 0; i < nbKeySize; i++)
+        {
+            CraftstudioModelAnimationNodeVector3Int nodeSize;
+            index = ReadAnimationNodeVector3Int(data, index, out nodeSize);
+            if (nodeSize != null)
+                node.size.Add(nodeSize);
+        }
+
+        int nbKeyPivot = BitConverter.ToUInt16(data, index);
+        index += 2;
+        for(int i = 0; i < nbKeyPivot; i++)
+        {
+            CraftstudioModelAnimationNodeVector3 nodePivot;
+            index = ReadAnimationNodeVector3(data, index, out nodePivot);
+            if (nodePivot != null)
+                node.offset.Add(nodePivot);
+        }
+
+        int nbKeyScale = BitConverter.ToUInt16(data, index);
+        index += 2;
+        for (int i = 0; i < nbKeyScale; i++)
+        {
+            CraftstudioModelAnimationNodeVector3 nodeScale;
+            index = ReadAnimationNodeVector3(data, index, out nodeScale);
+            if (nodeScale != null)
+                node.offset.Add(nodeScale);
+        }
+
+        return index;
+    }
+
+    int ReadAnimationNodeVector3(byte[] data, int index, out CraftstudioModelAnimationNodeVector3 node)
+    {
+        node = new CraftstudioModelAnimationNodeVector3();
+
+        node.keyTime = BitConverter.ToUInt16(data, index);
+        index += 2;
+
+        for(int i = 0; i < 3; i++)
+        {
+            node.value[i] = BitConverter.ToSingle(data, index);
+            index += 4;
+        }
+
+        return index;
+    }
+
+    int ReadAnimationNodeVector3Int(byte[] data, int index, out CraftstudioModelAnimationNodeVector3Int node)
+    {
+        node = new CraftstudioModelAnimationNodeVector3Int();
+
+        node.keyTime = BitConverter.ToUInt16(data, index);
+        index += 2;
+
+        for(int i = 0; i < 3; i++)
+        {
+            node.value[i] = BitConverter.ToInt32(data, index);
+            index += 4;
+        }
+
+        return index;
+    }
+
+    int ReadAnimationNodeQuaternion(byte[] data, int index, out CraftstudioModelAnimationNodeQuaternion node)
+    {
+        node = new CraftstudioModelAnimationNodeQuaternion();
+
+        node.keyTime = BitConverter.ToUInt16(data, index);
+        index += 2;
+
+        for(int i = 0; i < 4; i++)
+        {
+            node.value[i] = BitConverter.ToSingle(data, index);
+            index += 4;
+        }
+
+        return index;
+    }
 }
 
 public enum CraftstudioEntityType
@@ -372,4 +803,80 @@ class CraftstudioEntityTree
     public int entityIndex;
     public bool folded = false;
     public List<CraftstudioEntityTree> childrens = new List<CraftstudioEntityTree>();
+}
+
+class CraftstudioModel
+{
+    public List<CraftstudioModelNode> nodes = new List<CraftstudioModelNode>();
+    public List<UInt16> animations = new List<UInt16>();
+    public Texture texture;
+}
+
+class CraftstudioModelNode
+{
+    public UInt16 ID;
+    public UInt16 parentID;
+    public string name;
+    public Vector3 pos;
+    public Vector3 offset;
+    public Vector3 scale;
+    public Quaternion rot;
+    public Vector3Int size;
+    public CraftstudioModelCubeUnwrap unwrapMode; //
+    public Vector2Int[] unwrapOffsetQuads = new Vector2Int[6];
+    public int[] unwrapFlags = new int[6];
+
+    public int submeshIndex;
+}
+
+enum CraftstudioModelCubeUnwrap
+{
+    collapsed = 0,
+    full = 1,
+    custom = 2,
+}
+
+enum CraftstudioModelNodeUnwrap
+{
+    None = 0,
+    Rotate90 = 1 << 0,
+    Rotate180 =	1 << 1,
+    Rotate270 = 1 << 2,
+    MirrorHorizontal = 1 << 3,
+    MirrorVertical = 1 << 4,
+}
+
+class CraftstudioModelAnimation
+{
+    public UInt16 duration;
+    public bool holdLastKey;
+    public List<CraftstudioModelAnimationNode> nodes;
+}
+
+class CraftstudioModelAnimationNode
+{
+    public string name;
+    public List<CraftstudioModelAnimationNodeVector3> pos;
+    public List<CraftstudioModelAnimationNodeVector3> offset;
+    public List<CraftstudioModelAnimationNodeVector3> scale;
+    public List<CraftstudioModelAnimationNodeQuaternion> rot;
+    public List<CraftstudioModelAnimationNodeVector3Int> size;
+}
+
+class CraftstudioModelAnimationNodeVector3
+{
+    public UInt16 keyTime;
+    public Vector3 value;
+}
+
+class CraftstudioModelAnimationNodeVector3Int
+{
+    public UInt16 keyTime;
+    public Vector3Int value;
+}
+
+class CraftstudioModelAnimationNodeQuaternion
+{
+    public UInt16 keyTime;
+    public Quaternion value;
 }

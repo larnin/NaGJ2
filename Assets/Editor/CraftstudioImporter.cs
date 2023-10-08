@@ -26,7 +26,6 @@ public class CraftstudioImporter : OdinEditorWindow
     int m_currentPreview = 0;
     Vector2 m_scrollBlocks;
     Vector2 m_scrollAnimations;
-    int m_submeshNb;
 
     [MenuItem("Game/Craftstudio Importer")]
     public static void OpenWindow()
@@ -306,24 +305,68 @@ public class CraftstudioImporter : OdinEditorWindow
     void OnDrawSubmeshGUI()
     {
         GUILayout.BeginHorizontal();
-        m_submeshNb = EditorGUILayout.IntField("Submesh", m_submeshNb);
-        if (m_submeshNb < 1)
-            m_submeshNb = 1;
-        if (m_submeshNb > 64)
-            m_submeshNb = 64;
+        GUILayout.Label("Submesh", GUILayout.MaxWidth(100));
+        m_currentModel.submeshNb = EditorGUILayout.IntField(m_currentModel.submeshNb);
+        if (m_currentModel.submeshNb < 1)
+            m_currentModel.submeshNb = 1;
+        if (m_currentModel.submeshNb > 64)
+            m_currentModel.submeshNb = 64;
         GUILayout.EndHorizontal();
     }
 
     void OnDrawBlockListGUI()
     {
-        m_scrollBlocks = GUILayout.BeginScrollView(m_scrollBlocks);
+        m_scrollBlocks = GUILayout.BeginScrollView(m_scrollBlocks, GUILayout.MaxWidth(200));
+
+        OnDrawBlockTreeGUI(m_currentModel, m_currentModel.tree, 0);
 
         GUILayout.EndScrollView();
     }
 
+    void OnDrawBlockTreeGUI(CraftstudioModel model, CraftstudioModelNodeTree tree, int deep)
+    {
+        if (tree.nodeIndex >= 0)
+        {
+            var node = model.nodes[tree.nodeIndex];
+
+            GUILayout.BeginHorizontal();
+            
+            if (deep > 0)
+                GUILayout.Space(deep * 10);
+
+            var oldColor = GUI.backgroundColor;
+            GUI.backgroundColor = SubmeshToColor(node.submeshIndex);
+            if (tree.childrens.Count > 0)
+            {
+                tree.folded = EditorGUILayout.BeginFoldoutHeaderGroup(tree.folded, node.name);
+                EditorGUILayout.EndFoldoutHeaderGroup();
+            }
+            else
+            {
+                GUILayout.Button(node.name);
+            }
+
+            node.submeshIndex = EditorGUILayout.IntField(node.submeshIndex, GUILayout.MaxWidth(20));
+            if (node.submeshIndex < 0)
+                node.submeshIndex = 0;
+            if (node.submeshIndex >= model.submeshNb)
+                node.submeshIndex = model.submeshNb - 1;
+
+            GUI.backgroundColor = oldColor;
+
+            GUILayout.EndHorizontal();
+        }
+
+        if (tree.folded)
+        {
+            foreach (var child in tree.childrens)
+                OnDrawBlockTreeGUI(model, child, deep + 1);
+        }
+    }
+
     void OnDrawAnimationListGUI()
     {
-        m_scrollAnimations = GUILayout.BeginScrollView(m_scrollAnimations, GUILayout.MaxHeight(200));
+        m_scrollAnimations = GUILayout.BeginScrollView(m_scrollAnimations, GUILayout.MaxHeight(200), GUILayout.MaxWidth(200));
 
         for(int i = 0; i < m_currentAnimationsIndex.Count; i++)
         {
@@ -540,6 +583,8 @@ public class CraftstudioImporter : OdinEditorWindow
             index += 2;
         }
 
+        MakeNodeTree(model);
+
         return model;
     }
 
@@ -621,6 +666,63 @@ public class CraftstudioImporter : OdinEditorWindow
         texture.filterMode = FilterMode.Point;
 
         return index + size;
+    }
+
+    void MakeNodeTree(CraftstudioModel model)
+    {
+        model.tree = new CraftstudioModelNodeTree();
+        model.tree.nodeIndex = -1;
+
+        bool somethingChanged = false;
+        int deep = 0;
+        bool[] addedOnTree = new bool[model.nodes.Count];
+        do
+        {
+            deep++;
+            somethingChanged = false;
+
+            for (int i = 0; i < model.nodes.Count; i++)
+            {
+                var node = model.nodes[i];
+                if (addedOnTree[i])
+                    continue;
+
+                if (AddOnNodeTree(model, model.tree, i))
+                {
+                    somethingChanged = true;
+                    addedOnTree[i] = true;
+                }
+            }
+
+        } while (somethingChanged && deep < 20);
+    }
+
+    bool AddOnNodeTree(CraftstudioModel model, CraftstudioModelNodeTree tree, int nodeIndex)
+    {
+        var currentnode = tree.nodeIndex >= 0 ? model.nodes[tree.nodeIndex] : null;
+        var newNode = model.nodes[nodeIndex];
+
+        bool add = false;
+        if (newNode.parentID == CraftstudioEntityInfo.invalidID && currentnode == null)
+            add = true;
+        else if (currentnode != null && currentnode.ID == newNode.parentID)
+            add = true;
+
+        if (add)
+        {
+            CraftstudioModelNodeTree child = new CraftstudioModelNodeTree();
+            child.nodeIndex = nodeIndex;
+            tree.childrens.Add(child);
+            return true;
+        }
+
+        foreach (var child in tree.childrens)
+        {
+            if (AddOnNodeTree(model, child, nodeIndex))
+                return true;
+        }
+
+        return false;
     }
 
     CraftstudioModelAnimation LoadAnimation(string path)
@@ -724,7 +826,9 @@ public class CraftstudioImporter : OdinEditorWindow
         node.keyTime = BitConverter.ToUInt16(data, index);
         index += 2;
 
-        for(int i = 0; i < 3; i++)
+        index++; //1 Interpolation mode (currently ignored)
+
+        for (int i = 0; i < 3; i++)
         {
             node.value[i] = BitConverter.ToSingle(data, index);
             index += 4;
@@ -740,7 +844,9 @@ public class CraftstudioImporter : OdinEditorWindow
         node.keyTime = BitConverter.ToUInt16(data, index);
         index += 2;
 
-        for(int i = 0; i < 3; i++)
+        index++; //1 Interpolation mode (currently ignored)
+
+        for (int i = 0; i < 3; i++)
         {
             node.value[i] = BitConverter.ToInt32(data, index);
             index += 4;
@@ -756,13 +862,48 @@ public class CraftstudioImporter : OdinEditorWindow
         node.keyTime = BitConverter.ToUInt16(data, index);
         index += 2;
 
-        for(int i = 0; i < 4; i++)
+        index++; //1 Interpolation mode (currently ignored)
+
+        for (int i = 0; i < 4; i++)
         {
             node.value[i] = BitConverter.ToSingle(data, index);
             index += 4;
         }
 
         return index;
+    }
+
+    Color SubmeshToColor(int index)
+    {
+        Color[] colors = new Color[]
+        {
+            GUI.backgroundColor,
+
+            new Color(1, 0, 0),
+            new Color(1, 1, 0),
+            new Color(0, 1, 0),
+            new Color(0, 1, 1),
+            new Color(0, 0, 1),
+            new Color(1, 0, 1),
+
+            new Color(1, 0.5f, 0),
+            new Color(0.5f, 1, 0),
+            new Color(0, 1, 0.5f),
+            new Color(0, 0.5f, 1),
+            new Color(0.5f, 0, 1),
+            new Color(1, 0, 0.5f),
+
+            new Color(1, 0.5f, 0.5f),
+            new Color(1, 1, 0.5f),
+            new Color(0.5f, 1, 0.5f),
+            new Color(0.5f, 1, 1),
+            new Color(0.5f, 0.5f, 1),
+            new Color(1, 0.5f, 1),
+        };
+
+        if (index < 0 || index >= colors.Length)
+            return colors[0];
+        return colors[index];
     }
 }
 
@@ -808,6 +949,8 @@ class CraftstudioEntityTree
 class CraftstudioModel
 {
     public List<CraftstudioModelNode> nodes = new List<CraftstudioModelNode>();
+    public CraftstudioModelNodeTree tree;
+    public int submeshNb;
     public List<UInt16> animations = new List<UInt16>();
     public Texture texture;
 }
@@ -827,6 +970,13 @@ class CraftstudioModelNode
     public int[] unwrapFlags = new int[6];
 
     public int submeshIndex;
+}
+
+class CraftstudioModelNodeTree
+{
+    public int nodeIndex;
+    public bool folded = true;
+    public List<CraftstudioModelNodeTree> childrens = new List<CraftstudioModelNodeTree>();
 }
 
 enum CraftstudioModelCubeUnwrap
@@ -850,17 +1000,17 @@ class CraftstudioModelAnimation
 {
     public UInt16 duration;
     public bool holdLastKey;
-    public List<CraftstudioModelAnimationNode> nodes;
+    public List<CraftstudioModelAnimationNode> nodes = new List<CraftstudioModelAnimationNode>();
 }
 
 class CraftstudioModelAnimationNode
 {
     public string name;
-    public List<CraftstudioModelAnimationNodeVector3> pos;
-    public List<CraftstudioModelAnimationNodeVector3> offset;
-    public List<CraftstudioModelAnimationNodeVector3> scale;
-    public List<CraftstudioModelAnimationNodeQuaternion> rot;
-    public List<CraftstudioModelAnimationNodeVector3Int> size;
+    public List<CraftstudioModelAnimationNodeVector3> pos = new List<CraftstudioModelAnimationNodeVector3>();
+    public List<CraftstudioModelAnimationNodeVector3> offset = new List<CraftstudioModelAnimationNodeVector3>();
+    public List<CraftstudioModelAnimationNodeVector3> scale = new List<CraftstudioModelAnimationNodeVector3>();
+    public List<CraftstudioModelAnimationNodeQuaternion> rot = new List<CraftstudioModelAnimationNodeQuaternion>();
+    public List<CraftstudioModelAnimationNodeVector3Int> size = new List<CraftstudioModelAnimationNodeVector3Int>();
 }
 
 class CraftstudioModelAnimationNodeVector3

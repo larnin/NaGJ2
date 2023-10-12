@@ -1,5 +1,6 @@
 ﻿using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
+using Sirenix.Utilities.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,8 +23,12 @@ public class CraftstudioImporter : OdinEditorWindow
     CraftstudioModel m_currentModel;
     List<int> m_currentAnimationsIndex = new List<int>();
     List<CraftstudioModelAnimation> m_currentModelAnimations = new List<CraftstudioModelAnimation>();
+    GameObject m_currentObject;
+    MeshFilter m_filter;
+    MeshRenderer m_renderer;
     int m_currentTool = 0;
     int m_currentPreview = 0;
+    Mesh m_currentMesh;
     Vector2 m_scrollBlocks;
     Vector2 m_scrollAnimations;
 
@@ -31,6 +36,17 @@ public class CraftstudioImporter : OdinEditorWindow
     public static void OpenWindow()
     {
         GetWindow<CraftstudioImporter>().Show();
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+
+        if (m_currentObject != null)
+            DestroyImmediate(m_currentObject);
+
+        if (gameObjectEditor != null)
+            DestroyImmediate(gameObjectEditor);
     }
 
     [OnInspectorGUI]
@@ -283,11 +299,23 @@ public class CraftstudioImporter : OdinEditorWindow
             OnDrawCurrentModelPreviewSubmeshGUI();
         else if (m_currentPreview == 2)
             OnDrawCurrentModelPreviewTextureGUI();
+
+        m_currentMesh = MakeMesh(m_currentMesh, m_currentModel, m_currentPreview == 0);
+        SetObjectMeshAndMaterials();
     }
+
+    Editor gameObjectEditor;
 
     void OnDrawCurrentModelPreviewTexturedGUI()
     {
+        if (gameObjectEditor == null)
+            gameObjectEditor = Editor.CreateEditor(m_currentObject);
 
+        GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+        var rect = GUILayoutUtility.GetLastRect();
+
+        GUIStyle bgColor = new GUIStyle();
+        gameObjectEditor.OnInteractivePreviewGUI(rect, bgColor);
     }
 
     void OnDrawCurrentModelPreviewSubmeshGUI()
@@ -346,13 +374,21 @@ public class CraftstudioImporter : OdinEditorWindow
                 GUILayout.Button(node.name);
             }
 
+            int oldIndex = node.submeshIndex;
+
             node.submeshIndex = EditorGUILayout.IntField(node.submeshIndex, GUILayout.MaxWidth(20));
             if (node.submeshIndex < 0)
                 node.submeshIndex = 0;
             if (node.submeshIndex >= model.submeshNb)
                 node.submeshIndex = model.submeshNb - 1;
 
-            GUI.backgroundColor = oldColor;
+            if (oldIndex != node.submeshIndex)
+            {
+                m_currentMesh = MakeMesh(m_currentMesh, m_currentModel, m_currentPreview == 0);
+                SetObjectMeshAndMaterials();
+            }
+
+                GUI.backgroundColor = oldColor;
 
             GUILayout.EndHorizontal();
         }
@@ -401,7 +437,16 @@ public class CraftstudioImporter : OdinEditorWindow
 
     void OnOpenEntity(int entityIndex)
     {
+        if(m_currentMesh != null)
+            m_currentMesh.Clear();
+        
         LoadModel(entityIndex);
+        
+        if(m_currentModel != null)
+            m_currentMesh = MakeMesh(m_currentMesh, m_currentModel, m_currentPreview == 0);
+
+        MakeCurrentGameobject();
+        SetObjectMeshAndMaterials();
     }
 
     int MoveToEntities(byte[] data)
@@ -905,9 +950,331 @@ public class CraftstudioImporter : OdinEditorWindow
             return colors[0];
         return colors[index];
     }
-}
 
-public enum CraftstudioEntityType
+    int GetNodeIndexFromID(CraftstudioModel model, UInt16 ID)
+    {
+        for (int i = 0; i < model.nodes.Count; i++)
+        {
+            if (model.nodes[i].ID == ID)
+                return i;
+        }
+
+        return -1;
+    }
+
+    Mesh MakeMesh(Mesh mesh, CraftstudioModel model, bool textured)
+    {
+        SimpleMeshParam<NormalUVColorVertexDefinition> meshData = new SimpleMeshParam<NormalUVColorVertexDefinition>();
+        var data = meshData.Allocate(model.nodes.Count * 24, model.nodes.Count * 36);
+
+        for(int i = 0; i < model.nodes.Count; i++)
+        {
+            GenerateVertices(data, model, i, textured);
+        }
+
+        data.indexesSize = model.nodes.Count * 36;
+        data.verticesSize = model.nodes.Count * 24;
+
+        if (mesh == null)
+            mesh = new Mesh();
+
+        MeshEx.SetNormalUVColorMeshParams(mesh, data.verticesSize, data.indexesSize);
+
+        mesh.SetVertexBufferData(data.vertices, 0, 0, data.verticesSize);
+        mesh.SetIndexBufferData(data.indexes, 0, 0, data.indexesSize);
+
+        mesh.subMeshCount = 1;
+        mesh.SetSubMesh(0, new UnityEngine.Rendering.SubMeshDescriptor(0, data.indexesSize, MeshTopology.Triangles));
+
+        Bounds b = GetBounds(data, data.verticesSize);
+
+        mesh.bounds = b;
+
+        return mesh;
+    }
+
+    Bounds GetBounds(MeshParamData<NormalUVColorVertexDefinition> data, int vertexNb)
+    {
+        if (vertexNb == 0)
+            return new Bounds();
+
+        Bounds b = new Bounds(data.vertices[0].pos, Vector3.zero);
+
+        for(int i = 1; i < vertexNb; i++)
+            b.Encapsulate(data.vertices[i].pos);
+
+        return b;
+    }
+
+    void GenerateVertices(MeshParamData<NormalUVColorVertexDefinition> data, CraftstudioModel model, int index, bool textured)
+    {
+        int v = index * 24;
+        int i = index * 36;
+
+        GenerateBaseCube(data, i, v);
+
+        var node = model.nodes[index];
+        if (textured)
+            ApplyUVToCube(data, v, node, new Vector2Int(model.texture.width, model.texture.height));
+        else ApplySubmeshColorToCube(data, v, node);
+
+        ScaleVertices(data, v, 24, node.size);
+        ScaleVertices(data, v, 24, node.scale);
+        MoveVertices(data, v, 24, node.offset);
+        RotateVertices(data, v, 24, node.rot);
+        MoveVertices(data, v, 24, node.pos);
+
+        while(node.parentID != CraftstudioEntityInfo.invalidID)
+        {
+            int parentIndex = GetNodeIndexFromID(model, node.parentID);
+            if (parentIndex < 0)
+                break;
+
+            node = model.nodes[parentIndex];
+
+            MoveVertices(data, v, 24, node.offset);
+            RotateVertices(data, v, 24, node.rot);
+            MoveVertices(data, v, 24, node.pos);
+        }
+    }
+
+    void GenerateBaseCube(MeshParamData<NormalUVColorVertexDefinition> data, int index, int vertex)
+    {
+        Vector3 min = new Vector3(-0.5f, -0.5f, -0.5f);
+        Vector3 max = new Vector3(0.5f, 0.5f, 0.5f);
+
+        int v = vertex;
+
+        data.vertices[v + 0].pos = new Vector3(min.x, min.y, min.z);
+        data.vertices[v + 1].pos = new Vector3(max.x, min.y, min.z);
+        data.vertices[v + 2].pos = new Vector3(max.x, min.y, max.z);
+        data.vertices[v + 3].pos = new Vector3(min.x, min.y, max.z);
+
+        data.vertices[v + 4].pos = new Vector3(max.x, max.y, min.z);
+        data.vertices[v + 5].pos = new Vector3(max.x, max.y, max.z);
+        data.vertices[v + 6].pos = new Vector3(min.x, max.y, min.z);
+        data.vertices[v + 7].pos = new Vector3(min.x, max.y, max.z);
+
+        data.vertices[v + 8].pos = new Vector3(min.x, min.y, min.z);
+        data.vertices[v + 9].pos = new Vector3(min.x, max.y, min.z);
+        data.vertices[v + 10].pos = new Vector3(min.x, max.y, max.z);
+        data.vertices[v + 11].pos = new Vector3(min.x, min.y, max.z);
+
+        data.vertices[v + 12].pos = new Vector3(max.x, min.y, min.z);
+        data.vertices[v + 13].pos = new Vector3(max.x, max.y, min.z);
+        data.vertices[v + 14].pos = new Vector3(max.x, max.y, max.z);
+        data.vertices[v + 15].pos = new Vector3(max.x, min.y, max.z);
+
+        data.vertices[v + 16].pos = new Vector3(min.x, min.y, min.z);
+        data.vertices[v + 17].pos = new Vector3(max.x, min.y, min.z);
+        data.vertices[v + 18].pos = new Vector3(max.x, max.y, min.z);
+        data.vertices[v + 19].pos = new Vector3(min.x, max.y, min.z);
+
+        data.vertices[v + 20].pos = new Vector3(min.x, min.y, max.z);
+        data.vertices[v + 21].pos = new Vector3(max.x, min.y, max.z);
+        data.vertices[v + 22].pos = new Vector3(max.x, max.y, max.z);
+        data.vertices[v + 23].pos = new Vector3(min.x, max.y, max.z);
+
+        int i = index;
+        for (int j = 0; j < 6; j++)
+        {
+            int rI = i + j * 6;
+            int rV = v + j * 4;
+
+            data.indexes[rI + 0] = (ushort)(rV + 0);
+            data.indexes[rI + 1] = (ushort)(rV + 1);
+            data.indexes[rI + 2] = (ushort)(rV + 2);
+            data.indexes[rI + 3] = (ushort)(rV + 1);
+            data.indexes[rI + 4] = (ushort)(rV + 2);
+            data.indexes[rI + 5] = (ushort)(rV + 3);
+
+        }
+    }
+
+    void ApplyUVToCube(MeshParamData<NormalUVColorVertexDefinition> data, int vertex, CraftstudioModelNode node, Vector2Int textureSize)
+    {
+        for(int i = 0; i < 6; i++)
+        {
+            var uv = GetUV(node, i);
+
+            Vector2 pos = new Vector2(uv.position.x / (float)textureSize.x, uv.position.y / (float)textureSize.y);
+            Vector2 size = new Vector2(uv.size.x / (float)textureSize.x, uv.size.y / (float)textureSize.y);
+
+            data.vertices[vertex + i * 4].uv = pos;
+            data.vertices[vertex + i * 4 + 1].uv = new Vector2(pos.x + size.x, pos.y);
+            data.vertices[vertex + i * 4 + 2].uv = new Vector2(pos.x + size.x, pos.y + size.y);
+            data.vertices[vertex + i * 4 + 3].uv = new Vector2(pos.x, pos.y + size.y);
+        }
+    }
+
+    void ApplySubmeshColorToCube(MeshParamData<NormalUVColorVertexDefinition> data, int vertex, CraftstudioModelNode node)
+    {
+        Color32 color = node.submeshIndex == 0 ? Color.white : SubmeshToColor(node.submeshIndex);
+
+        for (int i = 0; i < 24; i++)
+            data.vertices[vertex + i].color = color;
+    }
+
+    RectInt GetUV(CraftstudioModelNode node, int faceIndex)
+    {
+        Vector2Int size = Vector2Int.zero;
+        Vector2Int pos = node.unwrapOffsetQuads[faceIndex];
+        switch((CraftstudioFace)faceIndex)
+        {
+            case CraftstudioFace.top:
+            case CraftstudioFace.down:
+                size.x = node.size.x;
+                size.y = node.size.z;
+                    break;
+            case CraftstudioFace.front:
+            case CraftstudioFace.back:
+                size.x = node.size.x;
+                size.y = node.size.y;
+                    break;
+            case CraftstudioFace.left:
+            case CraftstudioFace.right:
+                size.x = node.size.z;
+                size.y = node.size.y;
+                    break;
+        }
+
+        int flags = node.unwrapFlags[faceIndex];
+
+        if((flags & (int)CraftstudioModelNodeUnwrap.Rotate90) == 0)
+        {
+            int temp = size.x;
+            if (size.x < 0)
+                pos.x -= size.x;
+            size.x = -size.y;
+            if (size.x < 0)
+                pos.x += size.x;
+            if (size.y < 0)
+                pos.y -= size.y;
+            size.y = temp;
+            if (size.y < 0)
+                pos.y += size.y;
+        }
+
+        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate180) == 0)
+        {
+            if (size.x < 0)
+                pos.x -= size.x;
+            size.x = -size.x;
+            if (size.x < 0)
+                pos.x += size.x;
+            if (size.y < 0)
+                pos.y -= size.y;
+            size.y = -size.y;
+            if (size.y < 0)
+                pos.y += size.y;
+        }
+
+        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate270) == 0)
+        {
+            int temp = size.x;
+            if (size.x < 0)
+                pos.x = size.x;
+            size.x = -size.y;
+            if (size.x < 0)
+                pos.x += size.x;
+            if (size.y < 0)
+                pos.y -= size.y;
+            size.y -= temp;
+            if (size.y < 0)
+                pos.y += size.y;
+        }
+
+        if ((flags & (int)CraftstudioModelNodeUnwrap.MirrorHorizontal) == 0)
+        {
+            if (size.x < 0)
+                pos.x -= size.x;
+            size.x = -size.x;
+            if (size.x < 0)
+                pos.x += size.x;
+        }
+
+        if ((flags & (int)CraftstudioModelNodeUnwrap.MirrorVertical) == 0)
+        {
+            if (size.y < 0)
+                pos.y -= size.y;
+            size.y = -size.y;
+            if (size.y < 0)
+                pos.y += size.y;
+        }
+
+        return new RectInt(pos, size);
+    }
+
+    void MoveVertices(MeshParamData<NormalUVColorVertexDefinition> data, int vertex, int size, Vector3 offset)
+    {
+        for(int i = vertex; i < vertex + size; i++)
+        {
+            data.vertices[i].pos += offset;
+        }
+    }
+
+    void ScaleVertices(MeshParamData<NormalUVColorVertexDefinition> data, int vertex, int size, Vector3 scale)
+    {
+        ScaleVertices(data, vertex, size, scale, Vector3.zero);
+    }
+
+    void ScaleVertices(MeshParamData<NormalUVColorVertexDefinition> data, int vertex, int size, Vector3 scale, Vector3 center)
+    {
+        for(int i = vertex; i < vertex + size; i++)
+        {
+            Vector3 relativePos = data.vertices[i].pos - center;
+            relativePos.x *= scale.x;
+            relativePos.y *= scale.y;
+            relativePos.z *= scale.z;
+            relativePos += center;
+            data.vertices[i].pos = relativePos;
+        }
+    }
+
+    void RotateVertices(MeshParamData<NormalUVColorVertexDefinition> data, int vertex, int size, Quaternion rot)
+    {
+        RotateVertices(data, vertex, size, rot, Vector3.zero);
+    }
+
+    void RotateVertices(MeshParamData<NormalUVColorVertexDefinition> data, int vertex, int size, Quaternion rot, Vector3 center)
+    {
+        for(int i = vertex; i < vertex + size; i++)
+        {
+            Vector3 relativePos = data.vertices[i].pos - center;
+            relativePos = rot * relativePos;
+            relativePos += center;
+            data.vertices[i].pos = relativePos;
+        }
+    }
+
+    void MakeCurrentGameobject()
+    {
+        if (m_currentObject != null)
+            DestroyImmediate(m_currentObject);
+
+        if (gameObjectEditor != null) 
+            DestroyImmediate(gameObjectEditor);
+
+        m_currentObject = new GameObject();
+        m_currentObject.name = "Craftstudio preview";
+        m_currentObject.hideFlags = HideFlags.HideAndDontSave;
+        m_filter = m_currentObject.AddComponent<MeshFilter>();
+        m_renderer = m_currentObject.AddComponent<MeshRenderer>();
+    }
+
+    void SetObjectMeshAndMaterials()
+    {
+        if (m_currentObject == null || m_filter == null || m_renderer == null)
+            return;
+
+        m_filter.mesh = m_currentMesh;
+
+        var mat = new Material(Shader.Find("Unlit/Texture"));
+        mat.SetTexture("_MainTex", m_currentModel.texture);
+        m_renderer.material = mat;
+    }
+}
+ enum CraftstudioEntityType
 {
     Model = 0,
     ModelAnimation = 6,
@@ -977,6 +1344,16 @@ class CraftstudioModelNodeTree
     public int nodeIndex;
     public bool folded = true;
     public List<CraftstudioModelNodeTree> childrens = new List<CraftstudioModelNodeTree>();
+}
+
+enum CraftstudioFace
+{
+    top,
+    down,
+    front,
+    back,
+    left,
+    right,
 }
 
 enum CraftstudioModelCubeUnwrap

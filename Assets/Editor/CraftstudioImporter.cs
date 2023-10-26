@@ -292,6 +292,8 @@ public class CraftstudioImporter : OdinEditorWindow
 
     void OnDrawCurrentModelPreviewGUI()
     {
+        int oldPreview = m_currentPreview;
+
         m_currentPreview = GUILayout.Toolbar(m_currentPreview, new string[] { "Textured", "Submesh", "Texture" });
         if (m_currentPreview == 0)
             OnDrawCurrentModelPreviewTexturedGUI();
@@ -300,8 +302,11 @@ public class CraftstudioImporter : OdinEditorWindow
         else if (m_currentPreview == 2)
             OnDrawCurrentModelPreviewTextureGUI();
 
-        m_currentMesh = MakeMesh(m_currentMesh, m_currentModel, m_currentPreview == 0);
-        SetObjectMeshAndMaterials();
+        if (oldPreview != m_currentPreview)
+        {
+            m_currentMesh = MakeMesh(m_currentMesh, m_currentModel, m_currentPreview == 0);
+            SetObjectMeshAndMaterials();
+        }
     }
 
     Editor gameObjectEditor;
@@ -663,11 +668,7 @@ public class CraftstudioImporter : OdinEditorWindow
             index += 4;
         }
 
-        for (int i = 0; i < 4; i++)
-        {
-            node.rot[i] = BitConverter.ToSingle(data, index);
-            index += 4;
-        }
+        index = ReadQuaternion(data, index, out node.rot);
 
         for (int i = 0; i < 3; i++)
         {
@@ -691,6 +692,20 @@ public class CraftstudioImporter : OdinEditorWindow
             node.unwrapFlags[i] = data[index];
             index++;
         }
+
+        return index;
+    }
+
+    int ReadQuaternion(byte[] data, int index, out Quaternion quaternion)
+    {
+        quaternion.w = BitConverter.ToSingle(data, index);
+        index += 4;
+        quaternion.x = BitConverter.ToSingle(data, index);
+        index += 4;
+        quaternion.y = BitConverter.ToSingle(data, index);
+        index += 4;
+        quaternion.z = BitConverter.ToSingle(data, index);
+        index += 4;
 
         return index;
     }
@@ -909,11 +924,7 @@ public class CraftstudioImporter : OdinEditorWindow
 
         index++; //1 Interpolation mode (currently ignored)
 
-        for (int i = 0; i < 4; i++)
-        {
-            node.value[i] = BitConverter.ToSingle(data, index);
-            index += 4;
-        }
+        index = ReadQuaternion(data, index, out node.value);
 
         return index;
     }
@@ -1018,7 +1029,9 @@ public class CraftstudioImporter : OdinEditorWindow
             ApplyUVToCube(data, v, node, new Vector2Int(model.texture.width, model.texture.height));
         else ApplySubmeshColorToCube(data, v, node);
 
-        ScaleVertices(data, v, 24, node.size);
+        float pixelPerUnit = 16;
+
+        ScaleVertices(data, v, 24, new Vector3(node.size.x, node.size.y, node.size.z) / pixelPerUnit);
         ScaleVertices(data, v, 24, node.scale);
         MoveVertices(data, v, 24, node.offset);
         RotateVertices(data, v, 24, node.rot);
@@ -1043,51 +1056,73 @@ public class CraftstudioImporter : OdinEditorWindow
         Vector3 min = new Vector3(-0.5f, -0.5f, -0.5f);
         Vector3 max = new Vector3(0.5f, 0.5f, 0.5f);
 
-        int v = vertex;
+        //top
+        int v = vertex + (int)CraftstudioFace.top * 4;
+        data.vertices[v + 0].pos = new Vector3(min.x, max.y, min.z);
+        data.vertices[v + 1].pos = new Vector3(max.x, max.y, min.z);
+        data.vertices[v + 2].pos = new Vector3(max.x, max.y, max.z);
+        data.vertices[v + 3].pos = new Vector3(min.x, max.y, max.z);
 
+        //down
+        v = vertex + (int)CraftstudioFace.down * 4;
         data.vertices[v + 0].pos = new Vector3(min.x, min.y, min.z);
         data.vertices[v + 1].pos = new Vector3(max.x, min.y, min.z);
         data.vertices[v + 2].pos = new Vector3(max.x, min.y, max.z);
         data.vertices[v + 3].pos = new Vector3(min.x, min.y, max.z);
 
-        data.vertices[v + 4].pos = new Vector3(max.x, max.y, min.z);
-        data.vertices[v + 5].pos = new Vector3(max.x, max.y, max.z);
-        data.vertices[v + 6].pos = new Vector3(min.x, max.y, min.z);
-        data.vertices[v + 7].pos = new Vector3(min.x, max.y, max.z);
+        //left
+        v = vertex + (int)CraftstudioFace.left * 4;
+        data.vertices[v + 0].pos = new Vector3(min.x, min.y, min.z);
+        data.vertices[v + 1].pos = new Vector3(min.x, max.y, min.z);
+        data.vertices[v + 2].pos = new Vector3(min.x, max.y, max.z);
+        data.vertices[v + 3].pos = new Vector3(min.x, min.y, max.z);
 
-        data.vertices[v + 8].pos = new Vector3(min.x, min.y, min.z);
-        data.vertices[v + 9].pos = new Vector3(min.x, max.y, min.z);
-        data.vertices[v + 10].pos = new Vector3(min.x, max.y, max.z);
-        data.vertices[v + 11].pos = new Vector3(min.x, min.y, max.z);
+        //right
+        v = vertex + (int)CraftstudioFace.right * 4;
+        data.vertices[v + 0].pos = new Vector3(max.x, min.y, min.z);
+        data.vertices[v + 1].pos = new Vector3(max.x, max.y, min.z);
+        data.vertices[v + 2].pos = new Vector3(max.x, max.y, max.z);
+        data.vertices[v + 3].pos = new Vector3(max.x, min.y, max.z);
 
-        data.vertices[v + 12].pos = new Vector3(max.x, min.y, min.z);
-        data.vertices[v + 13].pos = new Vector3(max.x, max.y, min.z);
-        data.vertices[v + 14].pos = new Vector3(max.x, max.y, max.z);
-        data.vertices[v + 15].pos = new Vector3(max.x, min.y, max.z);
+        //front
+        v = vertex + (int)CraftstudioFace.front * 4;
+        data.vertices[v + 0].pos = new Vector3(min.x, min.y, min.z);
+        data.vertices[v + 1].pos = new Vector3(max.x, min.y, min.z);
+        data.vertices[v + 2].pos = new Vector3(max.x, max.y, min.z);
+        data.vertices[v + 3].pos = new Vector3(min.x, max.y, min.z);
 
-        data.vertices[v + 16].pos = new Vector3(min.x, min.y, min.z);
-        data.vertices[v + 17].pos = new Vector3(max.x, min.y, min.z);
-        data.vertices[v + 18].pos = new Vector3(max.x, max.y, min.z);
-        data.vertices[v + 19].pos = new Vector3(min.x, max.y, min.z);
+        //back
+        v = vertex + (int)CraftstudioFace.back * 4;
+        data.vertices[v + 0].pos = new Vector3(min.x, min.y, max.z);
+        data.vertices[v + 1].pos = new Vector3(max.x, min.y, max.z);
+        data.vertices[v + 2].pos = new Vector3(max.x, max.y, max.z);
+        data.vertices[v + 3].pos = new Vector3(min.x, max.y, max.z);
 
-        data.vertices[v + 20].pos = new Vector3(min.x, min.y, max.z);
-        data.vertices[v + 21].pos = new Vector3(max.x, min.y, max.z);
-        data.vertices[v + 22].pos = new Vector3(max.x, max.y, max.z);
-        data.vertices[v + 23].pos = new Vector3(min.x, max.y, max.z);
-
-        int i = index;
         for (int j = 0; j < 6; j++)
         {
-            int rI = i + j * 6;
-            int rV = v + j * 4;
+            int rI = index + j * 6;
+            int rV = vertex + j * 4;
 
-            data.indexes[rI + 0] = (ushort)(rV + 0);
-            data.indexes[rI + 1] = (ushort)(rV + 1);
-            data.indexes[rI + 2] = (ushort)(rV + 2);
-            data.indexes[rI + 3] = (ushort)(rV + 1);
-            data.indexes[rI + 4] = (ushort)(rV + 2);
-            data.indexes[rI + 5] = (ushort)(rV + 3);
+            bool reverse = j == (int)CraftstudioFace.down || j == (int)CraftstudioFace.right || j == (int)CraftstudioFace.back;
 
+            if (reverse)
+            {
+                data.indexes[rI + 0] = (ushort)(rV + 0);
+                data.indexes[rI + 1] = (ushort)(rV + 1);
+                data.indexes[rI + 2] = (ushort)(rV + 2);
+                data.indexes[rI + 3] = (ushort)(rV + 0);
+                data.indexes[rI + 4] = (ushort)(rV + 2);
+                data.indexes[rI + 5] = (ushort)(rV + 3);
+            }
+            else
+            {
+                data.indexes[rI + 0] = (ushort)(rV + 0);
+                data.indexes[rI + 1] = (ushort)(rV + 2);
+                data.indexes[rI + 2] = (ushort)(rV + 1);
+                data.indexes[rI + 3] = (ushort)(rV + 0);
+                data.indexes[rI + 4] = (ushort)(rV + 3);
+                data.indexes[rI + 5] = (ushort)(rV + 2);
+            }
         }
     }
 
@@ -1095,15 +1130,27 @@ public class CraftstudioImporter : OdinEditorWindow
     {
         for(int i = 0; i < 6; i++)
         {
-            var uv = GetUV(node, i);
+            Rotation rot;
+            var uv = GetUV(node, i, out rot);
 
             Vector2 pos = new Vector2(uv.position.x / (float)textureSize.x, uv.position.y / (float)textureSize.y);
             Vector2 size = new Vector2(uv.size.x / (float)textureSize.x, uv.size.y / (float)textureSize.y);
+
+            pos.y = 1 - pos.y - size.y; 
 
             data.vertices[vertex + i * 4].uv = pos;
             data.vertices[vertex + i * 4 + 1].uv = new Vector2(pos.x + size.x, pos.y);
             data.vertices[vertex + i * 4 + 2].uv = new Vector2(pos.x + size.x, pos.y + size.y);
             data.vertices[vertex + i * 4 + 3].uv = new Vector2(pos.x, pos.y + size.y);
+
+            for(int j = 0; j < (int)rot; j++)
+            {
+                Vector2 temp = data.vertices[vertex + i * 4].uv;
+                data.vertices[vertex + i * 4].uv = data.vertices[vertex + i * 4 + 1].uv;
+                data.vertices[vertex + i * 4 + 1].uv = data.vertices[vertex + i * 4 + 2].uv;
+                data.vertices[vertex + i * 4 + 2].uv = data.vertices[vertex + i * 4 + 3].uv;
+                data.vertices[vertex + i * 4 + 3].uv = temp;
+            }
         }
     }
 
@@ -1115,11 +1162,15 @@ public class CraftstudioImporter : OdinEditorWindow
             data.vertices[vertex + i].color = color;
     }
 
-    RectInt GetUV(CraftstudioModelNode node, int faceIndex)
+    RectInt GetUV(CraftstudioModelNode node, int faceIndex, out Rotation rot)
     {
+        rot = Rotation.rot_0;
+
         Vector2Int size = Vector2Int.zero;
         Vector2Int pos = node.unwrapOffsetQuads[faceIndex];
-        switch((CraftstudioFace)faceIndex)
+
+        CraftstudioFace face = (CraftstudioFace)faceIndex;
+        switch (face)
         {
             case CraftstudioFace.top:
             case CraftstudioFace.down:
@@ -1135,72 +1186,48 @@ public class CraftstudioImporter : OdinEditorWindow
             case CraftstudioFace.right:
                 size.x = node.size.z;
                 size.y = node.size.y;
+                rot = Rotation.rot_90;
                     break;
         }
 
+        if (face == CraftstudioFace.top || face == CraftstudioFace.front || face == CraftstudioFace.left)
+        {
+            //rot = RotationEx.Add(rot, Rotation.rot_180);
+        }    
+
         int flags = node.unwrapFlags[faceIndex];
 
-        if((flags & (int)CraftstudioModelNodeUnwrap.Rotate90) == 0)
+        if((flags & (int)CraftstudioModelNodeUnwrap.Rotate90) != 0)
         {
             int temp = size.x;
-            if (size.x < 0)
-                pos.x -= size.x;
             size.x = -size.y;
-            if (size.x < 0)
-                pos.x += size.x;
-            if (size.y < 0)
-                pos.y -= size.y;
             size.y = temp;
-            if (size.y < 0)
-                pos.y += size.y;
+
+            rot = RotationEx.Add(rot, Rotation.rot_90);
         }
 
-        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate180) == 0)
+        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate180) != 0)
         {
-            if (size.x < 0)
-                pos.x -= size.x;
             size.x = -size.x;
-            if (size.x < 0)
-                pos.x += size.x;
-            if (size.y < 0)
-                pos.y -= size.y;
             size.y = -size.y;
-            if (size.y < 0)
-                pos.y += size.y;
+
+            rot = RotationEx.Add(rot, Rotation.rot_180);
         }
 
-        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate270) == 0)
+        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate270) != 0)
         {
             int temp = size.x;
-            if (size.x < 0)
-                pos.x = size.x;
-            size.x = -size.y;
-            if (size.x < 0)
-                pos.x += size.x;
-            if (size.y < 0)
-                pos.y -= size.y;
-            size.y -= temp;
-            if (size.y < 0)
-                pos.y += size.y;
+            size.x = size.y;
+            size.y = -temp;
+
+            rot = RotationEx.Add(rot, Rotation.rot_270);
         }
 
-        if ((flags & (int)CraftstudioModelNodeUnwrap.MirrorHorizontal) == 0)
-        {
-            if (size.x < 0)
-                pos.x -= size.x;
+        if ((flags & (int)CraftstudioModelNodeUnwrap.MirrorHorizontal) != 0)
             size.x = -size.x;
-            if (size.x < 0)
-                pos.x += size.x;
-        }
 
-        if ((flags & (int)CraftstudioModelNodeUnwrap.MirrorVertical) == 0)
-        {
-            if (size.y < 0)
-                pos.y -= size.y;
+        if ((flags & (int)CraftstudioModelNodeUnwrap.MirrorVertical) != 0)
             size.y = -size.y;
-            if (size.y < 0)
-                pos.y += size.y;
-        }
 
         return new RectInt(pos, size);
     }
@@ -1257,7 +1284,7 @@ public class CraftstudioImporter : OdinEditorWindow
 
         m_currentObject = new GameObject();
         m_currentObject.name = "Craftstudio preview";
-        m_currentObject.hideFlags = HideFlags.HideAndDontSave;
+        m_currentObject.hideFlags = HideFlags.HideAndDontSave | HideFlags.NotEditable;
         m_filter = m_currentObject.AddComponent<MeshFilter>();
         m_renderer = m_currentObject.AddComponent<MeshRenderer>();
     }
@@ -1269,7 +1296,7 @@ public class CraftstudioImporter : OdinEditorWindow
 
         m_filter.mesh = m_currentMesh;
 
-        var mat = new Material(Shader.Find("Unlit/Texture"));
+        var mat = new Material(Shader.Find("Unlit/Transparent Cutout"));
         mat.SetTexture("_MainTex", m_currentModel.texture);
         m_renderer.material = mat;
     }
@@ -1348,12 +1375,12 @@ class CraftstudioModelNodeTree
 
 enum CraftstudioFace
 {
-    top,
-    down,
-    front,
     back,
-    left,
+    front,
     right,
+    down,
+    left,
+    top,
 }
 
 enum CraftstudioModelCubeUnwrap

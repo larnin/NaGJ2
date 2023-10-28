@@ -1190,14 +1190,9 @@ public class CraftstudioImporter : OdinEditorWindow
                     break;
         }
 
-        if (face == CraftstudioFace.top || face == CraftstudioFace.front || face == CraftstudioFace.left)
-        {
-            //rot = RotationEx.Add(rot, Rotation.rot_180);
-        }    
-
         int flags = node.unwrapFlags[faceIndex];
 
-        if((flags & (int)CraftstudioModelNodeUnwrap.Rotate90) != 0)
+        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate90) != 0)
         {
             int temp = size.x;
             size.x = -size.y;
@@ -1228,6 +1223,18 @@ public class CraftstudioImporter : OdinEditorWindow
 
         if ((flags & (int)CraftstudioModelNodeUnwrap.MirrorVertical) != 0)
             size.y = -size.y;
+
+        if (face == CraftstudioFace.right || face == CraftstudioFace.back)
+        {
+            pos.x += size.x;
+            size.x = -size.x;
+        }
+
+        if (face == CraftstudioFace.down)
+        {
+            pos.y += size.y;
+            size.y = -size.y;
+        }
 
         return new RectInt(pos, size);
     }
@@ -1375,8 +1382,8 @@ class CraftstudioModelNodeTree
 
 enum CraftstudioFace
 {
-    back,
     front,
+    back,
     right,
     down,
     left,

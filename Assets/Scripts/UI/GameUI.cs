@@ -198,9 +198,9 @@ public class GameUI : MonoBehaviour
         m_pricesUpdated = true;
 
         int priceGround = ElementHolder.Instance().GetGroundCost(GroundType.normal);
-        int priceTower0 = ElementHolder.Instance().GetBuildingCost(BuildingType.tower0, 0);
-        int priceTower1 = ElementHolder.Instance().GetBuildingCost(BuildingType.tower1, 0);
-        int priceTower2 = ElementHolder.Instance().GetBuildingCost(BuildingType.tower2, 0);
+        int priceTower0 = ElementHolder.Instance().GetBuildingCost(OldBuildingType.tower0, 0);
+        int priceTower1 = ElementHolder.Instance().GetBuildingCost(OldBuildingType.tower1, 0);
+        int priceTower2 = ElementHolder.Instance().GetBuildingCost(OldBuildingType.tower2, 0);
 
         m_buttons[(int)ButtonType.ground].cost.text = priceGround.ToString();
         m_buttons[(int)ButtonType.tower0].cost.text = priceTower0.ToString();
@@ -225,11 +225,11 @@ public class GameUI : MonoBehaviour
         {
             m_towerCursor.gameObject.SetActive(true);
             if (m_currentButton == (int)ButtonType.tower0)
-                m_towerCursor.SetBuilding(BuildingType.tower0);
+                m_towerCursor.SetBuilding(OldBuildingType.tower0);
             else if (m_currentButton == (int)ButtonType.tower1)
-                m_towerCursor.SetBuilding(BuildingType.tower1);
+                m_towerCursor.SetBuilding(OldBuildingType.tower1);
             else if (m_currentButton == (int)ButtonType.tower2)
-                m_towerCursor.SetBuilding(BuildingType.tower2);
+                m_towerCursor.SetBuilding(OldBuildingType.tower2);
         }
 
     }

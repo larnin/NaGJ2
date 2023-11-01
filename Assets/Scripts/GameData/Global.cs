@@ -16,6 +16,12 @@ public class Global : ScriptableObject
     [SerializeField] AllBlocks m_allBlocks;
     public AllBlocks allBlocks { get { return m_allBlocks; } }
 
+    [SerializeField] AllBuildings m_allBuildings;
+    public AllBuildings allBuildings { get { return m_allBuildings; } }
+
+    [SerializeField] AllResources m_allResources;
+    public AllResources allResources { get { return m_allResources; } }
+
     static Global m_instance;
 
     static string s_path = "World";

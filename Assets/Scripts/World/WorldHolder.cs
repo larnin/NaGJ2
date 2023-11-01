@@ -75,7 +75,7 @@ public class WorldHolder : MonoBehaviour
                 elem = new WorldElement();
                 m_world.Set(elem, x, y);
             }
-            if (elem.buildingType != BuildingType.empty && type == GroundType.empty)
+            if (elem.buildingType != OldBuildingType.empty && type == GroundType.empty)
                 return false;
             if (elem.groundType != type)
             {
@@ -87,17 +87,17 @@ public class WorldHolder : MonoBehaviour
         return true;
     }
 
-    public bool SetBuilding(BuildingType type, int level, int x, int y)
+    public bool SetBuilding(OldBuildingType type, int level, int x, int y)
     {
         if (!m_world.IsInGrid(x, y))
-            return type == BuildingType.empty;
+            return type == OldBuildingType.empty;
 
         var elem = m_world.Get(x, y);
         if (elem == null)
-            return type == BuildingType.empty;
+            return type == OldBuildingType.empty;
 
         if (elem.groundType == GroundType.empty)
-            return type == BuildingType.empty;
+            return type == OldBuildingType.empty;
 
         if(elem.buildingType != type || elem.buildingLevel != level)
         {
@@ -130,27 +130,27 @@ public class WorldHolder : MonoBehaviour
         return elem.groundSetTime;
     }
 
-    public BuildingType GetBuilding(int x, int y, out int level)
+    public OldBuildingType GetBuilding(int x, int y, out int level)
     {
         level = 0;
         if (!m_world.IsInGrid(x, y))
-            return BuildingType.empty;
+            return OldBuildingType.empty;
 
         var elem = m_world.Get(x, y);
         if (elem == null)
-            return BuildingType.empty;
+            return OldBuildingType.empty;
         level = elem.buildingLevel;
         return elem.buildingType;
     }
 
-    public BuildingType GetBuilding(int x, int y)
+    public OldBuildingType GetBuilding(int x, int y)
     {
         if (!m_world.IsInGrid(x, y))
-            return BuildingType.empty;
+            return OldBuildingType.empty;
 
         var elem = m_world.Get(x, y);
         if (elem == null)
-            return BuildingType.empty;
+            return OldBuildingType.empty;
         return elem.buildingType;
     }
     
@@ -224,7 +224,7 @@ public class WorldHolder : MonoBehaviour
         obj.transform.position = GetElemPos(x, y);
 
         Rotation rot = (Rotation)UnityEngine.Random.Range(0, 4);
-        if (elem.buildingType == BuildingType.tower0 || elem.buildingType == BuildingType.tower1 || elem.buildingType == BuildingType.tower2)
+        if (elem.buildingType == OldBuildingType.tower0 || elem.buildingType == OldBuildingType.tower1 || elem.buildingType == OldBuildingType.tower2)
             rot = Rotation.rot_0;
         ApplyRotation(obj, rot);
         elem.buildingObject = obj;
@@ -272,7 +272,7 @@ public class WorldHolder : MonoBehaviour
                 var elem = m_world.Get(tX, tY);
                 if (elem != null)
                 {
-                    bool valid = elem.buildingType == BuildingType.factory || elem.buildingType == BuildingType.house || elem.buildingType == BuildingType.scienceLab;
+                    bool valid = elem.buildingType == OldBuildingType.factory || elem.buildingType == OldBuildingType.house || elem.buildingType == OldBuildingType.scienceLab;
                     mat.Set(valid, i, j);
                 }
             }
@@ -337,7 +337,7 @@ public class WorldHolder : MonoBehaviour
                 if (elem.groundType == GroundType.deadly || elem.groundType == GroundType.empty)
                     continue;
 
-                if (elem.buildingType != BuildingType.empty)
+                if (elem.buildingType != OldBuildingType.empty)
                     continue;
 
                 if (Time.time - elem.groundSetTime < minTimer)

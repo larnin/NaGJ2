@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 public class CursorTower : CursorBase
 {
-    BuildingType m_building = BuildingType.empty;
+    OldBuildingType m_building = OldBuildingType.empty;
 
-    public void SetBuilding(BuildingType building)
+    public void SetBuilding(OldBuildingType building)
     {
         m_building = building;
     }
@@ -60,7 +60,7 @@ public class CursorTower : CursorBase
 
         var buildingType = WorldHolder.Instance().GetBuilding(x, y);
 
-        if (buildingType == BuildingType.tower0 || buildingType == BuildingType.tower1 || buildingType == BuildingType.tower2)
+        if (buildingType == OldBuildingType.tower0 || buildingType == OldBuildingType.tower1 || buildingType == OldBuildingType.tower2)
             return CursorValidation.disallowed;
 
         return CursorValidation.allowed;

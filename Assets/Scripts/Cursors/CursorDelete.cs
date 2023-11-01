@@ -44,7 +44,7 @@ public class CursorDelete : CursorBase
             return CursorValidation.disallowed;
 
         var buildingType = WorldHolder.Instance().GetBuilding(x, y);
-        if (buildingType == BuildingType.tower0 || buildingType == BuildingType.tower1 || buildingType == BuildingType.tower2)
+        if (buildingType == OldBuildingType.tower0 || buildingType == OldBuildingType.tower1 || buildingType == OldBuildingType.tower2)
             return CursorValidation.warning;
 
         return CursorValidation.allowed;

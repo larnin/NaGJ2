@@ -12,6 +12,6 @@ public class WorldElement
     public float groundSetTime = 0;
 
     public GameObject buildingObject;
-    public BuildingType buildingType = BuildingType.empty;
+    public OldBuildingType buildingType = OldBuildingType.empty;
     public int buildingLevel = 0;
 }

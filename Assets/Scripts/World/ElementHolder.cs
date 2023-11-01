@@ -14,7 +14,7 @@ public enum GroundType
     hight,
 }
 
-public enum BuildingType
+public enum OldBuildingType
 {
     empty,
     house,
@@ -49,7 +49,7 @@ public class OneBuildingLevelData
 [Serializable]
 public class BuildingData
 {
-    public BuildingType buildingType;
+    public OldBuildingType buildingType;
     public List<OneBuildingLevelData> building;
 }
 
@@ -157,7 +157,7 @@ public class ElementHolder : MonoBehaviour
         return 0;
     }
 
-    public int GetMaxBuildingLevel(BuildingType type)
+    public int GetMaxBuildingLevel(OldBuildingType type)
     {
         foreach (var b in m_buildings)
         {
@@ -170,7 +170,7 @@ public class ElementHolder : MonoBehaviour
         return 0;
     }
 
-    public GameObject GetBuilding(BuildingType type, int level)
+    public GameObject GetBuilding(OldBuildingType type, int level)
     {
         foreach(var b in m_buildings)
         {
@@ -185,7 +185,7 @@ public class ElementHolder : MonoBehaviour
         return null;
     }
 
-    public int GetBuildingCost(BuildingType type, int level)
+    public int GetBuildingCost(OldBuildingType type, int level)
     {
         foreach (var b in m_buildings)
         {
@@ -200,7 +200,7 @@ public class ElementHolder : MonoBehaviour
         return 0;
     }
 
-    public int GetBuildingCorruption(BuildingType type, int level)
+    public int GetBuildingCorruption(OldBuildingType type, int level)
     {
         foreach (var b in m_buildings)
         {

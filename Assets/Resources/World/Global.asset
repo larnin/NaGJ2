@@ -109,3 +109,71 @@ MonoBehaviour:
       - {fileID: 3566894212013922056, guid: 267ed8446dd3683458dd3a6600b447ff, type: 3}
       - {fileID: 8958695042441432280, guid: 35ead6a65afd48f4193226ed4e3e5e80, type: 3}
       - {fileID: 9116754217208307827, guid: ded4cb87c36d19b489eb182a79da18ac, type: 3}
+  m_allBuildings:
+    tower0:
+      levels:
+      - cost:
+          costs: []
+        prefab: {fileID: 4535419702433975566, guid: 8eba797e36303fc4aa4ec8400d1deb92, type: 3}
+        size: {x: 1, y: 1}
+      - cost:
+          costs: []
+        prefab: {fileID: 8171400753975530231, guid: 42253ed23eebbc747bcebdae98221ba7, type: 3}
+        size: {x: 1, y: 1}
+      - cost:
+          costs: []
+        prefab: {fileID: 5130323494322073348, guid: 15be08370ff54b2409be2305201e73d8, type: 3}
+        size: {x: 1, y: 1}
+    tower1:
+      levels:
+      - cost:
+          costs: []
+        prefab: {fileID: 2804463719667612666, guid: 63ad6f79d00a9c94f82a0132797ea959, type: 3}
+        size: {x: 1, y: 1}
+      - cost:
+          costs: []
+        prefab: {fileID: 8935526912260626739, guid: 2152d0ec59fa0c14d8317538fdb6edd6, type: 3}
+        size: {x: 1, y: 1}
+      - cost:
+          costs: []
+        prefab: {fileID: 532560842359466614, guid: 205779148b503094da400989405f7c22, type: 3}
+        size: {x: 1, y: 1}
+    tower2:
+      levels:
+      - cost:
+          costs: []
+        prefab: {fileID: 7160437945480003331, guid: 09065f8190b0fe5408ed028f25dbfddc, type: 3}
+        size: {x: 1, y: 1}
+      - cost:
+          costs: []
+        prefab: {fileID: 1825012431092698692, guid: 721e76d0363e07d4c8ef6e87b3c1b75f, type: 3}
+        size: {x: 1, y: 1}
+      - cost:
+          costs: []
+        prefab: {fileID: 6388430207544002530, guid: 88f900441c0c20847b9995c01267d562, type: 3}
+        size: {x: 1, y: 1}
+    operationCenter:
+      prefab: {fileID: 5759554216005528630, guid: b06ee74c9d891a04bb479dd096499d3a, type: 3}
+      size: {x: 3, y: 3}
+    bigMiningCenter:
+      cost:
+        costs: []
+      prefab: {fileID: 3619161916175125052, guid: 04db2099d619be3498e878be5aa5cc70, type: 3}
+      size: {x: 2, y: 2}
+      mineDistance: 2
+    mediumMiningCenter:
+      cost:
+        costs: []
+      prefab: {fileID: 4356035782417431393, guid: 5027ba4ce40e0444a94c294084c2cac6, type: 3}
+      size: {x: 2, y: 1}
+      mineDistance: 1
+    smallMiningCenter:
+      cost:
+        costs: []
+      prefab: {fileID: 218631143579773238, guid: 764274524090d4c4a9ea6e9371297f16, type: 3}
+      size: {x: 1, y: 1}
+      mineDistance: 1
+    belt:
+      forwardPrefab: {fileID: 8274155206733211446, guid: 0d1fd9e753fad9e45987aade37fa5e03, type: 3}
+      leftPrefab: {fileID: 1121509503944885969, guid: bbdf8dbd589bd7840ac9511940f866a3, type: 3}
+      rightPrefab: {fileID: 4338920473469947020, guid: ed780448c37d6f6428c35c9372fca578, type: 3}

@@ -46,7 +46,7 @@ class GameSystem : MonoBehaviour
     float m_moneyGeneration = 0;
     int m_money;
     float m_moneyToAdd; //range[0;1]
-    BuildingType m_nextWantedBuilding = BuildingType.empty;
+    OldBuildingType m_nextWantedBuilding = OldBuildingType.empty;
 
     int m_bestMoney = 0;
     int m_bestPopulation = 0;
@@ -133,7 +133,7 @@ class GameSystem : MonoBehaviour
         m_initialized = true;
 
         WorldHolder.Instance().SetGround(GroundType.normal, 0, 0);
-        WorldHolder.Instance().SetBuilding(BuildingType.house, 1, 0, 0);
+        WorldHolder.Instance().SetBuilding(OldBuildingType.house, 1, 0, 0);
         CountBuildings();
     }
 
@@ -148,14 +148,14 @@ class GameSystem : MonoBehaviour
         if (validPos.Count == 0)
             return;
 
-        if(m_nextWantedBuilding == BuildingType.empty)
+        if(m_nextWantedBuilding == OldBuildingType.empty)
         {
             if (UnityEngine.Random.value < m_labWeight)
-                m_nextWantedBuilding = BuildingType.scienceLab;
-            else m_nextWantedBuilding = BuildingType.factory;
+                m_nextWantedBuilding = OldBuildingType.scienceLab;
+            else m_nextWantedBuilding = OldBuildingType.factory;
         }
         if (m_workingPopulation <= 4)
-            m_nextWantedBuilding = BuildingType.factory;
+            m_nextWantedBuilding = OldBuildingType.factory;
 
 
         int validIndex = UnityEngine.Random.Range(0, validPos.Count);
@@ -173,21 +173,21 @@ class GameSystem : MonoBehaviour
             level = 2;
 
         int nbWantedWorker = 0;
-        if (m_nextWantedBuilding == BuildingType.factory && m_levelInfos.Count > level)
+        if (m_nextWantedBuilding == OldBuildingType.factory && m_levelInfos.Count > level)
             nbWantedWorker = m_levelInfos[level].populationPerFactory;
-        else if (m_nextWantedBuilding == BuildingType.scienceLab)
+        else if (m_nextWantedBuilding == OldBuildingType.scienceLab)
             nbWantedWorker = m_populationPerLab;
 
         int nbFreeWorker = m_population - m_workingPopulation;
 
         if (nbFreeWorker >= nbWantedWorker)
         {
-            if (m_nextWantedBuilding == BuildingType.scienceLab)
+            if (m_nextWantedBuilding == OldBuildingType.scienceLab)
                 level = 0;
             WorldHolder.Instance().SetBuilding(m_nextWantedBuilding, level, pos.x, pos.y);
-            m_nextWantedBuilding = BuildingType.empty;
+            m_nextWantedBuilding = OldBuildingType.empty;
         }
-        else WorldHolder.Instance().SetBuilding(BuildingType.house, level, pos.x, pos.y);
+        else WorldHolder.Instance().SetBuilding(OldBuildingType.house, level, pos.x, pos.y);
 
         CountBuildings();
     }
@@ -210,7 +210,7 @@ class GameSystem : MonoBehaviour
                 int level = 0;
                 var type = WorldHolder.Instance().GetBuilding(i, j, out level);
 
-                if(type == BuildingType.house)
+                if(type == OldBuildingType.house)
                 {
                     if(m_levelInfos.Count > level)
                     {
@@ -218,7 +218,7 @@ class GameSystem : MonoBehaviour
                         m_moneyGeneration += m_levelInfos[level].moneyPerHouse;
                     }
                 }
-                else if(type == BuildingType.factory)
+                else if(type == OldBuildingType.factory)
                 {
                     if(m_levelInfos.Count > level)
                     {
@@ -226,7 +226,7 @@ class GameSystem : MonoBehaviour
                         m_moneyGeneration += m_levelInfos[level].moneyPerFactory; 
                     }
                 }   
-                else if(type == BuildingType.scienceLab)
+                else if(type == OldBuildingType.scienceLab)
                 {
                     m_workingPopulation += m_populationPerLab;
                 }
@@ -253,7 +253,7 @@ class GameSystem : MonoBehaviour
             for (int j = bounds.y; j < bounds.y + bounds.height; j++)
             {
                 var type = WorldHolder.Instance().GetBuilding(i, j);
-                if(type == BuildingType.factory || type == BuildingType.house || type == BuildingType.scienceLab)
+                if(type == OldBuildingType.factory || type == OldBuildingType.house || type == OldBuildingType.scienceLab)
                 {
                     Vector2Int posItem = new Vector2Int(i, j);
                     var dir = currentPos - posItem;
@@ -291,7 +291,7 @@ class GameSystem : MonoBehaviour
         e.population = m_bestPopulation;
     }
 
-    public void PlaceTower(int x, int y, BuildingType type, int level)
+    public void PlaceTower(int x, int y, OldBuildingType type, int level)
     {
         if (ElementHolder.Instance() == null)
             return;
@@ -308,9 +308,9 @@ class GameSystem : MonoBehaviour
             return;
 
         var building = WorldHolder.Instance().GetBuilding(x, y);
-        if(building != type && building != BuildingType.empty)
+        if(building != type && building != OldBuildingType.empty)
         {
-            if (building == BuildingType.tower0 || building == BuildingType.tower1 || building == BuildingType.tower2)
+            if (building == OldBuildingType.tower0 || building == OldBuildingType.tower1 || building == OldBuildingType.tower2)
                 return;
         }
 
@@ -330,10 +330,10 @@ class GameSystem : MonoBehaviour
 
         var building = WorldHolder.Instance().GetBuilding(x, y);
 
-        if (building != BuildingType.tower0 || building != BuildingType.tower1 || building != BuildingType.tower2)
+        if (building != OldBuildingType.tower0 || building != OldBuildingType.tower1 || building != OldBuildingType.tower2)
             return;
 
-        WorldHolder.Instance().SetBuilding(BuildingType.empty, 0, x, y);
+        WorldHolder.Instance().SetBuilding(OldBuildingType.empty, 0, x, y);
 
         UpdateCorruption(x, y);
 
@@ -369,7 +369,7 @@ class GameSystem : MonoBehaviour
         if (WorldHolder.Instance() == null)
             return;
 
-        WorldHolder.Instance().SetBuilding(BuildingType.empty, 0, x, y);
+        WorldHolder.Instance().SetBuilding(OldBuildingType.empty, 0, x, y);
         WorldHolder.Instance().SetGround(GroundType.empty, x, y);
 
         CountBuildings();
@@ -378,7 +378,7 @@ class GameSystem : MonoBehaviour
     public void DestroyBuilding(int x, int y)
     {
         if(WorldHolder.Instance() != null)
-            WorldHolder.Instance().SetBuilding(BuildingType.empty, 0, x, y);
+            WorldHolder.Instance().SetBuilding(OldBuildingType.empty, 0, x, y);
 
         CountBuildings();
     }
@@ -509,7 +509,7 @@ class GameSystem : MonoBehaviour
                 int level = 0;
                 var buildingType = WorldHolder.Instance().GetBuilding(x + i, y + j, out level);
 
-                if(buildingType == BuildingType.house || buildingType == BuildingType.factory)
+                if(buildingType == OldBuildingType.house || buildingType == OldBuildingType.factory)
                 {
                     int newLevel = 1;
                     if (newGround == GroundType.low)
@@ -518,7 +518,7 @@ class GameSystem : MonoBehaviour
                         newLevel = -1;
 
                     if (newLevel < 0)
-                        WorldHolder.Instance().SetBuilding(BuildingType.empty, 0, x + i, y + j);
+                        WorldHolder.Instance().SetBuilding(OldBuildingType.empty, 0, x + i, y + j);
                     else WorldHolder.Instance().SetBuilding(buildingType, newLevel, x + i, y + j);
                 }
             }

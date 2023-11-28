@@ -23,7 +23,7 @@ public class OneTowerData
 {
     public ResourceCostData cost;
     public GameObject prefab;
-    public Vector2Int size = new Vector2Int(1, 1);
+    public Vector3Int size = new Vector3Int(1, 1, 1);
 }
 
 [Serializable]
@@ -36,7 +36,7 @@ public class TowerData
 public class OperationCenterData
 {
     public GameObject prefab;
-    public Vector2Int size = new Vector2Int(1, 1);
+    public Vector3Int size = new Vector3Int(1, 1, 1);
 }
 
 [Serializable]
@@ -44,7 +44,7 @@ public class MiningCenterData
 {
     public ResourceCostData cost;
     public GameObject prefab;
-    public Vector2Int size = new Vector2Int(1, 1);
+    public Vector3Int size = new Vector3Int(1, 1, 1);
     public int mineDistance = 1;
 }
 
@@ -52,7 +52,7 @@ public class MiningCenterData
 public class DrillData
 {
     public GameObject prefab;
-    public Vector2Int size = new Vector2Int(1, 1);
+    public Vector3Int size = new Vector3Int(1, 1, 1);
 }
 
 [Serializable]

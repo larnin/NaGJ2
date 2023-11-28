@@ -17,8 +17,16 @@ public class EditorInterface : MonoBehaviour
         public Sprite texture;
     }
 
+    [Serializable]
+    struct EditorBuildingData
+    {
+        public BuildingType building;
+        public Sprite texture;
+    }
+
     [SerializeField] List<GameObject> m_itemLists = new List<GameObject>();
     [SerializeField] List<EditorBlockData> m_blocks = new List<EditorBlockData>();
+    [SerializeField] List<EditorBuildingData> m_buildings = new List<EditorBuildingData>();
     [SerializeField] Image m_currentElementImage = null;
     [SerializeField] TMP_Text m_filename;
     [SerializeField] string menuName;
@@ -109,6 +117,18 @@ public class EditorInterface : MonoBehaviour
             var b = m_blocks[blockIndex];
 
             Event<EditorSetCursorBlockEvent>.Broadcast(new EditorSetCursorBlockEvent(b.block, b.additionalData));
+        }
+    }
+
+    public void OnBuildingClick(int buildingIndex)
+    {
+        if(buildingIndex < 0 || buildingIndex >= m_buildings.Count)
+            Event<EditorSetCursorBlockEvent>.Broadcast(new EditorSetCursorBlockEvent(BlockType.air, 0));
+        else
+        {
+            var b = m_buildings[buildingIndex];
+
+            Event<EditorSetCursorBuildingEvent>.Broadcast(new EditorSetCursorBuildingEvent(b.building));
         }
     }
 

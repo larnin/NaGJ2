@@ -73,3 +73,19 @@ public class EditorGetCursorBlockEvent
     public Rotation rotation;
     public int blockData;
 }
+
+public class EditorSetCursorBuildingEvent
+{
+    public BuildingType type;
+
+    public EditorSetCursorBuildingEvent(BuildingType _type)
+    {
+        type = _type;
+    }
+}
+
+public class EditorGetCursorBuildingEvent
+{
+    public BuildingType type;
+    public Rotation rotation;
+}

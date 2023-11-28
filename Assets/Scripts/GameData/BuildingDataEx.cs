@@ -7,10 +7,10 @@ using UnityEngine;
 
 public static class BuildingDataEx
 {
-    public static Vector2Int GetBuildingSize(BuildingType type, int level = 0)
+    public static Vector3Int GetBuildingSize(BuildingType type, int level = 0)
     {
         var buildings = Global.instance.allBuildings;
-        Vector2Int defaultSize = new Vector2Int(1, 1);
+        Vector3Int defaultSize = new Vector3Int(1, 1, 1);
 
         switch(type)
         {

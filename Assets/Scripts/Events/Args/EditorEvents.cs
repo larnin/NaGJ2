@@ -89,3 +89,68 @@ public class EditorGetCursorBuildingEvent
     public BuildingType type;
     public Rotation rotation;
 }
+
+public class EditorHaveBuildingEvent
+{
+    public Vector3Int pos;
+    public bool haveBuilding;
+
+    public EditorHaveBuildingEvent(Vector3Int _pos)
+    {
+        pos = _pos;
+    }
+}
+
+public class EditorGetBuildingEvent
+{
+    public Vector3Int pos;
+
+    public Vector3Int buildingPos;
+    public BuildingType buildingType;
+    public Rotation rotation;
+
+    public EditorGetBuildingEvent(Vector3Int _pos)
+    {
+        pos = _pos;
+    }
+}
+
+public class EditorCanPlaceBuildingEvent
+{
+    public Vector3Int pos;
+    public BuildingType buildingType;
+    public Rotation rotation;
+
+    public bool canBePlaced;
+
+    public EditorCanPlaceBuildingEvent(Vector3Int _pos, BuildingType _type, Rotation _rot)
+    {
+        pos = _pos;
+        buildingType = _type;
+        rotation = _rot;
+    }
+}
+
+public class EditorPlaceBuildingEvent
+{
+    public Vector3Int pos;
+    public BuildingType buildingType;
+    public Rotation rotation;
+
+    public EditorPlaceBuildingEvent(Vector3Int _pos, BuildingType _type, Rotation _rot)
+    {
+        pos = _pos;
+        buildingType = _type;
+        rotation = _rot;
+    }
+}
+
+public class EditorRemoveBuildingEvent
+{
+    public Vector3Int pos;
+    
+    public EditorRemoveBuildingEvent(Vector3Int _pos)
+    {
+        pos = _pos;
+    }
+}

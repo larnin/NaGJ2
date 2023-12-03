@@ -38,5 +38,17 @@ public static class BuildingDataEx
                 return defaultSize;
         }
     }
+
+    public static BoundsInt GetBuildingBounds(BuildingType type, Vector3Int pos, Rotation rot, int level = 0)
+    {
+        var size = GetBuildingSize(type, level);
+
+        size = RotationEx.Rotate(size, rot);
+
+        pos.x -= size.x / 2;
+        pos.z -= size.z / 2;
+
+        return new BoundsInt(pos, size);
+    }
 }
 

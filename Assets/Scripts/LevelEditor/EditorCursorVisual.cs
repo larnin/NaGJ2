@@ -108,16 +108,29 @@ public class EditorCursorVisual : MonoBehaviour
         }
         else if (click == EditorCursorClickType.rightClick)
         {
-            bool valid = BlockDataEx.GetValidPos(BlockType.air, blockPos, pos, out outPos);
-            if (!valid)
-                return;
-            BlockDataEx.SetBlock(BlockType.air, outPos);
+            if (!DeleteBuilding(pos, blockPos))
+            {
+                bool valid = BlockDataEx.GetValidPos(BlockType.air, blockPos, pos, out outPos);
+                if (!valid)
+                    return;
+                BlockDataEx.SetBlock(BlockType.air, outPos);
+            }
         }
     }
 
     void OnClickForBuilding(EditorCursorClickType click, Vector3Int pos, Vector3Int blockPos)
     {
-        //todo
+        if (click == EditorCursorClickType.leftClick)
+        {
+
+        }
+        else if (click == EditorCursorClickType.rightClick)
+            DeleteBuilding(pos, blockPos);
+    }
+
+    bool DeleteBuilding(Vector3Int pos, Vector3Int blockPos)
+    {
+        return false;
     }
 
     void SetType(EditorSetCursorBlockEvent e)

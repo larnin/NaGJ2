@@ -70,6 +70,10 @@ public class EditorCursorVisual : MonoBehaviour
 
         Vector3Int outPos = Vector3Int.zero;
         bool valid = BlockDataEx.GetValidPos(type, blockPos, pos, out outPos);
+        EditorGetBuildingAtEvent e = new EditorGetBuildingAtEvent(outPos);
+        Event<EditorGetBuildingAtEvent>.Broadcast(e);
+        if (e.ID != 0)
+            valid = false;
         if (valid)
             SetCursorPosition(outPos, true);
         else SetCursorPosition(outPos, false);
@@ -80,7 +84,12 @@ public class EditorCursorVisual : MonoBehaviour
 
     void UpdateForBuilding(Vector3Int pos, Vector3Int blockPos)
     {
-        //todo
+        if (Input.GetKeyDown(KeyCode.R))
+            m_rotation = RotationEx.Add(m_rotation, Rotation.rot_90);
+
+        SetCursorPosition(pos, true);
+
+        UpdateBuildingCursorColor(pos, m_buildingType);
     }
 
     void OnClick(EditorCursorClickEvent e)
@@ -104,6 +113,11 @@ public class EditorCursorVisual : MonoBehaviour
             if (!valid)
                 return;
 
+            EditorGetBuildingAtEvent e = new EditorGetBuildingAtEvent(outPos);
+            Event<EditorGetBuildingAtEvent>.Broadcast(e);
+            if (e.ID != 0)
+                return;
+
             BlockDataEx.SetBlock(m_blockType, m_rotation, m_blockData, outPos);
         }
         else if (click == EditorCursorClickType.rightClick)
@@ -122,7 +136,10 @@ public class EditorCursorVisual : MonoBehaviour
     {
         if (click == EditorCursorClickType.leftClick)
         {
+            if (!CanPlaceBuilding(pos, m_buildingType))
+                return;
 
+            Event<EditorPlaceBuildingEvent>.Broadcast(new EditorPlaceBuildingEvent(pos, m_buildingType, m_rotation, Team.player));
         }
         else if (click == EditorCursorClickType.rightClick)
             DeleteBuilding(pos, blockPos);
@@ -180,27 +197,31 @@ public class EditorCursorVisual : MonoBehaviour
 
     void SetCursorPosition(Vector3Int pos, bool visible)
     {
+        bool blockCursorVisible = false;
+        bool buildingCursorVisible = false;
+
         switch(m_cursorType)
         {
             case CursorType.None:
                 m_cursor = null;
-                m_blockCursor.SetActive(false);
-                m_buildingCursor.SetActive(false);
                 break;
             case CursorType.Block:
                 m_cursor = m_blockCursor;
-                m_blockCursor.SetActive(visible);
-                m_buildingCursor.SetActive(false);
+                blockCursorVisible = visible;
                 break;
             case CursorType.Building:
                 m_cursor = m_buildingCursor;
-                m_blockCursor.SetActive(false);
-                m_buildingCursor.SetActive(visible);
+                buildingCursorVisible = visible;
                 break;
             default:
                 Debug.LogWarning("Unknow cursor type " + m_cursorType);
                 break;
         }
+
+        if (m_blockCursor != null)
+            m_blockCursor.SetActive(blockCursorVisible);
+        if (m_buildingCursor != null)
+            m_buildingCursor.SetActive(buildingCursorVisible);
 
         if (m_cursor != null)
         {
@@ -211,6 +232,75 @@ public class EditorCursorVisual : MonoBehaviour
 
     void UpdateBuildingCursor()
     {
+        if (m_buildingCursor != null)
+            Destroy(m_buildingCursor);
 
+        var prefab = BuildingDataEx.GetBaseBuildingPrefab(m_buildingType);
+
+        m_buildingCursor = Instantiate(prefab);
+        m_buildingCursor.transform.parent = transform;
+        m_buildingCursor.transform.localPosition = Vector3.zero;
+        m_buildingCursor.SetActive(false);
+
+        var colliders = m_buildingCursor.GetComponentsInChildren<Collider>();
+        foreach (var col in colliders)
+            col.enabled = false;
+    }
+
+    void UpdateBuildingCursorColor(Vector3Int pos, BuildingType type)
+    {
+        if (m_buildingCursor == null)
+            return;
+
+        bool canPlace = CanPlaceBuilding(pos, type);
+        Color c = canPlace ? new Color(0, 1, 0) : new Color(1, 0, 0);
+
+        var renderers = m_buildingCursor.GetComponentsInChildren<Renderer>();
+        foreach (var r in renderers)
+        {
+            var mats = r.materials;
+            foreach (var mat in mats)
+                mat.color = c;
+            r.materials = mats;
+        }
+
+        m_buildingCursor.transform.localRotation = RotationEx.ToQuaternion(m_rotation);
+    }
+
+    bool CanPlaceBuilding(Vector3Int pos, BuildingType type)
+    {
+        var bounds = BuildingDataEx.GetBuildingBounds(m_buildingType, pos, m_rotation);
+
+        for(int i = bounds.min.x; i < bounds.max.x; i++)
+        {
+            for (int k = bounds.min.z; k < bounds.max.z; k++)
+            {
+                for (int j = bounds.min.y; j < bounds.max.y; j++)
+                {
+                    EditorGetBlockEvent eBlock = new EditorGetBlockEvent(new Vector3Int(i, j, k));
+                    Event<EditorGetBlockEvent>.Broadcast(eBlock);
+
+                    if (eBlock.type != BlockType.air)
+                        return false;
+
+                    EditorGetBuildingAtEvent eBuilding = new EditorGetBuildingAtEvent(new Vector3Int(i, j, k));
+                    Event<EditorGetBuildingAtEvent>.Broadcast(eBuilding);
+                    if (eBuilding.ID != 0)
+                        return false;
+                }
+
+                EditorGetBlockEvent eGround = new EditorGetBlockEvent(new Vector3Int(i, bounds.min.y - 1, k));
+                Event<EditorGetBlockEvent>.Broadcast(eGround);
+
+                bool groundValid = BlockDataEx.CanPlaceBuildingOnBlock(eGround.type);
+
+                if (type == BuildingType.Belt && eGround.type == BlockType.groundSlope)
+                    groundValid = true;
+
+                if (!groundValid)
+                    return false;
+            }
+        }
+        return true;
     }
 }

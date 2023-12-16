@@ -173,17 +173,8 @@ public class EditorWorld : MonoBehaviour
             var worldObject = new JsonObject();
             rootObject.AddElement("World", worldObject);
 
-            var sizeArray = new JsonArray();
-            worldObject.AddElement("Size", sizeArray);
-            sizeArray.Add(new JsonNumber(m_grid.Width()));
-            sizeArray.Add(new JsonNumber(m_grid.Height()));
-            sizeArray.Add(new JsonNumber(m_grid.Depth()));
-
-            var originArray = new JsonArray();
-            worldObject.AddElement("Origin", originArray);
-            originArray.Add(new JsonNumber(m_grid.OriginX()));
-            originArray.Add(new JsonNumber(m_grid.OriginY()));
-            originArray.Add(new JsonNumber(m_grid.OriginZ()));
+            worldObject.AddElement("Size", Json.FromVector3Int(new Vector3Int(m_grid.Width(), m_grid.Height(), m_grid.Depth())));
+            worldObject.AddElement("Origin", Json.FromVector3Int(new Vector3Int(m_grid.OriginX(), m_grid.OriginY(), m_grid.OriginZ())));
 
             var dataArray = new JsonArray();
             worldObject.AddElement("Data", dataArray);
@@ -224,34 +215,19 @@ public class EditorWorld : MonoBehaviour
         var root = e.document.GetRoot();
         if(root != null && root.IsJsonObject())
         {
-            int width = 1, height = 1, depth = 1;
-            int originX = 0, originY = 0, originZ = 0;
-
             var rootObject = root.JsonObject();
 
             var worldObject = rootObject.GetElement("World")?.JsonObject();
             if(worldObject != null)
             {
-                var sizeArray = worldObject.GetElement("Size")?.JsonArray();
-                if(sizeArray!= null && sizeArray.Size() == 3)
-                {
-                    width = sizeArray[0].Int();
-                    height = sizeArray[1].Int();
-                    depth = sizeArray[2].Int();
-                }
+                var size = Json.ToVector3Int(worldObject.GetElement("Size")?.JsonArray(), Vector3Int.one);
 
-                var originArray = worldObject.GetElement("Origin")?.JsonArray();
-                if(originArray != null && originArray.Size() == 3)
-                {
-                    originX = originArray[0].Int();
-                    originY = originArray[1].Int();
-                    originZ = originArray[2].Int();
-                }
+                var origin = Json.ToVector3Int(worldObject.GetElement("Origin")?.JsonArray(), Vector3Int.zero);
 
-                m_grid.Reset(width, height, depth, originX, originY, originZ);
+                m_grid.Reset(size.x, size.y, size.z, origin.x, origin.y, origin.z);
 
                 var dataArray = worldObject.GetElement("Data")?.JsonArray();
-                if (dataArray != null && dataArray.Size() == width * height * depth)
+                if (dataArray != null && dataArray.Size() == size.x * size.y * size.z)
                 {
                     for (int i = m_grid.MinX(); i <= m_grid.MaxX(); i++)
                     {
@@ -259,7 +235,7 @@ public class EditorWorld : MonoBehaviour
                         {
                             for (int k = m_grid.MinZ(); k <= m_grid.MaxZ(); k++)
                             {
-                                int index = (k - m_grid.MinZ()) + (j - m_grid.MinY()) * depth + (i - m_grid.MinX()) * depth * height;
+                                int index = (k - m_grid.MinZ()) + (j - m_grid.MinY()) * size.z + (i - m_grid.MinX()) * size.y * size.z;
 
                                 var elemObject = dataArray[index].JsonObject();
                                 if(elemObject != null)

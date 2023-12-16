@@ -5,6 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+public enum Team
+{
+    player,
+    neutral,
+    ennemy1,
+    ennemy2,
+    ennemy3,
+}
+
 public enum BuildingType
 {
     Tower0,
@@ -75,6 +84,7 @@ public class AllBuildings
     public MiningCenterData bigMiningCenter;
     public MiningCenterData mediumMiningCenter;
     public MiningCenterData smallMiningCenter;
+    public DrillData drill;
 
     public BeltData belt;
 }

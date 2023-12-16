@@ -92,24 +92,41 @@ public class EditorGetCursorBuildingEvent
 
 public class EditorHaveBuildingEvent
 {
-    public Vector3Int pos;
+    public int ID;
     public bool haveBuilding;
 
-    public EditorHaveBuildingEvent(Vector3Int _pos)
+    public EditorHaveBuildingEvent(int _id)
     {
-        pos = _pos;
+        ID = _id;
     }
 }
 
 public class EditorGetBuildingEvent
 {
-    public Vector3Int pos;
+    public int ID;
 
     public Vector3Int buildingPos;
     public BuildingType buildingType;
     public Rotation rotation;
+    public Team team;
 
-    public EditorGetBuildingEvent(Vector3Int _pos)
+    public EditorGetBuildingEvent(int _id)
+    {
+        ID = _id;
+    }
+}
+
+public class EditorGetBuildingAtEvent
+{
+    public Vector3Int pos;
+
+    public int ID;
+    public Vector3Int buildingPos;
+    public BuildingType buildingType;
+    public Rotation rotation;
+    public Team team;
+
+    public EditorGetBuildingAtEvent(Vector3Int _pos)
     {
         pos = _pos;
     }
@@ -120,14 +137,16 @@ public class EditorCanPlaceBuildingEvent
     public Vector3Int pos;
     public BuildingType buildingType;
     public Rotation rotation;
+    public Team team;
 
     public bool canBePlaced;
 
-    public EditorCanPlaceBuildingEvent(Vector3Int _pos, BuildingType _type, Rotation _rot)
+    public EditorCanPlaceBuildingEvent(Vector3Int _pos, BuildingType _type, Rotation _rot, Team _team)
     {
         pos = _pos;
         buildingType = _type;
         rotation = _rot;
+        team = _team;
     }
 }
 
@@ -136,21 +155,35 @@ public class EditorPlaceBuildingEvent
     public Vector3Int pos;
     public BuildingType buildingType;
     public Rotation rotation;
+    public Team team;
 
-    public EditorPlaceBuildingEvent(Vector3Int _pos, BuildingType _type, Rotation _rot)
+    public int ID;
+
+    public EditorPlaceBuildingEvent(Vector3Int _pos, BuildingType _type, Rotation _rot, Team _team)
     {
         pos = _pos;
         buildingType = _type;
         rotation = _rot;
+        team = _team;
     }
 }
 
 public class EditorRemoveBuildingEvent
 {
-    public Vector3Int pos;
+    public int ID;
     
-    public EditorRemoveBuildingEvent(Vector3Int _pos)
+    public EditorRemoveBuildingEvent(int _id)
     {
-        pos = _pos;
+        ID = _id;
+    }
+}
+
+public class EditorSetBuildingInstance
+{
+    public int ID;
+
+    public EditorSetBuildingInstance(int _id)
+    {
+        ID = _id;
     }
 }

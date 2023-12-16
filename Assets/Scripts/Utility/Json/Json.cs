@@ -68,6 +68,90 @@ public static class Json
 
         return null;
     }
+
+    public static Vector3 ToVector3(JsonArray array, Vector3 def = default(Vector3))
+    {
+        Vector3 vect = def;
+        if(array != null && array.Size() == 3)
+        {
+            vect.x = array[0].Float();
+            vect.y = array[1].Float();
+            vect.z = array[2].Float();
+        }
+        return vect;
+    }
+
+    public static JsonArray FromVector3(Vector3 vect)
+    {
+        var array = new JsonArray();
+        array.Add(new JsonNumber(vect.x));
+        array.Add(new JsonNumber(vect.y));
+        array.Add(new JsonNumber(vect.z));
+
+        return array;
+    }
+
+    public static Vector3Int ToVector3Int(JsonArray array, Vector3Int def = default(Vector3Int))
+    {
+        Vector3Int vect = def;
+        if (array != null && array.Size() == 3)
+        {
+            vect.x = array[0].Int();
+            vect.y = array[1].Int();
+            vect.z = array[2].Int();
+        }
+        return vect;
+    }
+
+    public static JsonArray FromVector3Int(Vector3Int vect)
+    {
+        var array = new JsonArray();
+        array.Add(new JsonNumber(vect.x));
+        array.Add(new JsonNumber(vect.y));
+        array.Add(new JsonNumber(vect.z));
+
+        return array;
+    }
+
+    public static Vector2 ToVector2(JsonArray array, Vector2 def = default(Vector2))
+    {
+        Vector2 vect = def;
+        if (array != null && array.Size() == 2)
+        {
+            vect.x = array[0].Float();
+            vect.y = array[1].Float();
+        }
+        return vect;
+    }
+
+    public static JsonArray FromVector2(Vector2 vect)
+    {
+        var array = new JsonArray();
+        array.Add(new JsonNumber(vect.x));
+        array.Add(new JsonNumber(vect.y));
+
+        return array;
+    }
+
+    public static Vector2Int ToVector2Int(JsonArray array, Vector2Int def = default(Vector2Int))
+    {
+        Vector2Int vect = def;
+        if (array != null && array.Size() == 2)
+        {
+            vect.x = array[0].Int();
+            vect.y = array[1].Int();
+        }
+        return vect;
+    }
+
+    public static JsonArray FromVector2Int(Vector2Int vect)
+    {
+        var array = new JsonArray();
+        array.Add(new JsonNumber(vect.x));
+        array.Add(new JsonNumber(vect.y));
+
+        return array;
+    }
 }
 
 

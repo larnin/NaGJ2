@@ -34,6 +34,8 @@ public static class BuildingDataEx
                 return buildings.mediumMiningCenter.size;
             case BuildingType.SmallMiningCenter:
                 return buildings.smallMiningCenter.size;
+            case BuildingType.Drill:
+                return buildings.drill.size;
             default:
                 return defaultSize;
         }
@@ -49,6 +51,41 @@ public static class BuildingDataEx
         pos.z -= size.z / 2;
 
         return new BoundsInt(pos, size);
+    }
+
+    public static GameObject GetBaseBuildingPrefab(BuildingType type, int level = 0)
+    {
+        var buildings = Global.instance.allBuildings;
+
+        switch (type)
+        {
+            case BuildingType.Tower0:
+                if (level >= 0 && level < buildings.tower0.levels.Count)
+                    return buildings.tower0.levels[level].prefab;
+                return null;
+            case BuildingType.Tower1:
+                if (level >= 0 && level < buildings.tower1.levels.Count)
+                    return buildings.tower1.levels[level].prefab;
+                return null;
+            case BuildingType.Tower2:
+                if (level >= 0 && level < buildings.tower2.levels.Count)
+                    return buildings.tower2.levels[level].prefab;
+                return null;
+            case BuildingType.OperationCenter:
+                return buildings.operationCenter.prefab;
+            case BuildingType.BigMiningCenter:
+                return buildings.bigMiningCenter.prefab;
+            case BuildingType.MediumMiningCenter:
+                return buildings.mediumMiningCenter.prefab;
+            case BuildingType.SmallMiningCenter:
+                return buildings.smallMiningCenter.prefab;
+            case BuildingType.Drill:
+                return buildings.drill.prefab;
+            case BuildingType.Belt:
+                return buildings.belt.forwardPrefab;
+            default:
+                return null;
+        }
     }
 }
 

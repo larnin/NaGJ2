@@ -40,7 +40,7 @@ public class EditorCursor : MonoBehaviour
         var ray = m_camera.ScreenPointToRay(Input.mousePosition);
 
         RaycastHit hit;
-        bool haveHit = Physics.Raycast(ray, out hit);
+        bool haveHit = Physics.Raycast(ray, out hit, m_groundLayer); 
         if(haveHit)
             ProcessHit(ray, hit);
         else

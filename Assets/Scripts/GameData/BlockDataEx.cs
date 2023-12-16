@@ -858,6 +858,11 @@ public static class BlockDataEx
         }
     }
 
+    public static bool CanPlaceBuildingOnBlock(BlockType type)
+    {
+        return type == BlockType.ground;
+    }
+
     public static Rotation ExtractDataRotation(byte data)
     {
         int value = data & 3;

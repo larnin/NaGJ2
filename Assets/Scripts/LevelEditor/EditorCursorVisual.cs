@@ -113,12 +113,17 @@ public class EditorCursorVisual : MonoBehaviour
             if (!valid)
                 return;
 
-            EditorGetBuildingAtEvent e = new EditorGetBuildingAtEvent(outPos);
-            Event<EditorGetBuildingAtEvent>.Broadcast(e);
-            if (e.ID != 0)
-                return;
+            if (m_blockType == BlockType.air)
+                RemoveBlock(outPos);
+            else
+            {
+                EditorGetBuildingAtEvent e = new EditorGetBuildingAtEvent(outPos);
+                Event<EditorGetBuildingAtEvent>.Broadcast(e);
+                if (e.ID != 0)
+                    return;
 
-            BlockDataEx.SetBlock(m_blockType, m_rotation, m_blockData, outPos);
+                BlockDataEx.SetBlock(m_blockType, m_rotation, m_blockData, outPos);
+            }
         }
         else if (click == EditorCursorClickType.rightClick)
         {
@@ -127,9 +132,19 @@ public class EditorCursorVisual : MonoBehaviour
                 bool valid = BlockDataEx.GetValidPos(BlockType.air, blockPos, pos, out outPos);
                 if (!valid)
                     return;
-                BlockDataEx.SetBlock(BlockType.air, outPos);
+                RemoveBlock(outPos);
             }
         }
+    }
+
+    void RemoveBlock(Vector3Int pos)
+    {
+        EditorGetBuildingAtEvent e = new EditorGetBuildingAtEvent(new Vector3Int(pos.x, pos.y + 1, pos.z));
+        Event<EditorGetBuildingAtEvent>.Broadcast(e);
+        if (e.ID != 0)
+            return;
+
+        BlockDataEx.SetBlock(BlockType.air, pos);
     }
 
     void OnClickForBuilding(EditorCursorClickType click, Vector3Int pos, Vector3Int blockPos)
@@ -147,7 +162,19 @@ public class EditorCursorVisual : MonoBehaviour
 
     bool DeleteBuilding(Vector3Int pos, Vector3Int blockPos)
     {
-        return false;
+        EditorGetBuildingAtEvent data = new EditorGetBuildingAtEvent(pos);
+        Event<EditorGetBuildingAtEvent>.Broadcast(data);
+        if(data.ID == 0)
+        {
+            data.pos = blockPos;
+            Event<EditorGetBuildingAtEvent>.Broadcast(data);
+            if (data.ID == 0)
+                return false;
+        }
+
+        EditorRemoveBuildingEvent removeData = new EditorRemoveBuildingEvent(data.ID);
+        Event<EditorRemoveBuildingEvent>.Broadcast(removeData);
+        return true;
     }
 
     void SetType(EditorSetCursorBlockEvent e)

@@ -17,7 +17,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] string m_gameLevel;
     [SerializeField] float m_playDelay;
 
-    Tower m_tower;
+    OLDTower m_tower;
 
     bool m_started = false;
 
@@ -31,7 +31,7 @@ public class MainMenu : MonoBehaviour
             int index = d.Next(rand);
 
             var tower = Instantiate(m_towers[index]);
-            m_tower = tower.GetComponent<Tower>();
+            m_tower = tower.GetComponent<OLDTower>();
             m_tower.AllowFire(false);
             m_tower.OverrideRange(1000);
             m_tower.ForceTarget(m_towerForcedTarget);

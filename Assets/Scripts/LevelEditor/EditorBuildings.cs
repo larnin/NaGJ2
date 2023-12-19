@@ -5,19 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-class EditorBuilding
-{
-    public int ID;
-    public BuildingType buildingType;
-    public Vector3Int pos;
-    public Rotation rotation;
-    public GameObject instance;
-    public Team team;
-}
-
 public class EditorBuildings : MonoBehaviour
 {
-    List<EditorBuilding> m_buildings = new List<EditorBuilding>();
+    List<BuildingElement> m_buildings = new List<BuildingElement>();
 
     SubscriberList m_subscriberList = new SubscriberList();
 
@@ -87,7 +77,7 @@ public class EditorBuildings : MonoBehaviour
         }
     }
 
-    EditorBuilding GetBuilding(int ID)
+    BuildingElement GetBuilding(int ID)
     {
         foreach (var b in m_buildings)
         {
@@ -134,7 +124,7 @@ public class EditorBuildings : MonoBehaviour
 
     void PlaceBuilding(EditorPlaceBuildingEvent e)
     {
-        EditorBuilding b = new EditorBuilding();
+        BuildingElement b = new BuildingElement();
         b.ID = m_nextID;
         m_nextID++;
         b.pos = e.pos;
@@ -158,76 +148,14 @@ public class EditorBuildings : MonoBehaviour
 
     void OnSave(SaveEvent e)
     {
-        var root = e.document.GetRoot();
-        if (root != null && root.IsJsonObject())
-        {
-            var rootObject = root.JsonObject();
-
-            var worldObject = new JsonObject();
-            rootObject.AddElement("Buildings", worldObject);
-
-            var buildingArray = new JsonArray();
-            worldObject.AddElement("List", buildingArray);
-            worldObject.AddElement("NextID", new JsonNumber(m_nextID));
-
-            foreach (var b in m_buildings)
-            {
-                var buildingObject = new JsonObject();
-                buildingArray.Add(buildingObject);
-                buildingObject.AddElement("ID", new JsonNumber(b.ID));
-                buildingObject.AddElement("Pos", Json.FromVector3Int(b.pos));
-                buildingObject.AddElement("Type", new JsonString(b.buildingType.ToString()));
-                buildingObject.AddElement("Rot", new JsonString(b.rotation.ToString()));
-                buildingObject.AddElement("Team", new JsonString(b.team.ToString()));
-            }
-        }
+        BuildingEx.Save(e.document, m_buildings, m_nextID);
     }
 
     void OnLoad(LoadEvent e)
     {
         OnNewLevel(new NewLevelEvent());
 
-        var root = e.document.GetRoot();
-        if (root != null && root.IsJsonObject())
-        {
-            var rootObject = root.JsonObject();
-
-            var worldObject = rootObject.GetElement("Buildings")?.JsonObject();
-            if (worldObject != null)
-            {
-                m_nextID = worldObject.GetElement("NextID")?.Int() ?? 0;
-
-                var buildingArray = worldObject.GetElement("List")?.JsonArray();
-                if(buildingArray != null)
-                {
-                    foreach (var elem in buildingArray)
-                    {
-                        var buildingObject = elem.JsonObject();
-                        if(buildingObject != null)
-                        {
-                            EditorBuilding building = new EditorBuilding();
-
-                            building.ID = buildingObject.GetElement("ID")?.Int() ?? 0;
-                            building.pos = Json.ToVector3Int(buildingObject.GetElement("Pos")?.JsonArray(), Vector3Int.zero);
-                            string str = buildingObject.GetElement("Type")?.String();
-                            if (str == null)
-                                continue;
-                            Enum.TryParse(str, out building.buildingType);
-                            str = buildingObject.GetElement("Rot")?.String();
-                            if (str == null)
-                                continue;
-                            Enum.TryParse(str, out building.rotation);
-                            str = buildingObject.GetElement("Team")?.String();
-                            if (str == null)
-                                continue;
-                            Enum.TryParse(str, out building.team);
-
-                            m_buildings.Add(building);
-                        }
-                    }
-                }
-            }
-        }
+        m_buildings = BuildingEx.Load(e.document, out m_nextID);
 
         foreach (var b in m_buildings)
             UpdateBuilding(b);
@@ -242,7 +170,7 @@ public class EditorBuildings : MonoBehaviour
         m_nextID = 1;
     }
 
-    void UpdateBuilding(EditorBuilding b)
+    void UpdateBuilding(BuildingElement b)
     {
         if(b.instance == null)
         {
@@ -254,7 +182,7 @@ public class EditorBuildings : MonoBehaviour
         Event<EditorSetBuildingInstance>.Broadcast(new EditorSetBuildingInstance(b.ID), b.instance);
     }
 
-    void DestroyBuilding(EditorBuilding b)
+    void DestroyBuilding(BuildingElement b)
     {
         Destroy(b.instance);
     }

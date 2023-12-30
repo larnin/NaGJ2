@@ -110,8 +110,8 @@ public class EditorBuildings : MonoBehaviour
             {
                 for(int k = newBounds.zMin; k <= newBounds.zMax; k++)
                 {
-                    EditorGetBlockEvent blockData = new EditorGetBlockEvent(new Vector3Int(i, j, k));
-                    Event<EditorGetBlockEvent>.Broadcast(blockData);
+                    GetBlockEvent blockData = new GetBlockEvent(new Vector3Int(i, j, k));
+                    Event<GetBlockEvent>.Broadcast(blockData);
                     if(blockData.type != BlockType.air)
                     {
                         e.canBePlaced = false;

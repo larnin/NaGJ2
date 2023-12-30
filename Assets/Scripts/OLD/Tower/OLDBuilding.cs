@@ -15,7 +15,7 @@ public class OLDBuilding : MonoBehaviour
     private void Awake()
     {
         m_subscriberList.Add(new Event<DeathEvent>.LocalSubscriber(OnDeath, gameObject));
-        m_subscriberList.Add(new Event<SetBuildingInfoEvent>.LocalSubscriber(SetBuildingInfo, gameObject));
+        m_subscriberList.Add(new Event<OLDSetBuildingInfoEvent>.LocalSubscriber(SetBuildingInfo, gameObject));
 
         m_subscriberList.Subscribe();
     }
@@ -33,7 +33,7 @@ public class OLDBuilding : MonoBehaviour
         OLDGameSystem.Instance().DestroyBuilding(m_x, m_y);
     }
 
-    void SetBuildingInfo(SetBuildingInfoEvent e)
+    void SetBuildingInfo(OLDSetBuildingInfoEvent e)
     {
         m_x = e.x;
         m_y = e.y;

@@ -229,7 +229,7 @@ public class OLDWorldHolder : MonoBehaviour
         ApplyRotation(obj, rot);
         elem.buildingObject = obj;
 
-        Event<SetBuildingInfoEvent>.Broadcast(new SetBuildingInfoEvent(x, y), obj);
+        Event<OLDSetBuildingInfoEvent>.Broadcast(new OLDSetBuildingInfoEvent(x, y), obj);
     }     
 
     public NearMatrix<bool> GetGroundNearMatrix(int x, int y)

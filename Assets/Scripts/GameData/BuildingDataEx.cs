@@ -45,12 +45,20 @@ public static class BuildingDataEx
     {
         var size = GetBuildingSize(type, level);
 
-        size = RotationEx.Rotate(size, rot);
+        Vector3Int min = new Vector3Int((size.x - 1) / 2, 0, (size.z - 1) / 2);
+        Vector3Int max = new Vector3Int((size.x - 1) - min.x, size.y, (size.z - 1) - min.z);
 
-        pos.x -= size.x / 2;
-        pos.z -= size.z / 2;
+        int count = (int)rot;
+        for (int i = 0; i < count; i++)
+        {
+            int temp = min.x;
+            min.x = max.z;
+            max.z = max.x;
+            max.x = min.z;
+            min.z = temp;
+        }
 
-        return new BoundsInt(pos, size);
+        return new BoundsInt(pos - min, max + min + Vector3Int.one);
     }
 
     public static GameObject GetBaseBuildingPrefab(BuildingType type, int level = 0)

@@ -5,6 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+public enum BuildingPortDirection
+{
+    input,
+    output,
+}
+
+[Serializable]
+public class BuildingOnePortData
+{
+    public Vector3Int pos;
+    public Rotation rotation;
+    public BuildingPortDirection direction;
+}
+
+[Serializable]
+public class BuildingOneBeltData
+{
+    public Vector3Int pos;
+    public Rotation rotation;
+    public int verticalOffset;
+}
+
 public enum Team
 {
     player,

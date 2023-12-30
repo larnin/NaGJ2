@@ -304,8 +304,8 @@ public class EditorCursorVisual : MonoBehaviour
             {
                 for (int j = bounds.min.y; j < bounds.max.y; j++)
                 {
-                    EditorGetBlockEvent eBlock = new EditorGetBlockEvent(new Vector3Int(i, j, k));
-                    Event<EditorGetBlockEvent>.Broadcast(eBlock);
+                    GetBlockEvent eBlock = new GetBlockEvent(new Vector3Int(i, j, k));
+                    Event<GetBlockEvent>.Broadcast(eBlock);
 
                     if (eBlock.type != BlockType.air)
                         return false;
@@ -316,8 +316,8 @@ public class EditorCursorVisual : MonoBehaviour
                         return false;
                 }
 
-                EditorGetBlockEvent eGround = new EditorGetBlockEvent(new Vector3Int(i, bounds.min.y - 1, k));
-                Event<EditorGetBlockEvent>.Broadcast(eGround);
+                GetBlockEvent eGround = new GetBlockEvent(new Vector3Int(i, bounds.min.y - 1, k));
+                Event<GetBlockEvent>.Broadcast(eGround);
 
                 bool groundValid = BlockDataEx.CanPlaceBuildingOnBlock(eGround.type);
 

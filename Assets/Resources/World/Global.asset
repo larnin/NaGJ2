@@ -165,7 +165,7 @@ MonoBehaviour:
       cost:
         costs: []
       prefab: {fileID: 4356035782417431393, guid: 5027ba4ce40e0444a94c294084c2cac6, type: 3}
-      size: {x: 2, y: 1, z: 1}
+      size: {x: 1, y: 1, z: 2}
       mineDistance: 1
     smallMiningCenter:
       cost:

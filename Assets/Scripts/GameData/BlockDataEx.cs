@@ -643,11 +643,11 @@ public static class BlockDataEx
 
     static bool GetValidPosAir(Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
     {
-        EditorGetBlockEvent b1 = new EditorGetBlockEvent(blockPos);
-        EditorGetBlockEvent b2 = new EditorGetBlockEvent(pos);
+        GetBlockEvent b1 = new GetBlockEvent(blockPos);
+        GetBlockEvent b2 = new GetBlockEvent(pos);
 
-        Event<EditorGetBlockEvent>.Broadcast(b1);
-        Event<EditorGetBlockEvent>.Broadcast(b2);
+        Event<GetBlockEvent>.Broadcast(b1);
+        Event<GetBlockEvent>.Broadcast(b2);
 
         if(b2.type != BlockType.air)
         {
@@ -667,11 +667,11 @@ public static class BlockDataEx
 
     static bool GetValidPosGround(BlockType current, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
     {
-        EditorGetBlockEvent b1 = new EditorGetBlockEvent(blockPos);
-        EditorGetBlockEvent b2 = new EditorGetBlockEvent(pos);
+        GetBlockEvent b1 = new GetBlockEvent(blockPos);
+        GetBlockEvent b2 = new GetBlockEvent(pos);
 
-        Event<EditorGetBlockEvent>.Broadcast(b1);
-        Event<EditorGetBlockEvent>.Broadcast(b2);
+        Event<GetBlockEvent>.Broadcast(b1);
+        Event<GetBlockEvent>.Broadcast(b2);
 
         if(b1.type == BlockType.air)
         {
@@ -691,11 +691,11 @@ public static class BlockDataEx
 
     static bool GetValidPosPaint(BlockType current, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
     {
-        EditorGetBlockEvent b1 = new EditorGetBlockEvent(blockPos);
-        EditorGetBlockEvent b2 = new EditorGetBlockEvent(pos);
+        GetBlockEvent b1 = new GetBlockEvent(blockPos);
+        GetBlockEvent b2 = new GetBlockEvent(pos);
 
-        Event<EditorGetBlockEvent>.Broadcast(b1);
-        Event<EditorGetBlockEvent>.Broadcast(b2);
+        Event<GetBlockEvent>.Broadcast(b1);
+        Event<GetBlockEvent>.Broadcast(b2);
 
         if ((IsBlockFull(b1.type) || b1.type == BlockType.air || b1.type == BlockType.waterfall) && current != b1.type)
         {
@@ -709,11 +709,11 @@ public static class BlockDataEx
 
     static bool GetValidPosDecoration(BlockType current, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
     {
-        EditorGetBlockEvent b1 = new EditorGetBlockEvent(blockPos);
-        EditorGetBlockEvent b2 = new EditorGetBlockEvent(pos);
+        GetBlockEvent b1 = new GetBlockEvent(blockPos);
+        GetBlockEvent b2 = new GetBlockEvent(pos);
 
-        Event<EditorGetBlockEvent>.Broadcast(b1);
-        Event<EditorGetBlockEvent>.Broadcast(b2);
+        Event<GetBlockEvent>.Broadcast(b1);
+        Event<GetBlockEvent>.Broadcast(b2);
 
         if (!IsBlockFull(b1.type))
         {
@@ -753,7 +753,7 @@ public static class BlockDataEx
     public static void SetBlock(BlockType type, byte data, Vector3Int pos)
     {
         RemoveCustomBlocksFrom(pos);
-        Event<EditorSetBlockEvent>.Broadcast(new EditorSetBlockEvent(pos, type, data));
+        Event<SetBlockEvent>.Broadcast(new SetBlockEvent(pos, type, data));
         AddCustomBlocksFrom(pos);
     }
 
@@ -761,8 +761,8 @@ public static class BlockDataEx
 
     public static void RemoveCustomBlocksFrom(Vector3Int pos)
     {
-        EditorGetBlockEvent block = new EditorGetBlockEvent(pos);
-        Event<EditorGetBlockEvent>.Broadcast(block);
+        GetBlockEvent block = new GetBlockEvent(pos);
+        Event<GetBlockEvent>.Broadcast(block);
 
         switch(block.type)
         {
@@ -782,36 +782,36 @@ public static class BlockDataEx
         Rotation rot = ExtractDataRotation(data);
 
         Vector3Int front = RotationEx.ToVector3Int(rot) + pos;
-        EditorGetBlockEvent block = new EditorGetBlockEvent(front);
-        Event<EditorGetBlockEvent>.Broadcast(block);
-        EditorSetBlockEvent setBlock = new EditorSetBlockEvent(front, BlockType.air);
+        GetBlockEvent block = new GetBlockEvent(front);
+        Event<GetBlockEvent>.Broadcast(block);
+        SetBlockEvent setBlock = new SetBlockEvent(front, BlockType.air);
         while(block.type == BlockType.waterfall)
         {
             setBlock.pos = block.pos;
-            Event<EditorSetBlockEvent>.Broadcast(setBlock);
+            Event<SetBlockEvent>.Broadcast(setBlock);
             block.pos.y--;
-            Event<EditorGetBlockEvent>.Broadcast(block);
+            Event<GetBlockEvent>.Broadcast(block);
         }
     }
 
     public static void RemoveCustomBlockWaterfallFrom(Vector3Int pos)
     {
-        EditorGetBlockEvent block = new EditorGetBlockEvent(pos);
-        Event<EditorGetBlockEvent>.Broadcast(block);
-        EditorSetBlockEvent setBlock = new EditorSetBlockEvent(pos, BlockType.air);
+        GetBlockEvent block = new GetBlockEvent(pos);
+        Event<GetBlockEvent>.Broadcast(block);
+        SetBlockEvent setBlock = new SetBlockEvent(pos, BlockType.air);
         while (block.type == BlockType.waterfall)
         {
             setBlock.pos = block.pos;
-            Event<EditorSetBlockEvent>.Broadcast(setBlock);
+            Event<SetBlockEvent>.Broadcast(setBlock);
             block.pos.y--;
-            Event<EditorGetBlockEvent>.Broadcast(block);
+            Event<GetBlockEvent>.Broadcast(block);
         }
     }
 
     public static void AddCustomBlocksFrom(Vector3Int pos)
     {
-        EditorGetBlockEvent block = new EditorGetBlockEvent(pos);
-        Event<EditorGetBlockEvent>.Broadcast(block);
+        GetBlockEvent block = new GetBlockEvent(pos);
+        Event<GetBlockEvent>.Broadcast(block);
 
         switch (block.type)
         {
@@ -828,17 +828,17 @@ public static class BlockDataEx
         Rotation rot = ExtractDataRotation(data);
 
         Vector3Int front = RotationEx.ToVector3Int(rot) + pos;
-        EditorGetBlockEvent block = new EditorGetBlockEvent(front);
-        Event<EditorGetBlockEvent>.Broadcast(block);
-        EditorSetBlockEvent setBlock = new EditorSetBlockEvent(front, BlockType.waterfall, MakeData(rot, 0));
+        GetBlockEvent block = new GetBlockEvent(front);
+        Event<GetBlockEvent>.Broadcast(block);
+        SetBlockEvent setBlock = new SetBlockEvent(front, BlockType.waterfall, MakeData(rot, 0));
         int nbMax = Global.instance.allBlocks.river.waterfallSize;
 
         for(int i = 0; i < nbMax && block.type == BlockType.air; i++)
         {
             setBlock.pos = block.pos;
-            Event<EditorSetBlockEvent>.Broadcast(setBlock);
+            Event<SetBlockEvent>.Broadcast(setBlock);
             block.pos.y--;
-            Event<EditorGetBlockEvent>.Broadcast(block);
+            Event<GetBlockEvent>.Broadcast(block);
         }
     }
 

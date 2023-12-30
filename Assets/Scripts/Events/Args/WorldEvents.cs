@@ -14,3 +14,31 @@ public class ShowLoadingScreenEvent
         start = _start;
     }
 }
+
+public class SetBlockEvent
+{
+    public BlockType type;
+    public byte data;
+    public Vector3Int pos;
+
+    public SetBlockEvent(Vector3Int _pos, BlockType _type, byte _data = 0)
+    {
+        type = _type;
+        data = _data;
+        pos = _pos;
+    }
+}
+
+public class GetBlockEvent
+{
+    public BlockType type;
+    public byte data;
+    public Vector3Int pos;
+
+    public GetBlockEvent(Vector3Int _pos)
+    {
+        type = BlockType.air;
+        data = 0;
+        pos = _pos;
+    }
+}

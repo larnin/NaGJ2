@@ -25,3 +25,5 @@ public class LoadEvent
         document = _document;
     }
 }
+
+public class LoadEndedEvent { }

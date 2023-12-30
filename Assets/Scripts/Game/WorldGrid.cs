@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-struct EditorBlock
+struct OneBlock
 {
     public SimpleBlock block;
     public GameObject instance;
 }
 
-public class EditorWorld : MonoBehaviour
+public class WorldGrid : MonoBehaviour
 {
-    ResizableMatrix3<EditorBlock> m_grid = new ResizableMatrix3<EditorBlock>(1, 1, 1);
+    ResizableMatrix3<OneBlock> m_grid = new ResizableMatrix3<OneBlock>(1, 1, 1);
 
     SubscriberList m_subscriberList = new SubscriberList();
 
@@ -21,8 +21,8 @@ public class EditorWorld : MonoBehaviour
 
     private void Awake()
     {
-        m_subscriberList.Add(new Event<EditorSetBlockEvent>.Subscriber(SetBlock));
-        m_subscriberList.Add(new Event<EditorGetBlockEvent>.Subscriber(GetBlock));
+        m_subscriberList.Add(new Event<SetBlockEvent>.Subscriber(SetBlock));
+        m_subscriberList.Add(new Event<GetBlockEvent>.Subscriber(GetBlock));
         m_subscriberList.Add(new Event<SaveEvent>.Subscriber(OnSave));
         m_subscriberList.Add(new Event<LoadEvent>.Subscriber(OnLoad));
         m_subscriberList.Add(new Event<NewLevelEvent>.Subscriber(OnNew));
@@ -34,12 +34,12 @@ public class EditorWorld : MonoBehaviour
         m_subscriberList.Unsubscribe();
     }
 
-    void SetBlock(EditorSetBlockEvent e)
+    void SetBlock(SetBlockEvent e)
     {
         SetBlock(e.pos, e.type, e.data);
     }
 
-    void GetBlock(EditorGetBlockEvent e)
+    void GetBlock(GetBlockEvent e)
     {
         if(!m_grid.IsInGrid(e.pos.x, e.pos.y, e.pos.z))
         {
@@ -56,7 +56,7 @@ public class EditorWorld : MonoBehaviour
 
     void SetBlock(Vector3Int pos, BlockType type, byte data)
     {
-        EditorBlock block = new EditorBlock();
+        OneBlock block = new OneBlock();
         if (m_grid.IsInGrid(pos.x, pos.y, pos.z))
             block = m_grid.Get(pos.x, pos.y, pos.z);
         block.block.id = type;
@@ -240,7 +240,7 @@ public class EditorWorld : MonoBehaviour
                                 var elemObject = dataArray[index].JsonObject();
                                 if(elemObject != null)
                                 {
-                                    var item = new EditorBlock();
+                                    var item = new OneBlock();
 
                                     string name = elemObject.GetElement("T")?.String();
                                     if (name != null)

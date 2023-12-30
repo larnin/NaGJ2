@@ -117,6 +117,16 @@ public static class RotationEx
         return Rotation.rot_270;
     }
 
+    public static Rotation FromVector(Vector3Int dir)
+    {
+        return FromVector(new Vector2Int(dir.x, dir.z));
+    }
+
+    public static Rotation FromVector(Vector3 dir)
+    {
+        return FromVector(new Vector2(dir.x, dir.z));
+    }
+
     public static Vector2Int Rotate(Vector2Int dir, Rotation rot)
     {
         int count = (int)rot;

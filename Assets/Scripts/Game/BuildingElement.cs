@@ -13,6 +13,19 @@ public class BuildingElement
     public Rotation rotation;
     public GameObject instance;
     public Team team;
+
+    public BuildingElement Clone()
+    {
+        BuildingElement b = new BuildingElement();
+        b.ID = ID;
+        b.buildingType = buildingType;
+        b.pos = pos;
+        b.rotation = rotation;
+        b.instance = instance;
+        b.team = team;
+
+        return b;
+    }
 }
 
 

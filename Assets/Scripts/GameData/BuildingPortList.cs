@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 public class BuildingPortList : MonoBehaviour
-{ 
+{
+    [SerializeField] List<BuildingContainer> m_containers = new List<BuildingContainer>();
     [SerializeField] List<BuildingOnePortData> m_portList = new List<BuildingOnePortData>();
 
     SubscriberList m_subsciberList = new SubscriberList();
@@ -27,6 +28,26 @@ public class BuildingPortList : MonoBehaviour
     void GetPorts(GetBuildingPortsEvent e)
     {
         e.ports = GetPorts();
+        e.containers = GetContainers();
+    }
+
+    List<BuildingContainer> GetContainers()
+    {
+        GetBuildingInstanceIDEvent idData = new GetBuildingInstanceIDEvent();
+        Event<GetBuildingInstanceIDEvent>.Broadcast(idData, gameObject);
+
+        List<BuildingContainer> containers = new List<BuildingContainer>();
+        for(int i = 0; i < m_containers.Count; i++)
+        {
+            var c = new BuildingContainer();
+            c.direction = m_containers[i].direction;
+            c.id = idData.ID;
+            c.index = i;
+            c.filter = m_containers[i].filter.Copy();
+            c.count = m_containers[i].count;
+        }
+
+        return containers;
     }
 
     List<BuildingOnePortData> GetPorts()
@@ -63,6 +84,7 @@ public class BuildingPortList : MonoBehaviour
         foreach (var p in m_portList)
         {
             BuildingOnePortData data = new BuildingOnePortData();
+            data.containerIndex = p.containerIndex;
             data.rotation = RotationEx.Add(rot, p.rotation);
             data.direction = p.direction;
             data.pos = pos + p.pos;

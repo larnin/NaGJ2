@@ -45,43 +45,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f3f34bb2eca15445a4f89838ac5d183, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_containers:
+  - id: 0
+    index: 0
+    direction: 0
+    filter:
+      type: 0
+      resources: 
+    count: -1
   m_portList:
   - pos: {x: 1, y: 0, z: 0}
     rotation: 3
     direction: 0
+    containerIndex: 0
   - pos: {x: 1, y: 0, z: 1}
     rotation: 3
     direction: 0
+    containerIndex: 0
   - pos: {x: 1, y: 0, z: -1}
     rotation: 3
     direction: 0
+    containerIndex: 0
   - pos: {x: 0, y: 0, z: -1}
     rotation: 2
     direction: 0
+    containerIndex: 0
   - pos: {x: 1, y: 0, z: -1}
     rotation: 2
     direction: 0
+    containerIndex: 0
   - pos: {x: -1, y: 0, z: -1}
     rotation: 2
     direction: 0
+    containerIndex: 0
   - pos: {x: -1, y: 0, z: 0}
     rotation: 1
     direction: 0
+    containerIndex: 0
   - pos: {x: -1, y: 0, z: -1}
     rotation: 1
     direction: 0
+    containerIndex: 0
   - pos: {x: -1, y: 0, z: 1}
     rotation: 1
     direction: 0
+    containerIndex: 0
   - pos: {x: 0, y: 0, z: 1}
     rotation: 0
     direction: 0
+    containerIndex: 0
   - pos: {x: -1, y: 0, z: 1}
     rotation: 0
     direction: 0
+    containerIndex: 0
   - pos: {x: 1, y: 0, z: 1}
     rotation: 0
     direction: 0
+    containerIndex: 0
 --- !u!1 &8328146292900113397
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,6 +9,51 @@ public enum BuildingPortDirection
 {
     input,
     output,
+    inout,
+}
+
+public enum ResourceFilterType
+{
+    everything,
+    isOneOf,
+    notOneOf,
+}
+
+[Serializable]
+public class ResourceFilter
+{
+    public ResourceFilterType type;
+    public List<ResourceType> resources = new List<ResourceType>();
+
+    public ResourceFilter Copy()
+    {
+        var r = new ResourceFilter();
+        r.type = type;
+        r.resources = resources.ToList();
+        return r;
+    }
+
+    public bool IsValid(ResourceType resource)
+    {
+        if (type == ResourceFilterType.everything)
+            return true;
+
+        bool isInList = resources != null && resources.Contains(resource);
+        if (isInList)
+            return type == ResourceFilterType.isOneOf;
+        else return type == ResourceFilterType.notOneOf;
+    }
+}
+
+[Serializable]
+public class BuildingContainer
+{
+    [HideInInspector] public int id; //building ID
+    [HideInInspector] public int index; //container index in building
+
+    public BuildingPortDirection direction;
+    public ResourceFilter filter;
+    public int count;
 }
 
 [Serializable]
@@ -17,6 +62,7 @@ public class BuildingOnePortData
     public Vector3Int pos;
     public Rotation rotation;
     public BuildingPortDirection direction;
+    public int containerIndex;
 }
 
 [Serializable]

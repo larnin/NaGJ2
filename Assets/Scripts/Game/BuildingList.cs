@@ -222,22 +222,32 @@ public class BuildingList : MonoBehaviour
     {
         e.belts.Clear();
         e.ports.Clear();
+        e.containers.Clear();
 
         GetBuildingPortsEvent portData = new GetBuildingPortsEvent();
 
         foreach (var b in m_buildings)
         {
+            int firstContainer = e.containers.Count;
+
             portData.ports.Clear();
+            portData.containers.Clear();
             Event<GetBuildingPortsEvent>.Broadcast(portData, b.instance);
             foreach (var d in portData.ports)
+            {
+                d.containerIndex += firstContainer;
                 e.ports.Add(d);
+            }
+
+            foreach(var d in portData.containers)
+                e.containers.Add(d);
 
             if (b.buildingType == BuildingType.Belt)
             {
                 var data = new BuildingOneBeltData();
                 data.pos = b.pos;
                 data.rotation = b.rotation;
-                data.verticalOffset = 0;
+                data.verticalOffset = 0; //todo later
                 e.belts.Add(data);
             }
         }

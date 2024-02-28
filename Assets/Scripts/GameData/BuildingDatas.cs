@@ -135,6 +135,7 @@ public class DrillData
 [Serializable]
 public class BeltData
 {
+    public ResourceCostData cost;
     public GameObject forwardPrefab;
     public GameObject leftPrefab;
     public GameObject rightPrefab;

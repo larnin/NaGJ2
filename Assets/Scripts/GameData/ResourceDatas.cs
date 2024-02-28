@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public enum ResourceType
 {
@@ -26,7 +27,28 @@ public class ResourceCostData
 }
 
 [Serializable]
+public class OneResource
+{
+    public ResourceType type;
+    public GameObject prefab;
+    public Texture sprite;
+}
+
+[Serializable]
 public class AllResources
 {
+    public float beltResourceSpacing = 0.5f;
 
+    [SerializeField] List<OneResource> m_resources;
+
+    public OneResource Get(ResourceType type)
+    {
+        foreach(var r in m_resources)
+        {
+            if (r.type == type)
+                return r;
+        }
+
+        return null;
+    }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class ButtonHit : MonoBehaviour
+public class OLDButtonHit : MonoBehaviour
 {
     [SerializeField] float m_hitPower = 1;
 

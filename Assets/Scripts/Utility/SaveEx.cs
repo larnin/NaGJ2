@@ -69,5 +69,66 @@ public static class SaveEx
 
         return asset.text;
     }
+
+    public static string GetRelativeAssetPath(string path)
+    {
+        string originFolder = "Assets";
+
+        int startIndex = 0;
+
+        do
+        {
+            int index = path.IndexOf(originFolder, startIndex);
+            if (index < 0)
+                return path;
+
+            char lastChar = '\\';
+            char nextChar = '\\';
+
+            if (index > 0)
+                lastChar = path[index - 1];
+            if (index < path.Length - originFolder.Length - 1)
+                nextChar = path[index + originFolder.Length];
+
+            if ((lastChar == '\\' || lastChar == '/') && (nextChar == '/' || nextChar == '\\'))
+                return path.Substring(index);
+
+            startIndex = index + 1;
+
+        } while (startIndex >= 0);
+
+        return path;
+    }
+
+    public static void SaveLevelFromEditor(string path, JsonDocument doc)
+    {
+        string data = Json.WriteToString(doc);
+
+        var obj = AssetDatabase.LoadAssetAtPath<LevelScriptableObject>(path);
+        if (obj == null)
+        {
+            obj = ScriptableObject.CreateInstance<LevelScriptableObject>();
+            obj.data = data;
+            AssetDatabase.CreateAsset(obj, path);
+            EditorUtility.SetDirty(obj);
+            AssetDatabase.SaveAssets();
+        }
+        else
+        {
+            obj.data = data;
+            EditorUtility.SetDirty(obj);
+            AssetDatabase.SaveAssets();
+        }
+    }
+
+    public static JsonDocument LoadLevelFromEditor(string path)
+    {
+        var obj = AssetDatabase.LoadAssetAtPath<LevelScriptableObject>(path);
+        if (obj != null)
+            return null;
+
+        var json = Json.ReadFromString(obj.data);
+        return json;
+    }
 }
 

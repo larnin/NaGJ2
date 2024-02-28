@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class MenuFakeTarget : MonoBehaviour
+public class OLDMenuFakeTarget : MonoBehaviour
 {
     [SerializeField] LayerMask m_targetLayer;
 

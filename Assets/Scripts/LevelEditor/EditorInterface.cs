@@ -154,7 +154,17 @@ public class EditorInterface : MonoBehaviour
         SaveEvent e = new SaveEvent(doc);
         Event<SaveEvent>.Broadcast(e);
 
-        Json.WriteToFile(m_currentPath, doc);
+#if UNITY_EDITOR
+        string relativePath = SaveEx.GetRelativeAssetPath(m_currentPath);
+        if(relativePath != m_currentPath)
+        {
+            SaveEx.SaveLevelFromEditor(relativePath, doc);
+        }
+        else
+#endif
+        {
+            Json.WriteToFile(m_currentPath, doc);
+        }
     }
 
     public void OnSaveAs()
@@ -180,7 +190,19 @@ public class EditorInterface : MonoBehaviour
 
         UpdateFilename();
 
-        JsonDocument doc = Json.ReadFromFile(m_currentPath);
+        JsonDocument doc = null;
+
+#if UNITY_EDITOR
+        string relativePath = SaveEx.GetRelativeAssetPath(m_currentPath);
+        if (relativePath != m_currentPath)
+        {
+            doc = SaveEx.LoadLevelFromEditor(relativePath);
+        }
+        else
+#endif
+        {
+            doc = Json.ReadFromFile(m_currentPath);
+        }
 
         LoadEvent e = new LoadEvent(doc);
         Event<LoadEvent>.Broadcast(e);

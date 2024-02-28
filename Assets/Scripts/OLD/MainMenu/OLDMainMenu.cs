@@ -7,7 +7,7 @@ using UnityEngine;
 using NRand;
 using DG.Tweening;
 
-public class MainMenu : MonoBehaviour
+public class OLDMainMenu : MonoBehaviour
 {
     [SerializeField] List<GameObject> m_towers = new List<GameObject>();
     [SerializeField] Transform m_towerPosition;
@@ -42,7 +42,7 @@ public class MainMenu : MonoBehaviour
 
         if(m_PlayButton != null)
         {
-            var button = m_PlayButton.GetComponent<ButtonHit>();
+            var button = m_PlayButton.GetComponent<OLDButtonHit>();
             button?.onClick.AddListener(OnPlayClick);
         }
 

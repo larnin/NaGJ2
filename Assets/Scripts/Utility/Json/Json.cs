@@ -11,7 +11,12 @@ public static class Json
 {
     public static JsonDocument ReadFromFile(string path)
     {
+        if (!SaveEx.FileExist(path))
+            return null;
+
         string data = SaveEx.LoadFile(path);
+        if (data == null)
+            return null;
 
         return ReadFromString(data);
     }
@@ -19,7 +24,7 @@ public static class Json
     public static JsonDocument ReadFromString(string data)
     {
         if (data == null)
-            return new JsonDocument();
+            return null;
 
         var reader = new JsonTextReader(new StringReader(data));
 
@@ -84,9 +89,9 @@ public static class Json
     public static JsonArray FromVector3(Vector3 vect)
     {
         var array = new JsonArray();
-        array.Add(new JsonNumber(vect.x));
-        array.Add(new JsonNumber(vect.y));
-        array.Add(new JsonNumber(vect.z));
+        array.Add(vect.x);
+        array.Add(vect.y);
+        array.Add(vect.z);
 
         return array;
     }
@@ -106,9 +111,9 @@ public static class Json
     public static JsonArray FromVector3Int(Vector3Int vect)
     {
         var array = new JsonArray();
-        array.Add(new JsonNumber(vect.x));
-        array.Add(new JsonNumber(vect.y));
-        array.Add(new JsonNumber(vect.z));
+        array.Add(vect.x);
+        array.Add(vect.y);
+        array.Add(vect.z);
 
         return array;
     }
@@ -127,8 +132,8 @@ public static class Json
     public static JsonArray FromVector2(Vector2 vect)
     {
         var array = new JsonArray();
-        array.Add(new JsonNumber(vect.x));
-        array.Add(new JsonNumber(vect.y));
+        array.Add(vect.x);
+        array.Add(vect.y);
 
         return array;
     }
@@ -147,8 +152,42 @@ public static class Json
     public static JsonArray FromVector2Int(Vector2Int vect)
     {
         var array = new JsonArray();
-        array.Add(new JsonNumber(vect.x));
-        array.Add(new JsonNumber(vect.y));
+        array.Add(vect.x);
+        array.Add(vect.y);
+
+        return array;
+    }
+
+    public static Rect ToRect(JsonArray array, Rect def = default(Rect))
+    {
+        Rect rect = def;
+        if(array != null && array.Size() == 4)
+        {
+            Vector2 pos = rect.position;
+            pos.x = array[0].Int();
+            pos.y = array[1].Int();
+
+            Vector2 size = rect.size;
+            size.x = array[2].Int();
+            size.y = array[3].Int();
+
+            rect.position = pos;
+            rect.size = size;
+        }
+
+        return rect;
+    }
+
+    public static JsonArray FromRect(Rect rect)
+    {
+        Vector2 pos = rect.position;
+        Vector2 size = rect.size;
+
+        var array = new JsonArray();
+        array.Add(pos.x);
+        array.Add(pos.y);
+        array.Add(size.x);
+        array.Add(size.y);
 
         return array;
     }

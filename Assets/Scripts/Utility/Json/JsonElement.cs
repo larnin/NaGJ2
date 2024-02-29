@@ -111,6 +111,21 @@ public class JsonArray : JsonElement, IEnumerable<JsonElement>
         m_elements.Add(element);
     }
 
+    public void Add(string value)
+    {
+        Add(new JsonString(value));
+    }
+
+    public void Add(int value)
+    {
+        Add(new JsonNumber(value));
+    }
+
+    public void Add(float value)
+    {
+        Add(new JsonNumber(value));
+    }
+
     public bool Remove(JsonElement element)
     {
         return m_elements.Remove(element);
@@ -148,6 +163,9 @@ public class JsonArray : JsonElement, IEnumerable<JsonElement>
             return;
         do
         {
+            if (reader.TokenType == JsonToken.EndArray)
+                break;
+
             var element = JsonTools.ReadNextElement(reader, false);
             if (element == null)
                 return;
@@ -183,6 +201,21 @@ public class JsonObject : JsonElement, IEnumerable<KeyValuePair<string, JsonElem
     public void AddElement(string key, JsonElement element)
     {
         m_elements[key] = element;
+    }
+
+    public void AddElement(string key, string value)
+    {
+        AddElement(key, new JsonString(value));
+    }
+
+    public void AddElement(string key, int value)
+    {
+        AddElement(key, new JsonNumber(value));
+    }
+
+    public void AddElement(string key, float value)
+    {
+        AddElement(key, new JsonNumber(value));
     }
 
     public bool RemoveElement(string key)

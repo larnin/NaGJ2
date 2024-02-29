@@ -43,6 +43,11 @@ public static class SaveEx
         return true;
     }
 
+    public static bool FileExist(string path)
+    {
+        return File.Exists(path);
+    }
+
     public static string LoadFile(string path)
     {
         try
@@ -52,8 +57,13 @@ public static class SaveEx
         catch (Exception e)
         {
             Debug.LogError("Unable to read " + path + "\n" + e.Message);
-            return "";
+            return null;
         }
+    }
+
+    public static void DeleteFile(string path)
+    {
+        File.Delete(path);
     }
 
     public static string LoadAsset(string assetName)
@@ -65,7 +75,7 @@ public static class SaveEx
     public static string LoadAsset(TextAsset asset)
     {
         if (asset == null)
-            return "";
+            return null;
 
         return asset.text;
     }

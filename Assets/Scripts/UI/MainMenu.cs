@@ -108,8 +108,12 @@ public class MainMenu : MonoBehaviour
 
         Save.instance.DeleteSave(index);
 
-        for(int i = 0; i < m_selectSaveCenter.childCount; i++)
-            Destroy(m_selectSaveCenter.GetChild(i));
+        while (m_selectSaveCenter.childCount > 0)
+        {
+            var obj = m_selectSaveCenter.GetChild(0);
+            obj.SetParent(null, false);
+            Destroy(obj.gameObject);
+        }
 
         PopulateSelectSave();
     }

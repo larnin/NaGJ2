@@ -52,6 +52,8 @@ public class SaveHeader
 
     void Start()
     {
+        if (!empty)
+            return;
         ResetPlayTime();
         empty = false;
     }

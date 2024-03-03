@@ -594,7 +594,7 @@ MonoBehaviour:
   m_transitionSize: {x: 750, y: 400}
   m_transitionDuration: 2
   m_editorLevelName: LevelEditor
-  m_gameLevelName: Game
+  m_gameLevelName: LevelSelect
 --- !u!1 &370274865
 GameObject:
   m_ObjectHideFlags: 0

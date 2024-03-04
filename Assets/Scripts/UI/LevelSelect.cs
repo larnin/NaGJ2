@@ -131,7 +131,7 @@ public class LevelSelect : MonoBehaviour
 
         m_selectedMenu = true;
 
-        //todo use index to create a level
+        Gamestate.instance.currentLevel = m_levels[index].level;
 
         SceneSystem.changeScene(m_gameName);
     }

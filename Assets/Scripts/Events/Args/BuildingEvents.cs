@@ -59,6 +59,18 @@ public class GetBuildingAtEvent
     }
 }
 
+public class GetBuildingByTypeEvent
+{
+    public BuildingType type;
+
+    public BuildingElement element;
+
+    public GetBuildingByTypeEvent(BuildingType _type)
+    {
+        type = _type;
+    }
+}
+
 public class GetBuildingPortsEvent
 {
     public List<BuildingOnePortData> ports;

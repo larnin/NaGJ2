@@ -95,5 +95,90 @@ public static class BuildingDataEx
                 return null;
         }
     }
+
+    public static ResourceCostData GetCost(BuildingType type, int level = 0)
+    {
+        var buildings = Global.instance.allBuildings;
+
+        switch (type)
+        {
+            case BuildingType.Tower0:
+                if (level >= 0 && level < buildings.tower0.levels.Count)
+                    return buildings.tower0.levels[level].cost;
+                return null;
+            case BuildingType.Tower1:
+                if (level >= 0 && level < buildings.tower1.levels.Count)
+                    return buildings.tower1.levels[level].cost;
+                return null;
+            case BuildingType.Tower2:
+                if (level >= 0 && level < buildings.tower2.levels.Count)
+                    return buildings.tower2.levels[level].cost;
+                return null;
+            case BuildingType.BigMiningCenter:
+                return buildings.bigMiningCenter.cost;
+            case BuildingType.MediumMiningCenter:
+                return buildings.mediumMiningCenter.cost;
+            case BuildingType.SmallMiningCenter:
+                return buildings.smallMiningCenter.cost;
+            case BuildingType.Belt:
+                return buildings.belt.cost;
+            default:
+                return null;
+        }
+    }
+
+    public static string GetName(BuildingType type)
+    {
+        var buildings = Global.instance.allBuildings;
+
+        switch (type)
+        {
+            case BuildingType.Tower0:
+                return buildings.tower0.name;
+            case BuildingType.Tower1:
+                return buildings.tower1.name;
+            case BuildingType.Tower2:
+                return buildings.tower2.name;
+            case BuildingType.OperationCenter:
+                return buildings.operationCenter.name;
+            case BuildingType.BigMiningCenter:
+                return buildings.bigMiningCenter.name;
+            case BuildingType.MediumMiningCenter:
+                return buildings.mediumMiningCenter.name;
+            case BuildingType.SmallMiningCenter:
+                return buildings.smallMiningCenter.name;
+            case BuildingType.Belt:
+                return buildings.belt.name;
+            default:
+                return "";
+        }
+    }
+
+    public static string GetDescription(BuildingType type)
+    {
+        var buildings = Global.instance.allBuildings;
+
+        switch (type)
+        {
+            case BuildingType.Tower0:
+                return buildings.tower0.description;
+            case BuildingType.Tower1:
+                return buildings.tower1.description;
+            case BuildingType.Tower2:
+                return buildings.tower2.description;
+            case BuildingType.OperationCenter:
+                return buildings.operationCenter.description;
+            case BuildingType.BigMiningCenter:
+                return buildings.bigMiningCenter.description;
+            case BuildingType.MediumMiningCenter:
+                return buildings.mediumMiningCenter.description;
+            case BuildingType.SmallMiningCenter:
+                return buildings.smallMiningCenter.description;
+            case BuildingType.Belt:
+                return buildings.belt.description;
+            default:
+                return "";
+        }
+    }
 }
 

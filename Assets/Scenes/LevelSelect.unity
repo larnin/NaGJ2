@@ -1170,43 +1170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0df76e9ac8b54d2458e2be0ffffc8e88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_levels:
-  - name: First
-    level: {fileID: 0}
-    preview: {fileID: 0}
-    difficulty: 0
-  - name: Second
-    level: {fileID: 0}
-    preview: {fileID: 0}
-    difficulty: 0
-  - name: An other
-    level: {fileID: 0}
-    preview: {fileID: 0}
-    difficulty: 0
-  - name: Oh! A coin
-    level: {fileID: 0}
-    preview: {fileID: 0}
-    difficulty: 1
-  - name: Pop !
-    level: {fileID: 0}
-    preview: {fileID: 0}
-    difficulty: 3
-  - name: Easy !
-    level: {fileID: 0}
-    preview: {fileID: 0}
-    difficulty: 0
-  - name: Boring
-    level: {fileID: 0}
-    preview: {fileID: 0}
-    difficulty: 0
-  - name: Cows cows cows
-    level: {fileID: 0}
-    preview: {fileID: 0}
-    difficulty: 2
-  - name: The end ?
-    level: {fileID: 0}
-    preview: {fileID: 0}
-    difficulty: 1
+  m_levels: []
   m_leftButton: {fileID: 1047726016}
   m_rightButton: {fileID: 1827896140}
   m_previousMenuName: MainMenu

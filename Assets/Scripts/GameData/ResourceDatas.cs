@@ -31,7 +31,7 @@ public class OneResource
 {
     public ResourceType type;
     public GameObject prefab;
-    public Texture sprite;
+    public Sprite sprite;
 }
 
 [Serializable]

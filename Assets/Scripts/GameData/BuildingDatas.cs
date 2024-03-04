@@ -106,12 +106,18 @@ public class OneTowerData
 [Serializable]
 public class TowerData
 {
+    public string name;
+    [Multiline]
+    public string description;
     public List<OneTowerData> levels;
 }
 
 [Serializable]
 public class OperationCenterData
 {
+    public string name;
+    [Multiline]
+    public string description;
     public GameObject prefab;
     public Vector3Int size = new Vector3Int(1, 1, 1);
 }
@@ -119,6 +125,9 @@ public class OperationCenterData
 [Serializable]
 public class MiningCenterData
 {
+    public string name;
+    [Multiline]
+    public string description;
     public ResourceCostData cost;
     public GameObject prefab;
     public Vector3Int size = new Vector3Int(1, 1, 1);
@@ -135,6 +144,9 @@ public class DrillData
 [Serializable]
 public class BeltData
 {
+    public string name;
+    [Multiline]
+    public string description;
     public ResourceCostData cost;
     public GameObject forwardPrefab;
     public GameObject leftPrefab;

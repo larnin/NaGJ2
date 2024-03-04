@@ -169,7 +169,7 @@ public class EditorInterface : MonoBehaviour
 
     public void OnSaveAs()
     {
-        string path = SaveEx.GetSaveFilePath("Save world", m_currentPath, "lvl");
+        string path = SaveEx.GetSaveFilePath("Save world", m_currentPath, "asset");
         if (path.Length == 0)
             return;
 
@@ -182,7 +182,7 @@ public class EditorInterface : MonoBehaviour
 
     public void OnLoad()
     {
-        string path = SaveEx.GetLoadFiltPath("Load world", m_currentPath, "lvl");
+        string path = SaveEx.GetLoadFiltPath("Load world", m_currentPath, "asset");
         if (path.Length == 0)
             return;
 

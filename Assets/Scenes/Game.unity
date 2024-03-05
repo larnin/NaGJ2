@@ -2563,7 +2563,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playSprite: {fileID: -686695761, guid: ba8445a584fd97a42b1a59627e819cf7, type: 3}
   m_pauseSprite: {fileID: 84286614, guid: ba8445a584fd97a42b1a59627e819cf7, type: 3}
-  m_pausePrefab: {fileID: 0}
+  m_pausePrefab: {fileID: 7326490400006769255, guid: 8c4c06f0fe1b9d34fa66b10bad9a4aad, type: 3}
   m_pauseButtonImage: {fileID: 1209260611}
   m_buildingList: 08000000040000000500000006000000000000000100000002000000
   m_buildingListObject: {fileID: 412281931}

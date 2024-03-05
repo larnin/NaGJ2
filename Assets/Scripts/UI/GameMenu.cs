@@ -50,7 +50,7 @@ public class GameMenu : MonoBehaviour
         {
             m_pauseInstance = Instantiate(m_pausePrefab);
             m_pauseInstance.transform.SetParent(transform, false);
-            m_pauseInstance.transform.position = Vector3.zero;
+            m_pauseInstance.transform.localPosition = Vector3.zero;
 
             m_pauseButtonImage.sprite = m_pauseSprite;
         }

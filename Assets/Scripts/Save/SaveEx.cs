@@ -134,7 +134,7 @@ public static class SaveEx
     public static JsonDocument LoadLevelFromEditor(string path)
     {
         var obj = AssetDatabase.LoadAssetAtPath<LevelScriptableObject>(path);
-        if (obj != null)
+        if (obj == null)
             return null;
 
         var json = Json.ReadFromString(obj.data);

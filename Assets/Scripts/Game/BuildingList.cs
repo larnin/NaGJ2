@@ -60,11 +60,11 @@ public class BuildingList : MonoBehaviour
             m_idDictionary.Add(b.ID, x);
 
             var bounds = BuildingDataEx.GetBuildingBounds(b.buildingType, b.pos, b.rotation);
-            for (int i = bounds.xMin; i <= bounds.xMax; i++)
+            for (int i = bounds.xMin; i < bounds.xMax; i++)
             {
-                for (int j = bounds.yMin; j <= bounds.yMax; j++)
+                for (int j = bounds.yMin; j < bounds.yMax; j++)
                 {
-                    for (int k = bounds.zMin; k <= bounds.zMax; k++)
+                    for (int k = bounds.zMin; k < bounds.zMax; k++)
                         m_posDictionary.Add(PosToID(new Vector3Int(i, j, k)), x);
                 }
             }
@@ -73,12 +73,30 @@ public class BuildingList : MonoBehaviour
 
     void UpdateBuilding(BuildingElement b)
     {
-        //todo
+        RemoveBuilding(b);
+
+        var prefab = BuildingDataEx.GetBaseBuildingPrefab(b.buildingType, b.level);
+        if (prefab == null)
+            return;
+
+        var size = Global.instance.allBlocks.blockSize;
+        Vector3 offset = new Vector3(size.x * b.pos.x, size.y * b.pos.y, size.z * b.pos.z);
+        
+        var instance = Instantiate(prefab);
+        instance.transform.parent = transform;
+
+        instance.transform.localPosition = offset;
+        instance.transform.localRotation = RotationEx.ToQuaternion(b.rotation);
+
+        b.instance = instance;
     }
 
     void RemoveBuilding(BuildingElement b)
     {
-        //todo
+        if(b.instance != null)
+        {
+            Destroy(b.instance);
+        }
     }
 
     ulong PosToID(Vector3Int pos)
@@ -148,6 +166,8 @@ public class BuildingList : MonoBehaviour
                 }
             }
         }
+
+        UpdateBuilding(b);
 
         Event<BuildingUpdatedEvent>.Broadcast(new BuildingUpdatedEvent(e.ID, bounds));
     }

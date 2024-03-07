@@ -9,6 +9,7 @@ public class BuildingElement
 {
     public int ID;
     public BuildingType buildingType;
+    public int level;
     public Vector3Int pos;
     public Rotation rotation;
     public GameObject instance;
@@ -19,6 +20,7 @@ public class BuildingElement
         BuildingElement b = new BuildingElement();
         b.ID = ID;
         b.buildingType = buildingType;
+        b.level = level;
         b.pos = pos;
         b.rotation = rotation;
         b.instance = instance;
@@ -49,11 +51,12 @@ public static class BuildingEx
             {
                 var buildingObject = new JsonObject();
                 buildingArray.Add(buildingObject);
-                buildingObject.AddElement("ID", new JsonNumber(b.ID));
+                buildingObject.AddElement("ID", b.ID);
+                buildingObject.AddElement("Level", b.level);
                 buildingObject.AddElement("Pos", Json.FromVector3Int(b.pos));
-                buildingObject.AddElement("Type", new JsonString(b.buildingType.ToString()));
-                buildingObject.AddElement("Rot", new JsonString(b.rotation.ToString()));
-                buildingObject.AddElement("Team", new JsonString(b.team.ToString()));
+                buildingObject.AddElement("Type", b.buildingType.ToString());
+                buildingObject.AddElement("Rot", b.rotation.ToString());
+                buildingObject.AddElement("Team", b.team.ToString());
             }
         }
     }
@@ -84,6 +87,7 @@ public static class BuildingEx
                             BuildingElement building = new BuildingElement();
 
                             building.ID = buildingObject.GetElement("ID")?.Int() ?? 0;
+                            building.level = buildingObject.GetElement("Level")?.Int() ?? 0;
                             building.pos = Json.ToVector3Int(buildingObject.GetElement("Pos")?.JsonArray(), Vector3Int.zero);
                             string str = buildingObject.GetElement("Type")?.String();
                             if (str == null)

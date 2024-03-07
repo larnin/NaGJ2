@@ -301,7 +301,7 @@ public class BeltSystem : MonoBehaviour
 
             var pos = new Vector3(b.pos.x * size.x, b.pos.y * size.y, b.pos.z * size.z);
 
-            DebugDraw.Box(pos, Vector3.one * 0.1f, Color.green);
+            DebugDraw.CentredBox(pos, Vector3.one * 0.1f, Color.green);
 
             if(b.nextIndex >= 0)
             {

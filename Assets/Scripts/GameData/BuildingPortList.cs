@@ -45,6 +45,8 @@ public class BuildingPortList : MonoBehaviour
             c.index = i;
             c.filter = m_containers[i].filter.Copy();
             c.count = m_containers[i].count;
+
+            containers.Add(c);
         }
 
         return containers;

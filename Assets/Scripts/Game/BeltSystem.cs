@@ -145,7 +145,10 @@ public class BeltSystem : MonoBehaviour
 
         int[] indexInBeltNode = new int[buildingBelts.belts.Count];
         for (int i = 0; i < buildingBelts.belts.Count; i++)
+        {
             indexInBeltNode[i] = -1;
+            visitedIndex[i] = false;
+        }
 
         //with the tails belts, create the belt tree
         for(int i = 0; i < firstIndexs.Count; i++)
@@ -155,7 +158,9 @@ public class BeltSystem : MonoBehaviour
             
             while(true)
             {
-                if(indexInBeltNode[currentIndex] != -1)
+                visitedIndex[currentIndex] = true;
+
+                if (indexInBeltNode[currentIndex] != -1)
                 {
                     if(lastIndex != -1)
                     {
@@ -175,7 +180,12 @@ public class BeltSystem : MonoBehaviour
                 int nextIndex = nextBeltIndexs[currentIndex];
                 newNode.nextIndex = nextIndex;
 
+                newBelts.Add(newNode);
+
                 if (nextIndex < 0)
+                    break;
+
+                if (visitedIndex[nextIndex])
                     break;
 
                 lastIndex = currentIndex;
@@ -212,7 +222,7 @@ public class BeltSystem : MonoBehaviour
             else if (port.direction == BuildingPortDirection.input)
                 newNode.rotation = RotationEx.Add(port.rotation, Rotation.rot_180);
 
-            if(beltIndex > 0)
+            if(beltIndex >= 0)
             {
                  var belt = newBelts[beltIndex];
                 if(port.direction == BuildingPortDirection.output)
@@ -303,6 +313,11 @@ public class BeltSystem : MonoBehaviour
 
             DebugDraw.CentredBox(pos, Vector3.one * 0.1f, Color.green);
 
+            var pos2 = pos;
+            pos2.y += 0.2f;
+            var pos3 = pos2 + RotationEx.ToVector3(b.rotation) * 0.5f;
+            DebugDraw.Line(pos2, pos3, Color.green);
+
             if(b.nextIndex >= 0)
             {
                 var next = m_belts[b.nextIndex];
@@ -315,6 +330,11 @@ public class BeltSystem : MonoBehaviour
             if(b.portIndex >= 0)
             {
                 var port = m_ports[b.portIndex];
+
+                pos2 = pos;
+                pos2.y += 0.3f;
+                pos3 = pos2 + RotationEx.ToVector3(port.rotation) * 0.5f;
+                DebugDraw.Line(pos2, pos3, Color.blue);
 
                 var upPos = pos;
                 upPos.y += 1;

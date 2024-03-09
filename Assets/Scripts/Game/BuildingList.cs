@@ -88,6 +88,12 @@ public class BuildingList : MonoBehaviour
         instance.transform.localPosition = offset;
         instance.transform.localRotation = RotationEx.ToQuaternion(b.rotation);
 
+        var buildingID = instance.GetComponent<BuildingID>();
+        if(buildingID == null)
+            buildingID = instance.AddComponent<BuildingID>();
+
+        Event<SetBuildingInstanceIDEvent>.Broadcast(new SetBuildingInstanceIDEvent(b.ID), instance);
+
         b.instance = instance;
     }
 

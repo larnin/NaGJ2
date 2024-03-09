@@ -61,7 +61,7 @@ public class BuildingPortList : MonoBehaviour
         Vector3Int pos = Vector3Int.zero; 
         if(idData.ID == 0)
         {
-            rot = RotationEx.FromVector(transform.forward);
+            rot = RotationEx.FromVector(transform.right);
 
             var localPos = transform.position;
             var scale = Global.instance.allBlocks.blockSize;
@@ -89,7 +89,7 @@ public class BuildingPortList : MonoBehaviour
             data.containerIndex = p.containerIndex;
             data.rotation = RotationEx.Add(rot, p.rotation);
             data.direction = p.direction;
-            data.pos = pos + p.pos;
+            data.pos = pos + RotationEx.Rotate(p.pos, rot);
 
             ports.Add(data);
         }

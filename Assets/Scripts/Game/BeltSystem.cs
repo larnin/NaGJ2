@@ -93,108 +93,67 @@ public class BeltSystem : MonoBehaviour
             newContainers.Add(container);
         }
 
-        //first, get the belt that the current one face
-        int[] nextBeltIndexs = new int[buildingBelts.belts.Count];
 
-        for(int i = 0; i < buildingBelts.belts.Count; i++)
+        int beltCount = buildingBelts.belts.Count;
+        List<int> othersBelts = new List<int>();
+        for(int i = 0; i < beltCount; i++)
         {
+            othersBelts.Clear();
+
             var b = buildingBelts.belts[i];
 
-            var nextPos = b.pos + RotationEx.ToVector3Int(b.rotation);
-            int nextIndex = -1;
-            for(int j = 0; j < buildingBelts.belts.Count; j++)
+            for(int j = 0; j < beltCount; j++)
             {
-                if (i == j)
+                var b2 = buildingBelts.belts[j];
+
+                var offset = b2.pos - b.pos;
+
+                if (MathF.Abs(offset.x) + MathF.Abs(offset.z) == 1)
+                    othersBelts.Add(j);
+            }
+
+            var newNode = new BeltNode();
+            newNode.pos = b.pos;
+            newNode.rotation = b.rotation;
+
+            var nextPos = newNode.pos + RotationEx.ToVector3Int(newNode.rotation);
+
+            int nextNodeIndex = -1;
+
+            for(int j = 0; j < othersBelts.Count; j++)
+            {
+                var b2 = buildingBelts.belts[othersBelts[j]];
+
+                if (b2.pos != nextPos)
                     continue;
 
-                var nextBelt = buildingBelts.belts[j];
+                if (b2.rotation == RotationEx.Add(newNode.rotation, Rotation.rot_180))
+                    continue;
 
-                if(nextBelt.pos == nextPos)
-                {
-                    if (nextBelt.rotation == RotationEx.Add(b.rotation, Rotation.rot_180))
-                        break;
-
-                    nextIndex = j;
-                    break;
-                }
+                nextNodeIndex = j;
+                break;
             }
 
-            nextBeltIndexs[i] = nextIndex;
-        }
+            if (nextNodeIndex >= 0)
+                newNode.nextIndex = othersBelts[nextNodeIndex];
 
-        //next, get the tail belts
-        bool[] visitedIndex = new bool[buildingBelts.belts.Count];
-        List<int> firstIndexs = new List<int>();
-        for(int i = 0; i < buildingBelts.belts.Count; i++)
-        {
-            int currentIndex = i;
-            if (visitedIndex[currentIndex])
-                continue;
-
-            firstIndexs.Add(i);
-
-            while(!visitedIndex[currentIndex])
+            for(int j = 0; j < othersBelts.Count; j++)
             {
-                visitedIndex[currentIndex] = true;
-                currentIndex = nextBeltIndexs[currentIndex];
-                if (currentIndex < 0)
-                    break;
-                firstIndexs.Remove(currentIndex);
+                if (j == nextNodeIndex)
+                    continue;
+
+                var b2 = buildingBelts.belts[othersBelts[j]];
+
+                nextPos = b2.pos + RotationEx.ToVector3Int(b2.rotation);
+                if (nextPos == newNode.pos)
+                    newNode.previousIndexs.Add(othersBelts[j]);
             }
-        }
 
-        int[] indexInBeltNode = new int[buildingBelts.belts.Count];
-        for (int i = 0; i < buildingBelts.belts.Count; i++)
-        {
-            indexInBeltNode[i] = -1;
-            visitedIndex[i] = false;
-        }
-
-        //with the tails belts, create the belt tree
-        for(int i = 0; i < firstIndexs.Count; i++)
-        {
-            int lastIndex = -1;
-            int currentIndex = firstIndexs[i];
-            
-            while(true)
-            {
-                visitedIndex[currentIndex] = true;
-
-                if (indexInBeltNode[currentIndex] != -1)
-                {
-                    if(lastIndex != -1)
-                    {
-                        var node = newBelts[indexInBeltNode[currentIndex]];
-                        if (!node.previousIndexs.Contains(lastIndex))
-                            node.previousIndexs.Add(lastIndex);
-                    }
-                    break;
-                }
-
-                var newNode = new BeltNode();
-                var belt = buildingBelts.belts[currentIndex];
-                newNode.pos = belt.pos;
-                newNode.rotation = belt.rotation;
-                newNode.previousIndexs.Add(lastIndex);
-
-                int nextIndex = nextBeltIndexs[currentIndex];
-                newNode.nextIndex = nextIndex;
-
-                newBelts.Add(newNode);
-
-                if (nextIndex < 0)
-                    break;
-
-                if (visitedIndex[nextIndex])
-                    break;
-
-                lastIndex = currentIndex;
-                currentIndex = nextIndex;
-            }
+            newBelts.Add(newNode);
         }
 
         //add ports
-        for(int i = 0; i < m_ports.Count; i++)
+        for (int i = 0; i < m_ports.Count; i++)
         {
             int nextIndex = newBelts.Count;
 
@@ -204,9 +163,9 @@ public class BeltSystem : MonoBehaviour
             var nextPos = pos + RotationEx.ToVector3Int(port.rotation);
 
             int beltIndex = -1;
-            for(int j = 0; j < newBelts.Count; j++)
+            for (int j = 0; j < newBelts.Count; j++)
             {
-                if(newBelts[j].pos == nextPos)
+                if (newBelts[j].pos == nextPos)
                 {
                     beltIndex = j;
                     break;
@@ -222,18 +181,18 @@ public class BeltSystem : MonoBehaviour
             else if (port.direction == BuildingPortDirection.input)
                 newNode.rotation = RotationEx.Add(port.rotation, Rotation.rot_180);
 
-            if(beltIndex >= 0)
+            if (beltIndex >= 0)
             {
-                 var belt = newBelts[beltIndex];
-                if(port.direction == BuildingPortDirection.output)
+                var belt = newBelts[beltIndex];
+                if (port.direction == BuildingPortDirection.output)
                 {
-                    if(belt.rotation != RotationEx.Add(port.rotation, Rotation.rot_180))
+                    if (belt.rotation != RotationEx.Add(port.rotation, Rotation.rot_180))
                     {
                         newNode.nextIndex = beltIndex;
                         belt.previousIndexs.Add(nextIndex);
                     }
                 }
-                else if(port.direction == BuildingPortDirection.inout)
+                else if (port.direction == BuildingPortDirection.inout)
                 {
                     if (belt.rotation == RotationEx.Add(port.rotation, Rotation.rot_180))
                     {
@@ -246,7 +205,7 @@ public class BeltSystem : MonoBehaviour
                         belt.previousIndexs.Add(nextIndex);
                     }
                 }
-                else if(port.direction == BuildingPortDirection.input)
+                else if (port.direction == BuildingPortDirection.input)
                 {
                     if (belt.rotation == RotationEx.Add(port.rotation, Rotation.rot_180))
                     {

@@ -38,6 +38,7 @@ public class OneResource
 public class AllResources
 {
     public float beltResourceSpacing = 0.5f;
+    public float beltSpeed = 1;
 
     [SerializeField] List<OneResource> m_resources;
 

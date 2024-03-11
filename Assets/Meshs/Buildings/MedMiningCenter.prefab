@@ -107,6 +107,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6544550689756656717}
   - component: {fileID: 3332566679805385158}
+  - component: {fileID: 1814315085528988009}
   m_Layer: 9
   m_Name: MedMiningCenter
   m_TagString: Untagged
@@ -155,3 +156,18 @@ MonoBehaviour:
     rotation: 1
     direction: 1
     containerIndex: 0
+--- !u!114 &1814315085528988009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4356035782417431393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cee7a3743023c4545a4e2fd00bbe3a05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_type: 1
+  m_container: 0
+  m_delay: 1

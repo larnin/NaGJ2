@@ -111,6 +111,8 @@ MonoBehaviour:
       - {fileID: 9116754217208307827, guid: ded4cb87c36d19b489eb182a79da18ac, type: 3}
   m_allBuildings:
     tower0:
+      name: 
+      description: 
       levels:
       - cost:
           costs: []
@@ -125,6 +127,8 @@ MonoBehaviour:
         prefab: {fileID: 5130323494322073348, guid: 15be08370ff54b2409be2305201e73d8, type: 3}
         size: {x: 1, y: 1, z: 1}
     tower1:
+      name: 
+      description: 
       levels:
       - cost:
           costs: []
@@ -139,6 +143,8 @@ MonoBehaviour:
         prefab: {fileID: 532560842359466614, guid: 205779148b503094da400989405f7c22, type: 3}
         size: {x: 1, y: 1, z: 1}
     tower2:
+      name: 
+      description: 
       levels:
       - cost:
           costs: []
@@ -153,21 +159,29 @@ MonoBehaviour:
         prefab: {fileID: 6388430207544002530, guid: 88f900441c0c20847b9995c01267d562, type: 3}
         size: {x: 1, y: 1, z: 1}
     operationCenter:
+      name: 
+      description: 
       prefab: {fileID: 5759554216005528630, guid: b06ee74c9d891a04bb479dd096499d3a, type: 3}
       size: {x: 3, y: 2, z: 3}
     bigMiningCenter:
+      name: 
+      description: 
       cost:
         costs: []
       prefab: {fileID: 3619161916175125052, guid: 04db2099d619be3498e878be5aa5cc70, type: 3}
       size: {x: 2, y: 1, z: 2}
       mineDistance: 2
     mediumMiningCenter:
+      name: 
+      description: 
       cost:
         costs: []
       prefab: {fileID: 4356035782417431393, guid: 5027ba4ce40e0444a94c294084c2cac6, type: 3}
       size: {x: 1, y: 1, z: 2}
       mineDistance: 1
     smallMiningCenter:
+      name: 
+      description: 
       cost:
         costs: []
       prefab: {fileID: 218631143579773238, guid: 764274524090d4c4a9ea6e9371297f16, type: 3}
@@ -177,6 +191,26 @@ MonoBehaviour:
       prefab: {fileID: 0}
       size: {x: 1, y: 1, z: 1}
     belt:
+      name: 
+      description: 
+      cost:
+        costs: []
       forwardPrefab: {fileID: 8274155206733211446, guid: 0d1fd9e753fad9e45987aade37fa5e03, type: 3}
       leftPrefab: {fileID: 1121509503944885969, guid: bbdf8dbd589bd7840ac9511940f866a3, type: 3}
       rightPrefab: {fileID: 4338920473469947020, guid: ed780448c37d6f6428c35c9372fca578, type: 3}
+  m_allResources:
+    beltResourceSpacing: 0.5
+    beltSpeed: 1
+    m_resources:
+    - type: 0
+      prefab: {fileID: 77937368576623179, guid: e4800c0131a6dd042baa34e8298ff2b5, type: 3}
+      sprite: {fileID: 0}
+    - type: 1
+      prefab: {fileID: 3243818941550011481, guid: d0a9c9b537d134145a2b9bf9d63dd612, type: 3}
+      sprite: {fileID: 0}
+    - type: 2
+      prefab: {fileID: 760831928678333270, guid: 8375eaa3dc565334387167f46fe15dbb, type: 3}
+      sprite: {fileID: 0}
+    - type: 3
+      prefab: {fileID: 8598079328801901074, guid: fcf6d97175fb21645b815c4e1e4f69d1, type: 3}
+      sprite: {fileID: 0}

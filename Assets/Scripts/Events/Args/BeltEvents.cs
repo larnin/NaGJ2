@@ -12,7 +12,7 @@ public class AddResourceEvent
     public int buildingID;
     public int containerIndex;
 
-    public bool result;
+    public int addedCount;
 
     public AddResourceEvent(ResourceType _type, int _count, int _buildingID, int _containerIndex)
     {
@@ -21,13 +21,29 @@ public class AddResourceEvent
         buildingID = _buildingID;
         containerIndex = _containerIndex;
 
-        result = false;
+        addedCount = 0;
     }
 }
 
-public class RemoveResourceEvent : AddResourceEvent
+public class RemoveResourceEvent 
 {
-    public RemoveResourceEvent(ResourceType _type, int _count, int _buildingID, int _containerIndex) : base(_type, _count, _buildingID, _containerIndex) {}
+    public ResourceType resource;
+    public int count;
+
+    public int buildingID;
+    public int containerIndex;
+
+    public int removedCount;
+
+    public RemoveResourceEvent(ResourceType _type, int _count, int _buildingID, int _containerIndex)
+    {
+        resource = _type;
+        count = _count;
+        buildingID = _buildingID;
+        containerIndex = _containerIndex;
+
+        removedCount = 0;
+    }
 }
 
 public class GetContainerCapacityEvent

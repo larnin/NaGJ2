@@ -54,6 +54,8 @@ public class BeltSystem : MonoBehaviour
 
     SubscriberList m_subscriberList = new SubscriberList();
 
+    List<Resource> m_tempList = new List<Resource>();
+
     private void Awake()
     {
         m_subscriberList.Add(new Event<LoadEndedEvent>.Subscriber(OnLoad));
@@ -483,17 +485,17 @@ public class BeltSystem : MonoBehaviour
                 if (belt.nextIndex >= 0)
                     nextBelt = m_belts[belt.nextIndex];
 
-                List<Resource> otherResources = new List<Resource>();
+                m_tempList.Clear();
                 foreach(var otherR in belt.resources)
                 {
                     if (otherR == r)
                         continue;
-                    otherResources.Add(otherR);
+                    m_tempList.Add(otherR);
                 }
                 if (nextBelt != null)
-                    otherResources.AddRange(nextBelt.resources);
+                    m_tempList.AddRange(nextBelt.resources);
 
-                var moving = MoveResource(r, otherResources, newPos);
+                var moving = MoveResource(r, m_tempList, newPos);
 
                 if (!moving)
                     continue;

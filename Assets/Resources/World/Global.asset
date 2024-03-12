@@ -198,6 +198,8 @@ MonoBehaviour:
       forwardPrefab: {fileID: 8274155206733211446, guid: 0d1fd9e753fad9e45987aade37fa5e03, type: 3}
       leftPrefab: {fileID: 1121509503944885969, guid: bbdf8dbd589bd7840ac9511940f866a3, type: 3}
       rightPrefab: {fileID: 4338920473469947020, guid: ed780448c37d6f6428c35c9372fca578, type: 3}
+      upPrefab: {fileID: 2051107364912174009, guid: a37b2a95172eb104e99bc27029f04084, type: 3}
+      downPrefab: {fileID: 6040769600941238851, guid: 9e2bcb3ddcac7b343947bec2f576d3a8, type: 3}
   m_allResources:
     beltResourceSpacing: 0.5
     beltSpeed: 1

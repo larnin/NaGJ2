@@ -151,6 +151,8 @@ public class BeltData
     public GameObject forwardPrefab;
     public GameObject leftPrefab;
     public GameObject rightPrefab;
+    public GameObject upPrefab;
+    public GameObject downPrefab;
 }
 
 [Serializable]

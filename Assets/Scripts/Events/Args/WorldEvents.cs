@@ -42,3 +42,14 @@ public class GetBlockEvent
         pos = _pos;
     }
 }
+
+public class GetNearBlocsEvent
+{
+    public Vector3Int pos;
+    public NearMatrix3<SimpleBlock> matrix = new NearMatrix3<SimpleBlock>();
+
+    public GetNearBlocsEvent(Vector3Int _pos)
+    {
+        pos = _pos;
+    }
+}

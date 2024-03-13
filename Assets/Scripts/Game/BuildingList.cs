@@ -22,6 +22,7 @@ public class BuildingList : MonoBehaviour
         m_subscriberList.Add(new Event<GetBuildingEvent>.Subscriber(GetBuilding));
         m_subscriberList.Add(new Event<GetBuildingAtEvent>.Subscriber(GetBuildingAt));
         m_subscriberList.Add(new Event<GetBuildingBeltsEvent>.Subscriber(GetBelts));
+        m_subscriberList.Add(new Event<GetNearBeltsEvent>.Subscriber(GetNearBelts));
 
         m_subscriberList.Add(new Event<SaveEvent>.Subscriber(OnSave));
         m_subscriberList.Add(new Event<LoadEvent>.Subscriber(OnLoad));
@@ -232,16 +233,22 @@ public class BuildingList : MonoBehaviour
         e.element = m_buildings[index].Clone();
     }
 
+    BuildingElement GetBuildingAt(Vector3Int pos)
+    {
+        int index = -1;
+        var ID = PosToID(pos);
+        if (!m_posDictionary.TryGetValue(ID, out index))
+            return null;
+
+        return m_buildings[index];
+    }
+
     void GetBuildingAt(GetBuildingAtEvent e)
     {
-        e.element = null;
-
-        int index = -1;
-        var ID = PosToID(e.pos);
-        if (!m_posDictionary.TryGetValue(ID, out index))
-            return;
-
-        e.element = m_buildings[index].Clone();
+        var element = GetBuildingAt(e.pos);
+        if (element == null)
+            e.element = null;
+        else e.element = element.Clone();
     }
 
     void GetBelts(GetBuildingBeltsEvent e)
@@ -275,6 +282,31 @@ public class BuildingList : MonoBehaviour
                 data.rotation = b.rotation;
                 data.verticalOffset = 0; //todo later
                 e.belts.Add(data);
+            }
+        }
+    }
+
+    void GetNearBelts(GetNearBeltsEvent e)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                for (int k = -1; k <= 1; k++)
+                {
+                    var data = new GetNearBeltsEvent.BeltData { haveBelt = false };
+
+                    Vector3Int pos = e.pos + new Vector3Int(i, j, k);
+
+                    var building = GetBuildingAt(pos);
+                    if(building.buildingType == BuildingType.Belt)
+                    {
+                        data.haveBelt = true;
+                        data.rotation = building.rotation;
+                    }
+
+                    e.matrix.Set(data, i, j, k);
+                }
             }
         }
     }

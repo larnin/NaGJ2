@@ -24,6 +24,7 @@ public class EditorBuildings : MonoBehaviour
         m_subscriberList.Add(new Event<SaveEvent>.Subscriber(OnSave));
         m_subscriberList.Add(new Event<LoadEvent>.Subscriber(OnLoad));
         m_subscriberList.Add(new Event<NewLevelEvent>.Subscriber(OnNewLevel));
+        m_subscriberList.Add(new Event<GetNearBeltsEvent>.Subscriber(GetNearBelts));
 
         m_subscriberList.Subscribe();
     }
@@ -185,6 +186,33 @@ public class EditorBuildings : MonoBehaviour
     void DestroyBuilding(BuildingElement b)
     {
         Destroy(b.instance);
+    }
+
+    void GetNearBelts(GetNearBeltsEvent e)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                for (int k = -1; k <= 1; k++)
+                {
+                    var data = new GetNearBeltsEvent.BeltData { haveBelt = false };
+
+                    Vector3Int pos = e.pos + new Vector3Int(i, j, k);
+
+                    var buildingData = new EditorGetBuildingAtEvent(pos);
+                    GetBuildingAt(buildingData);
+
+                    if (buildingData.buildingType == BuildingType.Belt)
+                    {
+                        data.haveBelt = true;
+                        data.rotation = buildingData.rotation;
+                    }
+
+                    e.matrix.Set(data, i, j, k);
+                }
+            }
+        }
     }
 }
 

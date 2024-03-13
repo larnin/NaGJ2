@@ -23,6 +23,7 @@ public class WorldGrid : MonoBehaviour
     {
         m_subscriberList.Add(new Event<SetBlockEvent>.Subscriber(SetBlock));
         m_subscriberList.Add(new Event<GetBlockEvent>.Subscriber(GetBlock));
+        m_subscriberList.Add(new Event<GetNearBlocsEvent>.Subscriber(GetNearBlocks));
         m_subscriberList.Add(new Event<SaveEvent>.Subscriber(OnSave));
         m_subscriberList.Add(new Event<LoadEvent>.Subscriber(OnLoad));
         m_subscriberList.Add(new Event<NewLevelEvent>.Subscriber(OnNew));
@@ -52,6 +53,11 @@ public class WorldGrid : MonoBehaviour
 
         e.type = b.block.id;
         e.data = b.block.data;
+    }
+
+    void GetNearBlocks(GetNearBlocsEvent e)
+    {
+        SetNearMatrix(e.pos, e.matrix);
     }
 
     void SetBlock(Vector3Int pos, BlockType type, byte data)

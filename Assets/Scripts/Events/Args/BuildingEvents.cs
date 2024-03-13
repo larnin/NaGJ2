@@ -110,3 +110,27 @@ public class BuildingUpdatedEvent
         bounds = _bounds;
     }
 }
+
+public class GetNearBeltsEvent
+{
+    public struct BeltData
+    {
+        public bool haveBelt;
+        public Rotation rotation;
+    }
+
+    public Vector3Int pos;
+    public NearMatrix3<BeltData> matrix = new NearMatrix3<BeltData>();
+
+    public GetNearBeltsEvent(Vector3Int _pos)
+    {
+        pos = _pos;
+
+        var data = new BeltData { haveBelt = false, rotation = Rotation.rot_0 };
+
+        for (int i = -1; i <= 1; i++)
+            for (int j = -1; j <= 1; j++)
+                for (int k = -1; k <= 1; k++)
+                    matrix.Set(data, i, j, k);
+    }
+}

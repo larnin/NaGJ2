@@ -89,7 +89,7 @@ public class EditorCursorVisual : MonoBehaviour
 
         SetCursorPosition(pos, true);
 
-        UpdateBuildingCursorColor(pos, m_buildingType);
+        UpdateBuildingCursorColor(pos, m_buildingType, m_rotation);
     }
 
     void OnClick(EditorCursorClickEvent e)
@@ -151,7 +151,7 @@ public class EditorCursorVisual : MonoBehaviour
     {
         if (click == EditorCursorClickType.leftClick)
         {
-            if (!CanPlaceBuilding(pos, m_buildingType))
+            if (!CanPlaceBuilding(pos, m_buildingType, m_rotation))
                 return;
 
             Event<EditorPlaceBuildingEvent>.Broadcast(new EditorPlaceBuildingEvent(pos, m_buildingType, m_rotation, Team.player));
@@ -274,12 +274,12 @@ public class EditorCursorVisual : MonoBehaviour
             col.enabled = false;
     }
 
-    void UpdateBuildingCursorColor(Vector3Int pos, BuildingType type)
+    void UpdateBuildingCursorColor(Vector3Int pos, BuildingType type, Rotation rot)
     {
         if (m_buildingCursor == null)
             return;
 
-        bool canPlace = CanPlaceBuilding(pos, type);
+        bool canPlace = CanPlaceBuilding(pos, type, rot);
         Color c = canPlace ? new Color(0, 1, 0) : new Color(1, 0, 0);
 
         var renderers = m_buildingCursor.GetComponentsInChildren<Renderer>();
@@ -294,40 +294,67 @@ public class EditorCursorVisual : MonoBehaviour
         m_buildingCursor.transform.localRotation = RotationEx.ToQuaternion(m_rotation);
     }
 
-    bool CanPlaceBuilding(Vector3Int pos, BuildingType type)
+    bool CanPlaceBuilding(Vector3Int pos, BuildingType type, Rotation rotation)
     {
-        var bounds = BuildingDataEx.GetBuildingBounds(m_buildingType, pos, m_rotation);
-
-        for(int i = bounds.min.x; i < bounds.max.x; i++)
+        if (type == BuildingType.Belt)
+            return CanPlaceBelt(pos, rotation);
+        else
         {
-            for (int k = bounds.min.z; k < bounds.max.z; k++)
+            var bounds = BuildingDataEx.GetBuildingBounds(m_buildingType, pos, m_rotation);
+
+            for (int i = bounds.min.x; i < bounds.max.x; i++)
             {
-                for (int j = bounds.min.y; j < bounds.max.y; j++)
+                for (int k = bounds.min.z; k < bounds.max.z; k++)
                 {
-                    GetBlockEvent eBlock = new GetBlockEvent(new Vector3Int(i, j, k));
-                    Event<GetBlockEvent>.Broadcast(eBlock);
+                    for (int j = bounds.min.y; j < bounds.max.y; j++)
+                    {
+                        GetBlockEvent eBlock = new GetBlockEvent(new Vector3Int(i, j, k));
+                        Event<GetBlockEvent>.Broadcast(eBlock);
 
-                    if (eBlock.type != BlockType.air)
-                        return false;
+                        if (eBlock.type != BlockType.air)
+                            return false;
 
-                    EditorGetBuildingAtEvent eBuilding = new EditorGetBuildingAtEvent(new Vector3Int(i, j, k));
-                    Event<EditorGetBuildingAtEvent>.Broadcast(eBuilding);
-                    if (eBuilding.ID != 0)
+                        EditorGetBuildingAtEvent eBuilding = new EditorGetBuildingAtEvent(new Vector3Int(i, j, k));
+                        Event<EditorGetBuildingAtEvent>.Broadcast(eBuilding);
+                        if (eBuilding.ID != 0)
+                            return false;
+                    }
+
+                    GetBlockEvent eGround = new GetBlockEvent(new Vector3Int(i, bounds.min.y - 1, k));
+                    Event<GetBlockEvent>.Broadcast(eGround);
+
+                    bool groundValid = BlockDataEx.CanPlaceBuildingOnBlock(eGround.type);
+
+                    if (type == BuildingType.Belt && eGround.type == BlockType.groundSlope)
+                        groundValid = true;
+
+                    if (!groundValid)
                         return false;
                 }
-
-                GetBlockEvent eGround = new GetBlockEvent(new Vector3Int(i, bounds.min.y - 1, k));
-                Event<GetBlockEvent>.Broadcast(eGround);
-
-                bool groundValid = BlockDataEx.CanPlaceBuildingOnBlock(eGround.type);
-
-                if (type == BuildingType.Belt && eGround.type == BlockType.groundSlope)
-                    groundValid = true;
-
-                if (!groundValid)
-                    return false;
             }
         }
         return true;
+    }
+
+    bool CanPlaceBelt(Vector3Int pos, Rotation rot)
+    {
+        var currentBlock = new GetBlockEvent(pos);
+        Event<GetBlockEvent>.Broadcast(currentBlock);
+        if (currentBlock.type != BlockType.air)
+            return false;
+
+        var downBlock = new GetBlockEvent(new Vector3Int(pos.x, pos.y - 1, pos.z));
+        Event<GetBlockEvent>.Broadcast(downBlock);
+
+        if (BlockDataEx.CanPlaceBuildingOnBlock(downBlock.type))
+            return true;
+
+        if(downBlock.type == BlockType.groundSlope)
+        {
+            var blockRot = BlockDataEx.ExtractDataRotation(downBlock.data);
+            return blockRot == rot || blockRot == RotationEx.Add(rot, Rotation.rot_180);
+        }
+
+        return false;
     }
 }

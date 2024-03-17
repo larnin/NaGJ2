@@ -113,20 +113,14 @@ public class BuildingUpdatedEvent
 
 public class GetNearBeltsEvent
 {
-    public struct BeltData
-    {
-        public bool haveBelt;
-        public Rotation rotation;
-    }
-
     public Vector3Int pos;
-    public NearMatrix3<BeltData> matrix = new NearMatrix3<BeltData>();
+    public NearMatrix3<SimpleBeltInfos> matrix = new NearMatrix3<SimpleBeltInfos>();
 
     public GetNearBeltsEvent(Vector3Int _pos)
     {
         pos = _pos;
 
-        var data = new BeltData { haveBelt = false, rotation = Rotation.rot_0 };
+        var data = new SimpleBeltInfos { haveBelt = false, rotation = Rotation.rot_0 };
 
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)

@@ -294,7 +294,7 @@ public class BuildingList : MonoBehaviour
             {
                 for (int k = -1; k <= 1; k++)
                 {
-                    var data = new GetNearBeltsEvent.BeltData { haveBelt = false };
+                    var data = new SimpleBeltInfos { haveBelt = false };
 
                     Vector3Int pos = e.pos + new Vector3Int(i, j, k);
 

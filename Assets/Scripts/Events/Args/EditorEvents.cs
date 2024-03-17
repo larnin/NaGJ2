@@ -77,10 +77,7 @@ public class EditorGetBuildingEvent
 {
     public int ID;
 
-    public Vector3Int buildingPos;
-    public BuildingType buildingType;
-    public Rotation rotation;
-    public Team team;
+    public BuildingElement building;
 
     public EditorGetBuildingEvent(int _id)
     {
@@ -92,11 +89,7 @@ public class EditorGetBuildingAtEvent
 {
     public Vector3Int pos;
 
-    public int ID;
-    public Vector3Int buildingPos;
-    public BuildingType buildingType;
-    public Rotation rotation;
-    public Team team;
+    public BuildingElement building;
 
     public EditorGetBuildingAtEvent(Vector3Int _pos)
     {
@@ -150,12 +143,14 @@ public class EditorRemoveBuildingEvent
     }
 }
 
-public class EditorSetBuildingInstance
+public class EditorSetBuildingInstanceEvent
 {
     public int ID;
 
-    public EditorSetBuildingInstance(int _id)
+    public EditorSetBuildingInstanceEvent(int _id)
     {
         ID = _id;
     }
 }
+
+public class EditorUpdateInstanceEvent { }

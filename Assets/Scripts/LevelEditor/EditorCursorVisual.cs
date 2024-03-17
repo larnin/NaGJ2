@@ -72,7 +72,7 @@ public class EditorCursorVisual : MonoBehaviour
         bool valid = BlockDataEx.GetValidPos(type, blockPos, pos, out outPos);
         EditorGetBuildingAtEvent e = new EditorGetBuildingAtEvent(outPos);
         Event<EditorGetBuildingAtEvent>.Broadcast(e);
-        if (e.ID != 0)
+        if (e.building != null)
             valid = false;
         if (valid)
             SetCursorPosition(outPos, true);
@@ -119,7 +119,7 @@ public class EditorCursorVisual : MonoBehaviour
             {
                 EditorGetBuildingAtEvent e = new EditorGetBuildingAtEvent(outPos);
                 Event<EditorGetBuildingAtEvent>.Broadcast(e);
-                if (e.ID != 0)
+                if (e.building != null)
                     return;
 
                 BlockDataEx.SetBlock(m_blockType, m_rotation, m_blockData, outPos);
@@ -141,7 +141,7 @@ public class EditorCursorVisual : MonoBehaviour
     {
         EditorGetBuildingAtEvent e = new EditorGetBuildingAtEvent(new Vector3Int(pos.x, pos.y + 1, pos.z));
         Event<EditorGetBuildingAtEvent>.Broadcast(e);
-        if (e.ID != 0)
+        if (e.building != null)
             return;
 
         BlockDataEx.SetBlock(BlockType.air, pos);
@@ -164,15 +164,15 @@ public class EditorCursorVisual : MonoBehaviour
     {
         EditorGetBuildingAtEvent data = new EditorGetBuildingAtEvent(pos);
         Event<EditorGetBuildingAtEvent>.Broadcast(data);
-        if(data.ID == 0)
+        if(data.building == null)
         {
             data.pos = blockPos;
             Event<EditorGetBuildingAtEvent>.Broadcast(data);
-            if (data.ID == 0)
+            if (data.building == null)
                 return false;
         }
 
-        EditorRemoveBuildingEvent removeData = new EditorRemoveBuildingEvent(data.ID);
+        EditorRemoveBuildingEvent removeData = new EditorRemoveBuildingEvent(data.building.ID);
         Event<EditorRemoveBuildingEvent>.Broadcast(removeData);
         return true;
     }
@@ -316,7 +316,7 @@ public class EditorCursorVisual : MonoBehaviour
 
                         EditorGetBuildingAtEvent eBuilding = new EditorGetBuildingAtEvent(new Vector3Int(i, j, k));
                         Event<EditorGetBuildingAtEvent>.Broadcast(eBuilding);
-                        if (eBuilding.ID != 0)
+                        if (eBuilding.building != null)
                             return false;
                     }
 

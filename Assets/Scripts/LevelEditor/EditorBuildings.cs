@@ -49,33 +49,28 @@ public class EditorBuildings : MonoBehaviour
 
     void GetBuildingAt(EditorGetBuildingAtEvent e)
     {
+        var b = GetBuildingAt(e.pos);
+        if (b != null)
+            e.building = b.Clone();
+    }
+
+    BuildingElement GetBuildingAt(Vector3Int pos)
+    {
         foreach (var b in m_buildings)
         {
             var bounds = BuildingDataEx.GetBuildingBounds(b.buildingType, b.pos, b.rotation);
-            if (bounds.Contains(e.pos))
-            {
-                e.buildingPos = b.pos;
-                e.rotation = b.rotation;
-                e.buildingType = b.buildingType;
-                e.team = b.team;
-                e.ID = b.ID;
-
-                return;
-            }
+            if (bounds.Contains(pos))
+                return b;
         }
+
+        return null;
     }
 
     void GetBuilding(EditorGetBuildingEvent e)
     {
         var b = GetBuilding(e.ID);
         if(b != null)
-        {
-
-            e.buildingPos = b.pos;
-            e.rotation = b.rotation;
-            e.buildingType = b.buildingType;
-            e.team = b.team;
-        }
+            e.building = b.Clone();
     }
 
     BuildingElement GetBuilding(int ID)
@@ -135,6 +130,9 @@ public class EditorBuildings : MonoBehaviour
 
         m_buildings.Add(b);
         UpdateBuilding(b);
+
+        if(e.buildingType == BuildingType.Belt)
+            UpdateNearBelts(e.pos);
     }
 
     void RemoveBuilding(EditorRemoveBuildingEvent e)
@@ -143,7 +141,32 @@ public class EditorBuildings : MonoBehaviour
         if(b.ID == e.ID)
         {
             DestroyBuilding(b);
-            m_buildings.Remove(b);
+            m_buildings.Remove(b);            
+            
+            if (b.buildingType == BuildingType.Belt)
+                UpdateNearBelts(b.pos);
+        }
+    }
+
+    void UpdateNearBelts(Vector3Int pos)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                for (int k = -1; k <= 1; k++)
+                {
+                    if (i == 0 && j == 0 && k == 0)
+                        continue;
+
+                    var building = GetBuildingAt(pos + new Vector3Int(i, j, k));
+
+                    if (building == null || building.buildingType != BuildingType.Belt || building.instance == null)
+                        continue;
+
+                    Event<EditorUpdateInstanceEvent>.Broadcast(new EditorUpdateInstanceEvent(), building.instance);
+                }
+            }
         }
     }
 
@@ -180,7 +203,7 @@ public class EditorBuildings : MonoBehaviour
             b.instance.transform.parent = transform;
         }
 
-        Event<EditorSetBuildingInstance>.Broadcast(new EditorSetBuildingInstance(b.ID), b.instance);
+        Event<EditorSetBuildingInstanceEvent>.Broadcast(new EditorSetBuildingInstanceEvent(b.ID), b.instance);
     }
 
     void DestroyBuilding(BuildingElement b)
@@ -196,17 +219,16 @@ public class EditorBuildings : MonoBehaviour
             {
                 for (int k = -1; k <= 1; k++)
                 {
-                    var data = new GetNearBeltsEvent.BeltData { haveBelt = false };
+                    var data = new SimpleBeltInfos { haveBelt = false };
 
                     Vector3Int pos = e.pos + new Vector3Int(i, j, k);
 
-                    var buildingData = new EditorGetBuildingAtEvent(pos);
-                    GetBuildingAt(buildingData);
+                    var building = GetBuildingAt(pos);
 
-                    if (buildingData.buildingType == BuildingType.Belt)
+                    if (building != null && building.buildingType == BuildingType.Belt)
                     {
                         data.haveBelt = true;
-                        data.rotation = buildingData.rotation;
+                        data.rotation = building.rotation;
                     }
 
                     e.matrix.Set(data, i, j, k);

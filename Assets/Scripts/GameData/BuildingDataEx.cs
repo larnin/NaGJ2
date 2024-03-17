@@ -4,6 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+public struct SimpleBeltInfos
+{
+    public bool haveBelt;
+    public Rotation rotation;
+}
 
 public static class BuildingDataEx
 {
@@ -178,6 +183,103 @@ public static class BuildingDataEx
                 return buildings.belt.description;
             default:
                 return "";
+        }
+    }
+
+    public static GameObject InstantiateBelt(Vector3Int pos, NearMatrix3<SimpleBlock> blocks, NearMatrix3<SimpleBeltInfos> belts)
+    {
+        GameObject obj = null;
+        GameObject prefab = null;
+
+        var rot = belts.Get(0, 0, 0).rotation;
+        //var forward = RotationEx.ToVector3Int(rot);
+        //var left = new Vector3Int(forward.z, forward.y, -forward.x);
+
+        bool isSlope = blocks.Get(0, -1, 0).id == BlockType.groundSlope;
+
+        var beltsData = Global.instance.allBuildings.belt;
+
+        if(isSlope)
+        {
+            var slopeRot = BlockDataEx.ExtractDataRotation(blocks.Get(0, -1, 0).data);
+
+            if (rot == slopeRot)
+                prefab = beltsData.upPrefab;
+            else prefab = beltsData.downPrefab;
+        }
+        else
+        {
+            bool isBack = IsBelt(blocks, belts, rot);
+            bool isLeft = IsBelt(blocks, belts, RotationEx.Add(rot, Rotation.rot_90));
+            bool isRight = IsBelt(blocks, belts, RotationEx.Add(rot, Rotation.rot_270));
+
+            //var backElt = belts.Get(-forward.x, 0, -forward.z);
+            //var leftElt = belts.Get(left.x, 0, left.z);
+            //var rightElt = belts.Get(-left.x, 0, -left.z);
+
+            //bool isBack = backElt.haveBelt && backElt.rotation == rot;
+            //bool isLeft = leftElt.haveBelt && leftElt.rotation == RotationEx.Add(rot, Rotation.rot_90);
+            //bool isRight = rightElt.haveBelt && rightElt.rotation == RotationEx.Add(rot, Rotation.rot_270);
+
+            if (isBack)
+                prefab = beltsData.forwardPrefab;
+            else if (isLeft && !isRight)
+                prefab = beltsData.rightPrefab;
+            else if (isRight && !isLeft)
+                prefab = beltsData.leftPrefab;
+            else prefab = beltsData.forwardPrefab;
+        }
+
+        if (prefab == null)
+            prefab = beltsData.forwardPrefab;
+
+        if (prefab != null)
+        {
+            obj = GameObject.Instantiate(prefab);
+
+            var size = Global.instance.allBlocks.blockSize;
+            var realPos = new Vector3(size.x * pos.x, size.y * pos.y, size.z * pos.z);
+
+            obj.transform.position = realPos;
+            obj.transform.rotation = RotationEx.ToQuaternion(rot);
+        }
+
+        return obj;
+    }
+
+    static bool IsBelt(NearMatrix3<SimpleBlock> blocks, NearMatrix3<SimpleBeltInfos> belts, Rotation rot)
+    {
+        var dir = RotationEx.ToVector3Int(rot);
+
+        var belt = belts.Get(-dir.x, 0, -dir.z);
+        if(!belt.haveBelt)
+        {
+            belt = belts.Get(-dir.x, 1, -dir.z);
+            if (!belt.haveBelt)
+                return false;
+
+            var block = blocks.Get(-dir.x, 0, -dir.z);
+            if (block.id != BlockType.groundSlope)
+                return false;
+
+            var blockRot = BlockDataEx.ExtractDataRotation(block.data);
+            if (RotationEx.Add(blockRot, Rotation.rot_180) != rot)
+                return false;
+
+            return belt.rotation == rot;
+        }
+        else
+        {
+            var block = blocks.Get(-dir.x, -1, -dir.z); 
+            var blockRot = BlockDataEx.ExtractDataRotation(block.data);
+            if (block.id == BlockType.groundSlope)
+            {
+                if (blockRot != rot)
+                    return false;
+
+                return belt.rotation == rot;
+            }
+            else return belt.rotation == rot; 
         }
     }
 }

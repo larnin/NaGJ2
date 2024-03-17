@@ -15,9 +15,12 @@ public class EditorBuildingComponent : MonoBehaviour
 
     SubscriberList m_subscriberList = new SubscriberList();
 
+    GameObject m_instance;
+
     private void Awake()
     {
-        m_subscriberList.Add(new Event<EditorSetBuildingInstance>.LocalSubscriber(SetInstance, gameObject));
+        m_subscriberList.Add(new Event<EditorSetBuildingInstanceEvent>.LocalSubscriber(SetInstance, gameObject));
+        m_subscriberList.Add(new Event<EditorUpdateInstanceEvent>.LocalSubscriber(UpdateInstance, gameObject));
 
         m_subscriberList.Subscribe();
     }
@@ -27,28 +30,31 @@ public class EditorBuildingComponent : MonoBehaviour
         m_subscriberList.Unsubscribe();
     }
 
-    void SetInstance(EditorSetBuildingInstance e)
+    void SetInstance(EditorSetBuildingInstanceEvent e)
     {
         Vector3 size = Global.instance.allBlocks.blockSize;
         
         EditorGetBuildingEvent building = new EditorGetBuildingEvent(e.ID);
         Event<EditorGetBuildingEvent>.Broadcast(building);
 
-        Vector3 offset = new Vector3(size.x * building.buildingPos.x, size.y * building.buildingPos.y, size.z * building.buildingPos.z);
+        Vector3 offset = new Vector3(size.x * building.building.pos.x, size.y * building.building.pos.y, size.z * building.building.pos.z);
 
         transform.localPosition = offset;
 
         m_buildingID = e.ID;
-        m_type = building.buildingType;
-        m_team = building.team;
-        m_pos = building.buildingPos;
-        m_rot = building.rotation;
+        m_type = building.building.buildingType;
+        m_team = building.building.team;
+        m_pos = building.building.pos;
+        m_rot = building.building.rotation;
 
         SetBuilding();
     }
 
     void SetBuilding()
     {
+        if (m_instance != null)
+            Destroy(m_instance);
+
         if(m_type == BuildingType.Belt)
         {
             SetBelt();
@@ -61,17 +67,27 @@ public class EditorBuildingComponent : MonoBehaviour
         obj.transform.parent = transform;
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localRotation = RotationEx.ToQuaternion(m_rot);
+
+        m_instance = obj;
     }
 
     void SetBelt()
     {
-        //todo later
+        GetNearBlocsEvent blocks = new GetNearBlocsEvent(m_pos);
+        Event<GetNearBlocsEvent>.Broadcast(blocks);
 
-        var prefab = BuildingDataEx.GetBaseBuildingPrefab(m_type);
+        GetNearBeltsEvent belts = new GetNearBeltsEvent(m_pos);
+        Event<GetNearBeltsEvent>.Broadcast(belts);
 
-        var obj = Instantiate(prefab);
+        var obj = BuildingDataEx.InstantiateBelt(Vector3Int.zero, blocks.matrix, belts.matrix);
         obj.transform.parent = transform;
         obj.transform.localPosition = Vector3.zero;
-        obj.transform.localRotation = RotationEx.ToQuaternion(m_rot);
+
+        m_instance = obj;
+    }
+
+    void UpdateInstance(EditorUpdateInstanceEvent e)
+    {
+        SetBuilding();
     }
 }

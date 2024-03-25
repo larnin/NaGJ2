@@ -5,10 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+public enum BeltDirection
+{
+    Horizontal,
+    Up,
+    Down,
+}
+
 public class BuildingElement
 {
     public int ID;
     public BuildingType buildingType;
+    public BeltDirection beltDirection;
     public int level;
     public Vector3Int pos;
     public Rotation rotation;
@@ -20,6 +28,7 @@ public class BuildingElement
         BuildingElement b = new BuildingElement();
         b.ID = ID;
         b.buildingType = buildingType;
+        b.beltDirection = beltDirection;
         b.level = level;
         b.pos = pos;
         b.rotation = rotation;

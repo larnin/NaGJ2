@@ -26,6 +26,7 @@ public class BuildingList : MonoBehaviour
 
         m_subscriberList.Add(new Event<SaveEvent>.Subscriber(OnSave));
         m_subscriberList.Add(new Event<LoadEvent>.Subscriber(OnLoad));
+        m_subscriberList.Add(new Event<LoadEndedEvent>.Subscriber(OnLoadEnd));
 
         m_subscriberList.Subscribe();
     }
@@ -45,7 +46,10 @@ public class BuildingList : MonoBehaviour
         m_buildings = BuildingEx.Load(e.document, out m_nextID);
 
         CreateDictionaries();
+    }
 
+    void OnLoadEnd(LoadEndedEvent e)
+    {
         foreach (var b in m_buildings)
             UpdateBuilding(b);
     }
@@ -76,18 +80,34 @@ public class BuildingList : MonoBehaviour
     {
         RemoveBuilding(b);
 
-        var prefab = BuildingDataEx.GetBaseBuildingPrefab(b.buildingType, b.level);
-        if (prefab == null)
-            return;
+        GameObject instance = null;
 
-        var size = Global.instance.allBlocks.blockSize;
-        Vector3 offset = new Vector3(size.x * b.pos.x, size.y * b.pos.y, size.z * b.pos.z);
-        
-        var instance = Instantiate(prefab);
-        instance.transform.parent = transform;
+        if(b.buildingType != BuildingType.Belt)
+        {
+            var prefab = BuildingDataEx.GetBaseBuildingPrefab(b.buildingType, b.level);
+            if (prefab == null)
+                return;
+            instance = Instantiate(prefab);
 
-        instance.transform.localPosition = offset;
-        instance.transform.localRotation = RotationEx.ToQuaternion(b.rotation);
+            var size = Global.instance.allBlocks.blockSize;
+            Vector3 offset = new Vector3(size.x * b.pos.x, size.y * b.pos.y, size.z * b.pos.z);
+            instance.transform.parent = transform;
+            instance.transform.localPosition = offset;
+            instance.transform.localRotation = RotationEx.ToQuaternion(b.rotation);
+            b.beltDirection = BeltDirection.Horizontal;
+        }
+        else
+        {
+            GetNearBlocsEvent blocks = new GetNearBlocsEvent(b.pos);
+            Event<GetNearBlocsEvent>.Broadcast(blocks);
+
+            GetNearBeltsEvent belts = new GetNearBeltsEvent(b.pos);
+            Event<GetNearBeltsEvent>.Broadcast(belts);
+
+            BeltDirection dir;
+            instance = BuildingDataEx.InstantiateBelt(b.pos, blocks.matrix, belts.matrix, out dir, transform);
+            b.beltDirection = dir;
+        }
 
         var buildingID = instance.GetComponent<BuildingID>();
         if(buildingID == null)
@@ -280,7 +300,7 @@ public class BuildingList : MonoBehaviour
                 var data = new BuildingOneBeltData();
                 data.pos = b.pos;
                 data.rotation = b.rotation;
-                data.verticalOffset = 0; //todo later
+                data.direction = b.beltDirection;
                 e.belts.Add(data);
             }
         }
@@ -299,7 +319,7 @@ public class BuildingList : MonoBehaviour
                     Vector3Int pos = e.pos + new Vector3Int(i, j, k);
 
                     var building = GetBuildingAt(pos);
-                    if(building.buildingType == BuildingType.Belt)
+                    if(building != null && building.buildingType == BuildingType.Belt)
                     {
                         data.haveBelt = true;
                         data.rotation = building.rotation;

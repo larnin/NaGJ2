@@ -34,12 +34,14 @@ public class BeltSystem : MonoBehaviour
 
         public Vector3 pos;
         public int beltIndex;
+        public Rotation startDirection;
     }
 
     class BeltNode
     {
         public Vector3Int pos = Vector3Int.zero;
         public Rotation rotation = Rotation.rot_0;
+        public BeltDirection direction = BeltDirection.Horizontal;
         public int nextIndex = -1;
         public List<int> previousIndexs = new List<int>();
         public int portIndex = -1;
@@ -114,58 +116,31 @@ public class BeltSystem : MonoBehaviour
 
 
         int beltCount = buildingBelts.belts.Count;
-        List<int> othersBelts = new List<int>();
         for(int i = 0; i < beltCount; i++)
         {
-            othersBelts.Clear();
-
             var b = buildingBelts.belts[i];
-
-            for(int j = 0; j < beltCount; j++)
-            {
-                var b2 = buildingBelts.belts[j];
-
-                var offset = b2.pos - b.pos;
-
-                if (MathF.Abs(offset.x) + MathF.Abs(offset.z) == 1)
-                    othersBelts.Add(j);
-            }
 
             var newNode = new BeltNode();
             newNode.pos = b.pos;
             newNode.rotation = b.rotation;
+            newNode.direction = b.direction;
 
-            var nextPos = newNode.pos + RotationEx.ToVector3Int(newNode.rotation);
-
-            int nextNodeIndex = -1;
-
-            for(int j = 0; j < othersBelts.Count; j++)
+            for(int j = 0; j < beltCount; j++)
             {
-                var b2 = buildingBelts.belts[othersBelts[j]];
-
-                if (b2.pos != nextPos)
+                if (i == j)
                     continue;
 
-                if (b2.rotation == RotationEx.Add(newNode.rotation, Rotation.rot_180))
-                    continue;
+                var b2 = buildingBelts.belts[j];
 
-                nextNodeIndex = j;
-                break;
-            }
+                var offset = b2.pos - b.pos;
 
-            if (nextNodeIndex >= 0)
-                newNode.nextIndex = othersBelts[nextNodeIndex];
-
-            for(int j = 0; j < othersBelts.Count; j++)
-            {
-                if (j == nextNodeIndex)
-                    continue;
-
-                var b2 = buildingBelts.belts[othersBelts[j]];
-
-                nextPos = b2.pos + RotationEx.ToVector3Int(b2.rotation);
-                if (nextPos == newNode.pos)
-                    newNode.previousIndexs.Add(othersBelts[j]);
+                if (MathF.Abs(offset.x) + MathF.Abs(offset.z) == 1 && Mathf.Abs(offset.y) <= 1)
+                {
+                    if (newNode.nextIndex < 0 && IsForward(b, b2))
+                        newNode.nextIndex = j;
+                    else if (IsForward(b2, b))
+                        newNode.previousIndexs.Add(j);
+                }
             }
 
             newBelts.Add(newNode);
@@ -242,6 +217,24 @@ public class BeltSystem : MonoBehaviour
         m_containers = newContainers;
 
         ReplaceResources();
+    }
+
+    bool IsForward(BuildingOneBeltData first, BuildingOneBeltData second)
+    {
+        if (first.rotation == RotationEx.Add(second.rotation, Rotation.rot_180))
+            return false;
+
+        if (second.direction != BeltDirection.Horizontal && first.rotation != second.rotation)
+            return false;
+
+        Vector3Int target = first.pos + RotationEx.ToVector3Int(first.rotation);
+        if (first.direction == BeltDirection.Down)
+            target.y--;
+
+        if (second.direction == BeltDirection.Up)
+            target.y++;
+
+        return target == second.pos;
     }
 
     void ReplaceResources()
@@ -393,6 +386,7 @@ public class BeltSystem : MonoBehaviour
         r.resource = type;
         r.beltIndex = beltIndex;
         r.pos = new Vector3(node.pos.x, node.pos.y, node.pos.z);
+        r.startDirection = RotationEx.Add(node.rotation, Rotation.rot_180);
 
         node.resources.Add(r);
 
@@ -446,7 +440,7 @@ public class BeltSystem : MonoBehaviour
 
                 var target = beltPos;
 
-                if(rot == belt.rotation || dist < 0.1f)
+                if(rot == belt.rotation || dist < 0.001f)
                 {
                     if(belt.portIndex >= 0)
                     {
@@ -479,7 +473,13 @@ public class BeltSystem : MonoBehaviour
 
                 dir = target - r.pos;
 
-                var newPos = r.pos + dir.normalized * Time.deltaTime * Global.instance.allResources.beltSpeed;
+                float dirNorm = dir.magnitude;
+                dir /= dirNorm;
+                float distMove = Time.deltaTime * Global.instance.allResources.beltSpeed;
+                if (distMove > dirNorm)
+                    distMove = dirNorm;
+
+                var newPos = r.pos + distMove * dir;
 
                 BeltNode nextBelt = null;
                 if (belt.nextIndex >= 0)
@@ -505,6 +505,9 @@ public class BeltSystem : MonoBehaviour
                 {
                     if (nextBelt == null)
                         continue;
+
+                    if (nextBelt.pos.y != belt.pos.y)
+                        newPos.y = nextBelt.pos.y;
 
                     var beltMove = new BeltMove();
                     beltMove.resource = r;
@@ -540,8 +543,12 @@ public class BeltSystem : MonoBehaviour
 
         foreach(var b in movingResources)
         {
-            if(b.resource.beltIndex >= 0)
-                m_belts[b.resource.beltIndex].resources.Remove(b.resource);
+            if (b.resource.beltIndex >= 0)
+            {
+                var belt = m_belts[b.resource.beltIndex];
+                b.resource.startDirection = RotationEx.Add(belt.rotation, Rotation.rot_180);
+                belt.resources.Remove(b.resource);
+            }
 
             m_belts[b.newBeltIndex].resources.Add(b.resource);
             b.resource.beltIndex = b.newBeltIndex;
@@ -567,12 +574,12 @@ public class BeltSystem : MonoBehaviour
 
             if(otherTarget == target)
             {
-                if ((other.pos - otherTargetF).sqrMagnitude > (current.pos - targetF).sqrMagnitude)
+                if ((other.pos - otherTargetF).SqrMagnitudeXZ() > (current.pos - targetF).SqrMagnitudeXZ())
                     continue;
             }
 
-            float d = (other.pos - newPos).sqrMagnitude;
-            float oldD = (other.pos - current.pos).sqrMagnitude;
+            float d = (other.pos - newPos).SqrMagnitudeXZ();
+            float oldD = (other.pos - current.pos).SqrMagnitudeXZ();
 
             if (d < space * space && oldD > d)
                 return false;
@@ -608,7 +615,62 @@ public class BeltSystem : MonoBehaviour
             if (r.instance == null)
                 continue;
 
-            var pos = new Vector3(r.pos.x * size.x, r.pos.y * size.y + m_resourceOffset, r.pos.z * size.z);
+            var belt = m_belts[r.beltIndex];
+
+            Vector3 dirToCenter = new Vector3(r.pos.x - belt.pos.x, r.pos.y - belt.pos.y, r.pos.z - belt.pos.z);
+            Rotation rotToCenter = RotationEx.FromVector(dirToCenter);
+            float distToCenter = dirToCenter.MagnitudeXZ();
+
+            float normDist = 0;
+            if (rotToCenter == belt.rotation || distToCenter < 0.001f)
+            {
+                var target = new Vector3(belt.pos.x, belt.pos.y, belt.pos.z) + 0.5f * RotationEx.ToVector3(belt.rotation);
+                normDist = 1.0f - (r.pos - target).MagnitudeXZ();
+            }
+            else normDist = 0.5f - distToCenter;
+
+
+            Vector3 offset = r.pos;
+
+            if (belt.direction == BeltDirection.Horizontal)
+            {
+                if (r.startDirection == RotationEx.Add(belt.rotation, Rotation.rot_90) || r.startDirection == RotationEx.Add(belt.rotation, Rotation.rot_270))
+                {
+                    Vector3 center = new Vector3(belt.pos.x, belt.pos.y, belt.pos.z);
+                    Vector3 start = center + RotationEx.ToVector3(r.startDirection);
+                    Vector3 end = center + RotationEx.ToVector3(belt.rotation);
+                    Vector3 circleCenter = (start + end) / 2;
+
+                    start = (center + start) / 2 - circleCenter;
+                    end = (center + end) / 2 - circleCenter;
+
+                    Vector3 current = Vector3.Slerp(start, end, normDist);
+                    current += circleCenter;
+
+                    offset = current;
+                }
+            }
+            else if(belt.direction == BeltDirection.Up)
+            {
+                const float delta = 0.15f;
+                normDist /= 1 - delta;
+                if (normDist > 1)
+                    normDist = 1;
+
+                offset.y += -(1 - normDist);
+            }
+            else if(belt.direction == BeltDirection.Down)
+            {
+                const float delta = 0.15f;
+                normDist /= 1 - delta;
+                normDist -= delta;
+                if (normDist < 0)
+                    normDist = 0;
+
+                offset.y += -normDist;
+            }
+
+            var pos = new Vector3(offset.x * size.x, offset.y * size.y + m_resourceOffset, offset.z * size.z);
 
             r.instance.transform.localPosition = pos;
         }

@@ -70,7 +70,7 @@ public class BuildingOneBeltData
 {
     public Vector3Int pos;
     public Rotation rotation;
-    public int verticalOffset;
+    public BeltDirection direction;
 }
 
 public enum Team

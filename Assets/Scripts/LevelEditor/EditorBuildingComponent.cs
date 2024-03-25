@@ -79,7 +79,8 @@ public class EditorBuildingComponent : MonoBehaviour
         GetNearBeltsEvent belts = new GetNearBeltsEvent(m_pos);
         Event<GetNearBeltsEvent>.Broadcast(belts);
 
-        var obj = BuildingDataEx.InstantiateBelt(Vector3Int.zero, blocks.matrix, belts.matrix);
+        BeltDirection dir;
+        var obj = BuildingDataEx.InstantiateBelt(Vector3Int.zero, blocks.matrix, belts.matrix, out dir);
         obj.transform.parent = transform;
         obj.transform.localPosition = Vector3.zero;
 

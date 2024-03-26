@@ -240,14 +240,14 @@ public static class BuildingDataEx
 
             if(parent != null)
             {
-                obj.transform.position = realPos;
-                obj.transform.rotation = RotationEx.ToQuaternion(rot);
-            }
-            else
-            {
                 obj.transform.parent = parent;
                 obj.transform.localPosition = realPos;
                 obj.transform.localRotation = RotationEx.ToQuaternion(rot);
+            }
+            else
+            {
+                obj.transform.position = realPos;
+                obj.transform.rotation = RotationEx.ToQuaternion(rot);
             }
         }
 

@@ -118,4 +118,13 @@ public static class Utility
             (a.yMin <= b.yMax) && (a.yMax >= b.yMin) &&
             (a.zMin <= b.zMax) && (a.zMax >= b.zMin);
     }
+
+    public static float ReduceAngle(float current)
+    {
+        while (current > 180.0f)
+            current -= 360.0f;
+        while (current < -180.0f)
+            current += 180.0f;
+        return current;
+    }
 }

@@ -4,36 +4,68 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using DG.Tweening;
 
 public class GameCamera : MonoBehaviour
 {
     [SerializeField] float m_minZoom = 25;
     [SerializeField] float m_maxZoom = 1;
     [SerializeField] float m_stepZoom = 1.1f;
+    [SerializeField] float m_arrowsSpeed = 1;
+    [SerializeField] float m_arrowsAccelerationDuration = 0.2f;
+    [SerializeField] float m_rotationDuration = 0.5f;
+    [SerializeField] float m_cameraResetTime = 1.0f;
 
     Camera m_camera;
     float m_initialZoom;
     Vector3 m_initialPosition;
+    float m_initialAngle;
+    float m_zoom;
 
     Vector3 m_oldMousePos;
+
+    float m_left;
+    float m_right;
+    float m_up;
+    float m_down;
+
+    float m_currentAngle;
+    float m_startAngle;
+    float m_endAngle;
+    float m_rotationNormDuration;
+
+    float m_resetTime;
 
     private void Start()
     {
         m_camera = Camera.main;
         m_initialPosition = transform.position;
         m_initialZoom = m_camera.orthographicSize;
+        m_initialAngle = transform.rotation.eulerAngles.y;
+        m_startAngle = m_initialAngle;
+        m_endAngle = m_initialAngle;
+        m_currentAngle = m_initialAngle;
+        m_rotationNormDuration = 0;
+        m_resetTime = 0;
+        m_zoom = 1;
     }
 
     private void Update()
     {
         float scrollY = Input.mouseScrollDelta.y;
-        float multiplier = MathF.Pow(m_stepZoom, MathF.Abs(scrollY));
-        if (MathF.Sign(scrollY) < 0)
-            multiplier = 1/multiplier;
+        if (scrollY != 0)
+        {
+            float multiplier = MathF.Pow(m_stepZoom, MathF.Abs(scrollY));
+            if (MathF.Sign(scrollY) < 0)
+                multiplier = 1 / multiplier;
 
-        float newSize = m_camera.orthographicSize * multiplier;
-        if (newSize > m_maxZoom && newSize < m_minZoom)
-            m_camera.orthographicSize = newSize;
+            float newSize = m_camera.orthographicSize * multiplier;
+            if (newSize > m_maxZoom && newSize < m_minZoom)
+            {
+                m_camera.orthographicSize = newSize;
+                m_zoom *= multiplier;
+            }
+        }
 
         if(Input.GetMouseButton(2))
         {
@@ -51,11 +83,87 @@ public class GameCamera : MonoBehaviour
 
             Vector3 delta = newPos - oldPos;
 
-            Vector3 currentPos = m_camera.transform.position;
+            Vector3 currentPos = transform.position;
             currentPos -= delta;
-            m_camera.transform.position = currentPos;
+            transform.position = currentPos;
+        }
+
+        bool addRight = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D);
+        bool addLeft = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.A);
+        bool addUp = Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.W);
+        bool addDown = Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S);
+
+        m_right += Time.deltaTime / m_arrowsAccelerationDuration * (addRight ? 1 : -1);
+        m_left += Time.deltaTime / m_arrowsAccelerationDuration * (addLeft ? 1 : -1);
+        m_up += Time.deltaTime / m_arrowsAccelerationDuration * (addUp ? 1 : -1);
+        m_down += Time.deltaTime / m_arrowsAccelerationDuration * (addDown ? 1 : -1);
+
+        m_right = Mathf.Clamp01(m_right);
+        m_left = Mathf.Clamp01(m_left);
+        m_up = Mathf.Clamp01(m_up);
+        m_down = Mathf.Clamp01(m_down);
+
+        Vector2 inputDir = new Vector2(m_right - m_left, m_up - m_down);
+
+        if(inputDir != Vector2.zero)
+        {
+            var forward = m_camera.transform.forward;
+            forward.y = 0;
+            forward.Normalize();
+            Vector3 ortho = new Vector3(forward.z, 0, -forward.x);
+
+            Vector3 offset = (forward * inputDir.y + ortho * inputDir.x) * Time.deltaTime * m_arrowsSpeed * m_zoom;
+
+            Vector3 newPos = transform.position + offset;
+            transform.position = newPos;
         }
 
         m_oldMousePos = Input.mousePosition;
+
+        if(Input.GetKey(KeyCode.R))
+        {
+            float newResetTime = m_resetTime + Time.deltaTime;
+            if(m_resetTime < m_cameraResetTime && newResetTime >= m_cameraResetTime)
+            {
+                transform.position = m_initialPosition;
+                m_camera.orthographicSize = m_initialZoom;
+                m_zoom = 1;
+
+                m_startAngle = Utility.ReduceAngle(m_currentAngle);
+                m_endAngle = m_initialAngle;
+                m_rotationNormDuration = 0;
+            }
+            m_resetTime = newResetTime;
+        }
+        if(Input.GetKeyUp(KeyCode.R))
+        {
+            if (m_resetTime < m_cameraResetTime)
+            {
+                float rotDir = 1;
+                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                    rotDir = -1;
+
+                float newEndAngle = m_endAngle + 90 * rotDir;
+                
+                m_rotationNormDuration = 0;
+                m_startAngle = m_currentAngle;
+
+                m_endAngle = newEndAngle;
+            }
+            m_resetTime = 0;
+        }
+
+        if (m_currentAngle != m_endAngle)
+        {
+            m_rotationNormDuration += Time.deltaTime / m_rotationDuration;
+            if(m_rotationNormDuration >= 1)
+            {
+                m_rotationNormDuration = 1;
+                m_currentAngle = m_endAngle;
+            }
+            else m_currentAngle = DOVirtual.EasedValue(m_startAngle, m_endAngle, m_rotationNormDuration, Ease.InOutQuad);
+
+            transform.rotation = Quaternion.Euler(0, m_currentAngle, 0);
+        }
     }
 }

@@ -132,44 +132,50 @@ public class GameCamera : MonoBehaviour
 
         m_oldMousePos = Input.mousePosition;
 
-        if(Input.GetKey(KeyCode.R) && m_resetTime <= 0)
+        GetCurrentCursorEvent cursor = new GetCurrentCursorEvent();
+        Event<GetCurrentCursorEvent>.Broadcast(cursor);
+
+        if (cursor.cursorType == CursorType.select || m_resetPressTime > 0)
         {
-            float newResetTime = m_resetPressTime + Time.deltaTime;
-            if(m_resetPressTime < m_cameraResetPressTime && newResetTime >= m_cameraResetPressTime)
+            if (Input.GetKey(KeyCode.R) && m_resetTime <= 0)
             {
-                m_resetTime = Time.deltaTime / m_cameraResetTime;
-
-                m_resetStartPos = transform.position;
-                m_resetStartCameraZoom = m_camera.orthographicSize;
-                m_resetStartZoom = m_zoom;
-
-                m_startAngle = Utility.ReduceAngle(m_currentAngle);
-                m_endAngle = m_initialAngle;
-                m_rotationNormDuration = 0;
-            }
-            m_resetPressTime = newResetTime;
-        }
-        if(Input.GetKeyUp(KeyCode.R))
-        {
-            if (m_resetPressTime < m_cameraResetPressTime && m_resetTime <= 0)
-            {
-                float rotDir = 1;
-                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                    rotDir = -1;
-
-                if (m_currentAngle != m_endAngle)
+                float newResetTime = m_resetPressTime + Time.deltaTime;
+                if (m_resetPressTime < m_cameraResetPressTime && newResetTime >= m_cameraResetPressTime)
                 {
-                    m_nextRotation = true;
-                    m_nextRotationPositive = rotDir > 0;
-                }
-                else
-                {
+                    m_resetTime = Time.deltaTime / m_cameraResetTime;
+
+                    m_resetStartPos = transform.position;
+                    m_resetStartCameraZoom = m_camera.orthographicSize;
+                    m_resetStartZoom = m_zoom;
+
+                    m_startAngle = Utility.ReduceAngle(m_currentAngle);
+                    m_endAngle = m_initialAngle;
                     m_rotationNormDuration = 0;
-                    m_startAngle = m_currentAngle;
-                    m_endAngle += 90 * rotDir; ;
                 }
+                m_resetPressTime = newResetTime;
             }
-            m_resetPressTime = 0;
+            if (Input.GetKeyUp(KeyCode.R))
+            {
+                if (m_resetPressTime < m_cameraResetPressTime && m_resetTime <= 0)
+                {
+                    float rotDir = 1;
+                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                        rotDir = -1;
+
+                    if (m_currentAngle != m_endAngle)
+                    {
+                        m_nextRotation = true;
+                        m_nextRotationPositive = rotDir > 0;
+                    }
+                    else
+                    {
+                        m_rotationNormDuration = 0;
+                        m_startAngle = m_currentAngle;
+                        m_endAngle += 90 * rotDir; ;
+                    }
+                }
+                m_resetPressTime = 0;
+            }
         }
 
         if (m_currentAngle != m_endAngle)

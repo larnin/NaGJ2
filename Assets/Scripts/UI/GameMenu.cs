@@ -31,7 +31,13 @@ public class GameMenu : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-            OnPauseClick();
+        {
+            GetCurrentCursorEvent cursor = new GetCurrentCursorEvent();
+            Event<GetCurrentCursorEvent>.Broadcast(cursor);
+            if (cursor.cursorType != CursorType.select)
+                Event<EnableSelectCursorEvent>.Broadcast(new EnableSelectCursorEvent());
+            else OnPauseClick();
+        }
 
         if (m_paused && m_pauseInstance == null)
             OnPauseClick();
@@ -60,7 +66,7 @@ public class GameMenu : MonoBehaviour
 
     public void OnEmptyClick()
     {
-        //todo
+        Event<EnableSelectCursorEvent>.Broadcast(new EnableSelectCursorEvent());
     }
 
     public void OnBuildingListClick()
@@ -72,7 +78,8 @@ public class GameMenu : MonoBehaviour
 
     public void OnBuildingClick(int index)
     {
-        //todo
+        if (index >= 0 && index < m_buildingList.Count)
+            Event<EnableBuildingCursorEvent>.Broadcast(new EnableBuildingCursorEvent(m_buildingList[index], 0));
     }
 
     public void OnHoverStart(int index)

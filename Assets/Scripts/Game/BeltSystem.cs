@@ -408,8 +408,11 @@ public class BeltSystem : MonoBehaviour
 
     private void Update()
     {
-        ProcessBelts();
-        UpdateResourcesInstances();
+        if (!Gamestate.instance.paused)
+        {
+            ProcessBelts();
+            UpdateResourcesInstances();
+        }
 
         DebugDrawBelts();
     }

@@ -100,11 +100,11 @@ public class EditorBuildings : MonoBehaviour
             }
         }
 
-        for(int i = newBounds.xMin; i <= newBounds.xMax; i++)
+        for(int i = newBounds.xMin; i < newBounds.xMax; i++)
         {
-            for(int j = newBounds.yMin; j <= newBounds.yMax; j++)
+            for(int j = newBounds.yMin; j < newBounds.yMax; j++)
             {
-                for(int k = newBounds.zMin; k <= newBounds.zMax; k++)
+                for(int k = newBounds.zMin; k < newBounds.zMax; k++)
                 {
                     GetBlockEvent blockData = new GetBlockEvent(new Vector3Int(i, j, k));
                     Event<GetBlockEvent>.Broadcast(blockData);

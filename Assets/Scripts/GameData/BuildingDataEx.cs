@@ -51,7 +51,7 @@ public static class BuildingDataEx
         var size = GetBuildingSize(type, level);
 
         Vector3Int min = new Vector3Int((size.x - 1) / 2, 0, (size.z - 1) / 2);
-        Vector3Int max = new Vector3Int((size.x - 1) - min.x, size.y, (size.z - 1) - min.z);
+        Vector3Int max = new Vector3Int((size.x - 1) - min.x, size.y - 1, (size.z - 1) - min.z);
 
         int count = (int)rot;
         for (int i = 0; i < count; i++)

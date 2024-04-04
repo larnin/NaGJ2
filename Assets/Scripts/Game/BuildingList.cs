@@ -151,13 +151,13 @@ public class BuildingList : MonoBehaviour
     {
         e.ID = 0;
 
-        var bounds = BuildingDataEx.GetBuildingBounds(e.buildingType, e.pos, e.rotation);
+        var bounds = BuildingDataEx.GetBuildingBounds(e.buildingType, e.pos, e.rotation, e.level);
 
-        for (int i = bounds.xMin; i <= bounds.xMax; i++)
+        for (int i = bounds.xMin; i < bounds.xMax; i++)
         {
-            for (int j = bounds.yMin; j <= bounds.yMax; j++)
+            for (int j = bounds.yMin; j < bounds.yMax; j++)
             {
-                for (int k = bounds.zMin; k <= bounds.zMax; k++)
+                for (int k = bounds.zMin; k < bounds.zMax; k++)
                 {
                     var id = PosToID(new Vector3Int(i, j, k));
                     if (m_posDictionary.ContainsKey(id))
@@ -176,17 +176,18 @@ public class BuildingList : MonoBehaviour
         b.team = e.team;
         b.rotation = e.rotation;
         b.buildingType = e.buildingType;
+        b.level = e.level;
 
         int index = m_buildings.Count;
         m_buildings.Add(b);
 
         m_idDictionary.Add(e.ID, index);
 
-        for (int i = bounds.xMin; i <= bounds.xMax; i++)
+        for (int i = bounds.xMin; i < bounds.xMax; i++)
         {
-            for (int j = bounds.yMin; j <= bounds.yMax; j++)
+            for (int j = bounds.yMin; j < bounds.yMax; j++)
             {
-                for (int k = bounds.zMin; k <= bounds.zMax; k++)
+                for (int k = bounds.zMin; k < bounds.zMax; k++)
                 {
                     var id = PosToID(new Vector3Int(i, j, k));
                     m_posDictionary.Add(id, index);
@@ -222,11 +223,11 @@ public class BuildingList : MonoBehaviour
         }
 
         var bounds = BuildingDataEx.GetBuildingBounds(b.buildingType, b.pos, b.rotation);
-        for (int i = bounds.xMin; i <= bounds.xMax; i++)
+        for (int i = bounds.xMin; i < bounds.xMax; i++)
         {
-            for (int j = bounds.yMin; j <= bounds.yMax; j++)
+            for (int j = bounds.yMin; j < bounds.yMax; j++)
             {
-                for (int k = bounds.zMin; k <= bounds.zMax; k++)
+                for (int k = bounds.zMin; k < bounds.zMax; k++)
                 {
                     var id = PosToID(new Vector3Int(i, j, k));
                     m_posDictionary.Remove(id);

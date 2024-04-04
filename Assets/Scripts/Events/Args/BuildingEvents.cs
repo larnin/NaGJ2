@@ -9,15 +9,17 @@ public class PlaceBuildingEvent
 {
     public Vector3Int pos;
     public BuildingType buildingType;
+    public int level;
     public Rotation rotation;
     public Team team;
 
     public int ID;
 
-    public PlaceBuildingEvent(Vector3Int _pos, BuildingType _type, Rotation _rot, Team _team)
+    public PlaceBuildingEvent(Vector3Int _pos, BuildingType _type, int _level, Rotation _rot, Team _team)
     {
         pos = _pos;
         buildingType = _type;
+        level = _level;
         rotation = _rot;
         team = _team;
     }

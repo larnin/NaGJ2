@@ -414,7 +414,7 @@ public class BeltSystem : MonoBehaviour
             UpdateResourcesInstances();
         }
 
-        DebugDrawBelts();
+        //DebugDrawBelts();
     }
 
     class BeltMove

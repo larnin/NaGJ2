@@ -9,7 +9,7 @@ public class CursorBase : MonoBehaviour
 {
     [SerializeField] LayerMask m_groundLayer;
 
-    Camera m_camera;
+    protected Camera m_camera;
 
     private void Start()
     {

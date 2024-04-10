@@ -56,13 +56,17 @@ public class GameSystem : MonoBehaviour
 
     void SetCurrentCursor(CursorType cursorType)
     {
-        m_placeBuildingCursor.enabled = false;
-        m_selectCursor.enabled = false;
 
         if (cursorType == CursorType.select)
+        {
+            m_placeBuildingCursor.enabled = false;
             m_selectCursor.enabled = true;
+        }
         else if (cursorType == CursorType.placeBuilding)
+        {
+            m_selectCursor.enabled = false;
             m_placeBuildingCursor.enabled = true;
+        }
 
         m_cursorType = cursorType;
     }

@@ -73,6 +73,23 @@ public class GetBuildingByTypeEvent
     }
 }
 
+public class GetBuildingNbEvent
+{
+    public int nb = 0;
+}
+
+public class GetBuildingByIndexEvent
+{
+    public int index;
+
+    public BuildingElement element;
+
+    public GetBuildingByIndexEvent(int _index)
+    {
+        index = _index;
+    }
+}
+
 public class GetBuildingPortsEvent
 {
     public List<BuildingOnePortData> ports = new List<BuildingOnePortData>();

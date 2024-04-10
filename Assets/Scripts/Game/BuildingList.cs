@@ -21,6 +21,9 @@ public class BuildingList : MonoBehaviour
         m_subscriberList.Add(new Event<RemoveBuildingEvent>.Subscriber(RemoveBuilding));
         m_subscriberList.Add(new Event<GetBuildingEvent>.Subscriber(GetBuilding));
         m_subscriberList.Add(new Event<GetBuildingAtEvent>.Subscriber(GetBuildingAt));
+        m_subscriberList.Add(new Event<GetBuildingNbEvent>.Subscriber(GetBuildingNb));
+        m_subscriberList.Add(new Event<GetBuildingByIndexEvent>.Subscriber(GetBuildingByIndex));
+
         m_subscriberList.Add(new Event<GetBuildingBeltsEvent>.Subscriber(GetBelts));
         m_subscriberList.Add(new Event<GetNearBeltsEvent>.Subscriber(GetNearBelts));
 
@@ -214,12 +217,14 @@ public class BuildingList : MonoBehaviour
 
         var b = m_buildings[index];
         RemoveBuilding(b);
+        m_buildings.RemoveAt(index);
 
         m_idDictionary.Remove(e.ID);
-        foreach(var i in m_idDictionary)
+        foreach(var k in m_idDictionary.Keys.ToList())
         {
-            if (i.Value > index)
-                m_idDictionary[i.Key] = i.Value - 1;
+            int value = m_idDictionary[k];
+            if (value > index)
+                m_idDictionary[k] = value - 1;
         }
 
         var bounds = BuildingDataEx.GetBuildingBounds(b.buildingType, b.pos, b.rotation);
@@ -234,10 +239,11 @@ public class BuildingList : MonoBehaviour
                 }
             }
         }
-        foreach (var p in m_posDictionary)
+        foreach (var k in m_posDictionary.Keys.ToList())
         {
-            if (p.Value > index)
-                m_posDictionary[p.Key] = p.Value - 1;
+            int value = m_posDictionary[k];
+            if (value > index)
+                m_posDictionary[k] = value - 1;
         }
 
         Event<BuildingUpdatedEvent>.Broadcast(new BuildingUpdatedEvent(e.ID, bounds));
@@ -270,6 +276,18 @@ public class BuildingList : MonoBehaviour
         if (element == null)
             e.element = null;
         else e.element = element.Clone();
+    }
+
+    void GetBuildingNb(GetBuildingNbEvent e)
+    {
+        e.nb = m_buildings.Count;
+    }
+
+    void GetBuildingByIndex(GetBuildingByIndexEvent e)
+    {
+        if (e.index < 0 || e.index >= m_buildings.Count)
+            e.element = null;
+        else e.element = m_buildings[e.index].Clone();
     }
 
     void GetBelts(GetBuildingBeltsEvent e)

@@ -986,6 +986,13 @@ public class CraftstudioImporter : OdinEditorWindow
         data.indexesSize = model.nodes.Count * 36;
         data.verticesSize = model.nodes.Count * 24;
 
+        for(int i = 0; i < data.verticesSize; i++)
+        {
+            var pos = data.vertices[i].pos;
+            pos.x *= -1;
+            data.vertices[i].pos = pos;
+        }
+
         if (mesh == null)
             mesh = new Mesh();
 
@@ -1105,7 +1112,7 @@ public class CraftstudioImporter : OdinEditorWindow
 
             bool reverse = j == (int)CraftstudioFace.down || j == (int)CraftstudioFace.right || j == (int)CraftstudioFace.back;
 
-            if (reverse)
+            if (!reverse)
             {
                 data.indexes[rI + 0] = (ushort)(rV + 0);
                 data.indexes[rI + 1] = (ushort)(rV + 1);
@@ -1130,27 +1137,12 @@ public class CraftstudioImporter : OdinEditorWindow
     {
         for(int i = 0; i < 6; i++)
         {
-            Rotation rot;
-            var uv = GetUV(node, i, out rot);
+            var uv = GetUV(node, i);
 
-            Vector2 pos = new Vector2(uv.position.x / (float)textureSize.x, uv.position.y / (float)textureSize.y);
-            Vector2 size = new Vector2(uv.size.x / (float)textureSize.x, uv.size.y / (float)textureSize.y);
-
-            pos.y = 1 - pos.y - size.y; 
-
-            data.vertices[vertex + i * 4].uv = pos;
-            data.vertices[vertex + i * 4 + 1].uv = new Vector2(pos.x + size.x, pos.y);
-            data.vertices[vertex + i * 4 + 2].uv = new Vector2(pos.x + size.x, pos.y + size.y);
-            data.vertices[vertex + i * 4 + 3].uv = new Vector2(pos.x, pos.y + size.y);
-
-            for(int j = 0; j < (int)rot; j++)
-            {
-                Vector2 temp = data.vertices[vertex + i * 4].uv;
-                data.vertices[vertex + i * 4].uv = data.vertices[vertex + i * 4 + 1].uv;
-                data.vertices[vertex + i * 4 + 1].uv = data.vertices[vertex + i * 4 + 2].uv;
-                data.vertices[vertex + i * 4 + 2].uv = data.vertices[vertex + i * 4 + 3].uv;
-                data.vertices[vertex + i * 4 + 3].uv = temp;
-            }
+            data.vertices[vertex + i * 4].uv = new Vector2(uv.downLeft.x / (float)textureSize.x, 1 - uv.downLeft.y / (float)textureSize.y);
+            data.vertices[vertex + i * 4 + 1].uv = new Vector2(uv.downRight.x / (float)textureSize.x, 1 - uv.downRight.y / (float)textureSize.y);
+            data.vertices[vertex + i * 4 + 2].uv = new Vector2(uv.topRight.x / (float)textureSize.x, 1 - uv.topRight.y / (float)textureSize.y);
+            data.vertices[vertex + i * 4 + 3].uv = new Vector2(uv.topLeft.x / (float)textureSize.x, 1 - uv.topLeft.y / (float)textureSize.y); 
         }
     }
 
@@ -1162,9 +1154,17 @@ public class CraftstudioImporter : OdinEditorWindow
             data.vertices[vertex + i].color = color;
     }
 
-    RectInt GetUV(CraftstudioModelNode node, int faceIndex, out Rotation rot)
+    struct RectUV
     {
-        rot = Rotation.rot_0;
+        public Vector2Int topLeft;
+        public Vector2Int topRight;
+        public Vector2Int downLeft;
+        public Vector2Int downRight;
+    }
+
+    RectUV GetUV(CraftstudioModelNode node, int faceIndex)
+    {
+        var uv = new RectUV();
 
         Vector2Int size = Vector2Int.zero;
         Vector2Int pos = node.unwrapOffsetQuads[faceIndex];
@@ -1176,67 +1176,112 @@ public class CraftstudioImporter : OdinEditorWindow
             case CraftstudioFace.down:
                 size.x = node.size.x;
                 size.y = node.size.z;
-                    break;
+                break;
             case CraftstudioFace.front:
             case CraftstudioFace.back:
                 size.x = node.size.x;
                 size.y = node.size.y;
-                    break;
+                break;
             case CraftstudioFace.left:
             case CraftstudioFace.right:
                 size.x = node.size.z;
                 size.y = node.size.y;
-                rot = Rotation.rot_90;
-                    break;
+                break;
         }
 
         int flags = node.unwrapFlags[faceIndex];
 
+        int rot = 0;
         if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate90) != 0)
+            rot = 1;
+        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate180) != 0)
+            rot = 2;
+        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate270) != 0)
+            rot = 3;
+
+        bool flipX = (flags & (int)CraftstudioModelNodeUnwrap.MirrorHorizontal) != 0;
+        bool flipY = (flags & (int)CraftstudioModelNodeUnwrap.MirrorVertical) != 0;
+
+        if (flipX)
+            size.x *= -1;
+
+        if (flipY)
+            size.y *= -1;
+
+        for (int i = 0; i < rot; i++)
         {
-            int temp = size.x;
+            var temp = size.x;
             size.x = -size.y;
             size.y = temp;
-
-            rot = RotationEx.Add(rot, Rotation.rot_90);
         }
 
-        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate180) != 0)
+
+        uv.downLeft = pos;
+        uv.downRight = new Vector2Int(pos.x + size.x, pos.y);
+        uv.topLeft = new Vector2Int(pos.x, pos.y + size.y);
+        uv.topRight = pos + size;
+
+        bool correctFlipX = false;
+        bool correctFlipY = false;
+        int correctRotate = 0;
+
+        if(rot == 0 || rot == 2)
         {
-            size.x = -size.x;
-            size.y = -size.y;
-
-            rot = RotationEx.Add(rot, Rotation.rot_180);
+            if (face == CraftstudioFace.right || face == CraftstudioFace.back)
+                correctFlipX = true;
+            if (face == CraftstudioFace.down)
+                correctFlipY = true;
+            if (face == CraftstudioFace.right || face == CraftstudioFace.left)
+                correctRotate = 1;
+            if (face == CraftstudioFace.front || face == CraftstudioFace.back)
+                correctRotate = 2;
         }
-
-        if ((flags & (int)CraftstudioModelNodeUnwrap.Rotate270) != 0)
+        else if (rot == 1 || rot == 3)
         {
-            int temp = size.x;
-            size.x = size.y;
-            size.y = -temp;
-
-            rot = RotationEx.Add(rot, Rotation.rot_270);
+            if (face == CraftstudioFace.top || face == CraftstudioFace.front || face == CraftstudioFace.back)
+                correctRotate = 1;
+            if (face == CraftstudioFace.right)
+                correctRotate = 2;
+            if (face == CraftstudioFace.down)
+                correctRotate = 3;
+            if (face == CraftstudioFace.front || face == CraftstudioFace.top)
+                correctFlipY = true;
+            if (face == CraftstudioFace.left)
+                correctFlipX = true;
+            if (face == CraftstudioFace.front || face == CraftstudioFace.back)
+                correctRotate = 2;
         }
 
-        if ((flags & (int)CraftstudioModelNodeUnwrap.MirrorHorizontal) != 0)
-            size.x = -size.x;
-
-        if ((flags & (int)CraftstudioModelNodeUnwrap.MirrorVertical) != 0)
-            size.y = -size.y;
-
-        if (face == CraftstudioFace.right || face == CraftstudioFace.back)
+        if (correctFlipX)
         {
-            pos.x += size.x;
-            size.x = -size.x;
+            var temp = uv.topLeft;
+            uv.topLeft = uv.topRight;
+            uv.topRight = temp;
+            temp = uv.downLeft;
+            uv.downLeft = uv.downRight;
+            uv.downRight = temp;
         }
 
-        if (face == CraftstudioFace.down)
+        if(correctFlipY)
         {
-            pos.y += size.y;
-            size.y = -size.y;
+            var temp = uv.topLeft;
+            uv.topLeft = uv.downLeft;
+            uv.downLeft = temp;
+            temp = uv.topRight;
+            uv.topRight = uv.downRight;
+            uv.downRight = temp;
         }
 
-        return new RectInt(pos, size);
+        for(int i = 0; i < correctRotate; i++)
+        {
+            var temp = uv.topLeft;
+            uv.topLeft = uv.topRight;
+            uv.topRight = uv.downRight;
+            uv.downRight = uv.downLeft;
+            uv.downLeft = temp;
+        }
+
+        return uv;
     }
 
     void MoveVertices(MeshParamData<NormalUVColorVertexDefinition> data, int vertex, int size, Vector3 offset)
@@ -1382,8 +1427,8 @@ class CraftstudioModelNodeTree
 
 enum CraftstudioFace
 {
-    front,
     back,
+    front,
     right,
     down,
     left,

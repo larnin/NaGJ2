@@ -28,6 +28,7 @@ public class CraftstudioImporter : OdinEditorWindow
     MeshRenderer m_renderer;
     int m_currentTool = 0;
     int m_currentPreview = 0;
+    int m_currentTreeTool = 0;
     Mesh m_currentMesh;
     Vector2 m_scrollBlocks;
     Vector2 m_scrollAnimations;
@@ -209,6 +210,8 @@ public class CraftstudioImporter : OdinEditorWindow
         OnEntityListDrawGUI();
         GUILayout.EndVertical();
 
+        GUIEx.DrawVerticalLine(GUIEx.White, 1);
+
         GUILayout.BeginVertical();
         if (m_currentModel != null)
             OnDrawCurrentModelGUI();
@@ -268,6 +271,8 @@ public class CraftstudioImporter : OdinEditorWindow
 
         m_currentTool = GUILayout.Toolbar(m_currentTool, new string[] { "Model", "Export" });
 
+        GUIEx.DrawHorizontalLine(GUIEx.White, 1);
+
         if (m_currentTool == 0)
             OnDrawCurrentModelDisplayGUI();
         else if (m_currentTool == 1)
@@ -280,10 +285,14 @@ public class CraftstudioImporter : OdinEditorWindow
         GUILayout.BeginVertical();
         OnDrawCurrentModelPreviewGUI();
         GUILayout.EndVertical();
+        GUIEx.DrawVerticalLine(GUIEx.White, 1);
         GUILayout.BeginVertical(GUILayout.MaxWidth(200));
-        OnDrawSubmeshGUI();
+        m_currentTreeTool = GUILayout.Toolbar(m_currentTreeTool, new string[] { "Submesh", "Bones" });
+        if(m_currentTreeTool == 0)
+            OnDrawSubmeshGUI();
         GUILayout.Label("Blocks");
         OnDrawBlockListGUI();
+        GUIEx.DrawHorizontalLine(GUIEx.White, 1);
         GUILayout.Label("Animations");
         OnDrawAnimationListGUI();
         GUILayout.EndVertical();
@@ -368,7 +377,9 @@ public class CraftstudioImporter : OdinEditorWindow
                 GUILayout.Space(deep * 10);
 
             var oldColor = GUI.backgroundColor;
-            GUI.backgroundColor = SubmeshToColor(node.submeshIndex);
+            
+            if(m_currentTreeTool == 0)
+                GUI.backgroundColor = SubmeshToColor(node.submeshIndex);
             if (tree.childrens.Count > 0)
             {
                 tree.folded = EditorGUILayout.BeginFoldoutHeaderGroup(tree.folded, node.name);
@@ -379,21 +390,26 @@ public class CraftstudioImporter : OdinEditorWindow
                 GUILayout.Button(node.name);
             }
 
-            int oldIndex = node.submeshIndex;
-
-            node.submeshIndex = EditorGUILayout.IntField(node.submeshIndex, GUILayout.MaxWidth(20));
-            if (node.submeshIndex < 0)
-                node.submeshIndex = 0;
-            if (node.submeshIndex >= model.submeshNb)
-                node.submeshIndex = model.submeshNb - 1;
-
-            if (oldIndex != node.submeshIndex)
+            if (m_currentTreeTool == 0)
             {
-                m_currentMesh = MakeMesh(m_currentMesh, m_currentModel, m_currentPreview == 0);
-                SetObjectMeshAndMaterials();
-            }
+                int oldIndex = node.submeshIndex;
 
-                GUI.backgroundColor = oldColor;
+                node.submeshIndex = EditorGUILayout.IntField(node.submeshIndex, GUILayout.MaxWidth(20));
+                if (node.submeshIndex < 0)
+                    node.submeshIndex = 0;
+                if (node.submeshIndex >= model.submeshNb)
+                    node.submeshIndex = model.submeshNb - 1;
+
+                if (oldIndex != node.submeshIndex)
+                {
+                    m_currentMesh = MakeMesh(m_currentMesh, m_currentModel, m_currentPreview == 0);
+                    SetObjectMeshAndMaterials();
+                }
+            }
+            else if(m_currentTreeTool == 1)
+                node.bone = GUILayout.Toggle(node.bone, "", GUILayout.MaxWidth(20));
+
+            GUI.backgroundColor = oldColor;
 
             GUILayout.EndHorizontal();
         }
@@ -1416,6 +1432,7 @@ class CraftstudioModelNode
     public int[] unwrapFlags = new int[6];
 
     public int submeshIndex;
+    public bool bone = true;
 }
 
 class CraftstudioModelNodeTree

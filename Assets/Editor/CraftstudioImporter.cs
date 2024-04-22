@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using UnityEditor.Formats.Fbx.Exporter;
 
 public class CraftstudioImporter : OdinEditorWindow
 {
@@ -32,6 +33,10 @@ public class CraftstudioImporter : OdinEditorWindow
     Mesh m_currentMesh;
     Vector2 m_scrollBlocks;
     Vector2 m_scrollAnimations;
+
+    string m_exportPath;
+    bool m_exportSkinned = true;
+    bool m_exportAnimations = true;
 
     [MenuItem("Game/Craftstudio Importer")]
     public static void OpenWindow()
@@ -304,10 +309,8 @@ public class CraftstudioImporter : OdinEditorWindow
         int oldPreview = m_currentPreview;
 
         m_currentPreview = GUILayout.Toolbar(m_currentPreview, new string[] { "Textured", "Submesh", "Texture" });
-        if (m_currentPreview == 0)
+        if (m_currentPreview == 0 || m_currentPreview == 1)
             OnDrawCurrentModelPreviewTexturedGUI();
-        else if (m_currentPreview == 1)
-            OnDrawCurrentModelPreviewSubmeshGUI();
         else if (m_currentPreview == 2)
             OnDrawCurrentModelPreviewTextureGUI();
 
@@ -436,7 +439,194 @@ public class CraftstudioImporter : OdinEditorWindow
 
     void OnDrawCurrentModelExportGUI()
     {
+        bool browse = false;
 
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Path", GUILayout.MaxWidth(40));
+        m_exportPath = GUILayout.TextField(m_exportPath);
+        if (GUILayout.Button("...", GUILayout.MaxWidth(30)))
+            browse = true;
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        m_exportSkinned = GUILayout.Toggle(m_exportSkinned, "Export Skinned");
+        if (m_exportSkinned)
+            m_exportAnimations = GUILayout.Toggle(m_exportAnimations, "Export Animations");
+        GUILayout.EndHorizontal();
+
+        if (GUILayout.Button("Export", GUILayout.MaxWidth(80)))
+            Export();
+
+        if (browse)
+            OnOpenBrowseExport();
+    }
+
+    void OnOpenBrowseExport()
+    {
+        if (m_currentIndex < 0)
+            return;
+
+        string fileName = m_entities[m_currentIndex].name;
+
+        string path = EditorUtility.SaveFilePanelInProject("Save " + fileName, fileName, "fbx", "Save " + fileName);
+        if (path != null && path.Length != 0)
+            m_exportPath = path;
+    }
+
+    struct ExportNodeData
+    {
+        public GameObject node;
+        public int index;
+    }
+
+    void Export()
+    {
+        if (m_currentIndex < 0)
+            return;
+
+        string fileName = m_entities[m_currentIndex].name;
+
+        GameObject exportObj = new GameObject(fileName);
+        var skinnedRenderer = exportObj.AddComponent<SkinnedMeshRenderer>();
+
+        List<ExportNodeData> nodes = null;
+        if(m_exportSkinned)
+            nodes = AddExportNode(exportObj, m_currentModel.tree);
+        if(nodes.Count > 0)
+            skinnedRenderer.rootBone = nodes[0].node.transform;
+        
+        Transform[] bones = new Transform[nodes.Count];
+        Matrix4x4[] bindPoses = new Matrix4x4[bones.Length];
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            bones[i] = nodes[i].node.transform;
+            bindPoses[i] = bones[i].worldToLocalMatrix * bones[0].localToWorldMatrix;
+        }
+        skinnedRenderer.bones = bones;
+
+        var meshData = MakeMeshDatas(m_currentModel, true);
+        var meshWithBones = Clone(meshData);
+
+        //add bones weights
+        for (int i = 0; i < m_currentModel.nodes.Count; i++)
+        {
+            int nodeIndex = -1;
+            for (int j = 0; j< nodes.Count; j++)
+            {
+                if (nodes[j].index == i)
+                    nodeIndex = j;
+            }
+
+            for(int j = 0; j < 24; j++)
+            {
+                int verticeIndex = i * 24 + j;
+                if(verticeIndex < meshWithBones.verticesSize)
+                {
+                    meshWithBones.vertices[verticeIndex].boneIndex = nodeIndex;
+                    meshWithBones.vertices[verticeIndex].boneWeight = 1;
+                }
+            }
+        }
+
+        Mesh mesh = MakeMeshExport(meshWithBones);
+        mesh.bindposes = bindPoses;
+        skinnedRenderer.sharedMesh = mesh;
+        skinnedRenderer.localBounds = mesh.bounds;
+
+        Material[] mats = new Material[m_currentModel.submeshNb];
+        for (int i = 0; i < mats.Length; i++)
+            mats[i] = GetExportMaterial();
+        skinnedRenderer.materials = mats;
+
+        skinnedRenderer.enabled = false;
+        skinnedRenderer.enabled = true;
+    }
+
+    List<ExportNodeData> AddExportNode(GameObject parent, CraftstudioModelNodeTree tree)
+    {
+        GameObject obj = null;
+
+        if (tree.nodeIndex < 0)
+        {
+            obj = new GameObject("Root");
+            obj.transform.parent = parent.transform;
+            obj.transform.localPosition = Vector3.zero;
+            obj.transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            var node = m_currentModel.nodes[tree.nodeIndex];
+
+            obj = new GameObject(node.name);
+            obj.transform.parent = parent.transform;
+            obj.transform.localPosition = node.pos;
+            obj.transform.rotation = node.rot;
+        }
+
+        List<ExportNodeData> nodeDatas = new List<ExportNodeData>();
+        var nodeData = new ExportNodeData();
+        nodeData.node = obj;
+        nodeData.index = tree.nodeIndex;
+        nodeDatas.Add(nodeData);
+
+        foreach (var t in tree.childrens)
+        {
+            var newNodes = AddExportNode(obj, t);
+            foreach (var n in newNodes)
+                nodeDatas.Add(n);
+        }
+
+        return nodeDatas;
+    }
+
+    Mesh MakeMeshExport(MeshParamData<NormalUVBoneVertexDefinition> data)
+    {
+        Mesh mesh = new Mesh();
+
+        MeshEx.SetNormalUVBoneMeshParams(mesh, data.verticesSize, data.indexesSize);
+
+        mesh.SetVertexBufferData(data.vertices, 0, 0, data.verticesSize);
+        mesh.SetIndexBufferData(data.indexes, 0, 0, data.indexesSize);
+
+        mesh.subMeshCount = 1;
+        mesh.SetSubMesh(0, new UnityEngine.Rendering.SubMeshDescriptor(0, data.indexesSize, MeshTopology.Triangles));
+
+        Bounds b = GetBounds(data, data.verticesSize);
+
+        mesh.bounds = b;
+
+        return mesh;
+    }
+
+    Material GetExportMaterial()
+    {
+        var mat = new Material(Shader.Find("Standard"));
+        mat.SetTexture("_MainTex", m_currentModel.texture);
+        //mat.SetOverrideTag("RenderType", "TransparentCutout");
+        //mat.EnableKeyword("_ALPHATEST_ON");
+        //mat.renderQueue = 2449;
+        return mat;
+    }
+
+    MeshParamData<NormalUVBoneVertexDefinition> Clone(MeshParamData<NormalUVColorVertexDefinition> oldDatas)
+    {
+        SimpleMeshParam<NormalUVBoneVertexDefinition> meshData = new SimpleMeshParam<NormalUVBoneVertexDefinition>();
+        var data = meshData.Allocate(oldDatas.verticesSize, oldDatas.indexesSize);
+
+        for(int i = 0; i < oldDatas.verticesSize; i++)
+        {
+            data.vertices[i].pos = oldDatas.vertices[i].pos;
+            data.vertices[i].normal = oldDatas.vertices[i].normal;
+            data.vertices[i].uv = oldDatas.vertices[i].uv;
+        }
+
+        for (int i = 0; i < oldDatas.indexesSize; i++)
+            data.indexes[i] = oldDatas.indexes[i];
+
+        data.verticesSize = oldDatas.verticesSize;
+        data.indexesSize = oldDatas.indexesSize;
+
+        return data;
     }
 
     string GetEntityPath(int index)
@@ -989,12 +1179,12 @@ public class CraftstudioImporter : OdinEditorWindow
         return -1;
     }
 
-    Mesh MakeMesh(Mesh mesh, CraftstudioModel model, bool textured)
+    MeshParamData<NormalUVColorVertexDefinition> MakeMeshDatas(CraftstudioModel model, bool textured)
     {
         SimpleMeshParam<NormalUVColorVertexDefinition> meshData = new SimpleMeshParam<NormalUVColorVertexDefinition>();
         var data = meshData.Allocate(model.nodes.Count * 24, model.nodes.Count * 36);
 
-        for(int i = 0; i < model.nodes.Count; i++)
+        for (int i = 0; i < model.nodes.Count; i++)
         {
             GenerateVertices(data, model, i, textured);
         }
@@ -1002,12 +1192,19 @@ public class CraftstudioImporter : OdinEditorWindow
         data.indexesSize = model.nodes.Count * 36;
         data.verticesSize = model.nodes.Count * 24;
 
-        for(int i = 0; i < data.verticesSize; i++)
+        for (int i = 0; i < data.verticesSize; i++)
         {
             var pos = data.vertices[i].pos;
             pos.x *= -1;
             data.vertices[i].pos = pos;
         }
+
+        return data;
+    }
+
+    Mesh MakeMesh(Mesh mesh, CraftstudioModel model, bool textured)
+    {
+        var data = MakeMeshDatas(model, textured);
 
         if (mesh == null)
             mesh = new Mesh();
@@ -1025,6 +1222,19 @@ public class CraftstudioImporter : OdinEditorWindow
         mesh.bounds = b;
 
         return mesh;
+    }
+
+    Bounds GetBounds(MeshParamData<NormalUVBoneVertexDefinition> data, int vertexNb)
+    {
+        if (vertexNb == 0)
+            return new Bounds();
+
+        Bounds b = new Bounds(data.vertices[0].pos, Vector3.zero);
+
+        for (int i = 1; i < vertexNb; i++)
+            b.Encapsulate(data.vertices[i].pos);
+
+        return b;
     }
 
     Bounds GetBounds(MeshParamData<NormalUVColorVertexDefinition> data, int vertexNb)

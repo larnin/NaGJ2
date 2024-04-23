@@ -22,7 +22,6 @@ public class CraftstudioImporter : OdinEditorWindow
 
     int m_currentIndex;
     CraftstudioModel m_currentModel;
-    List<int> m_currentAnimationsIndex = new List<int>();
     List<CraftstudioModelAnimation> m_currentModelAnimations = new List<CraftstudioModelAnimation>();
     GameObject m_currentObject;
     MeshFilter m_filter;
@@ -428,10 +427,15 @@ public class CraftstudioImporter : OdinEditorWindow
     {
         m_scrollAnimations = GUILayout.BeginScrollView(m_scrollAnimations, GUILayout.MaxHeight(200), GUILayout.MaxWidth(200));
 
-        for(int i = 0; i < m_currentAnimationsIndex.Count; i++)
+        for(int i = 0; i < m_currentModelAnimations.Count; i++)
         {
-            var entity = m_entities[m_currentAnimationsIndex[i]];
+            var entity = m_entities[m_currentModelAnimations[i].index];
+            GUILayout.BeginHorizontal();
             GUILayout.Label(entity.name);
+
+            m_currentModelAnimations[i].export = GUILayout.Toggle(m_currentModelAnimations[i].export, "", GUILayout.MaxWidth(20)); ;
+
+            GUILayout.EndHorizontal();
         }
 
         GUILayout.EndScrollView();
@@ -530,6 +534,8 @@ public class CraftstudioImporter : OdinEditorWindow
 
         Mesh mesh = MakeMeshExport(meshWithBones);
         mesh.bindposes = bindPoses;
+        mesh.RecalculateNormals();
+        mesh.RecalculateTangents();
         skinnedRenderer.sharedMesh = mesh;
         skinnedRenderer.localBounds = mesh.bounds;
 
@@ -779,7 +785,6 @@ public class CraftstudioImporter : OdinEditorWindow
         m_currentModel = LoadModel(path);
 
         m_currentModelAnimations.Clear();
-        m_currentAnimationsIndex.Clear();
 
         if (m_currentModel != null)
         {
@@ -791,10 +796,12 @@ public class CraftstudioImporter : OdinEditorWindow
 
                 string pathAnim = m_path + "/Assets/ModelAnimations/" + anim + "/Current.csmodelanim";
                 var animation = LoadAnimation(pathAnim);
+
                 if (animation != null)
                 {
+                    animation.index = index;
+                    animation.export = true;
                     m_currentModelAnimations.Add(animation);
-                    m_currentAnimationsIndex.Add(index);
                 }
             }
         }
@@ -1220,6 +1227,8 @@ public class CraftstudioImporter : OdinEditorWindow
         Bounds b = GetBounds(data, data.verticesSize);
 
         mesh.bounds = b;
+        mesh.RecalculateNormals();
+        mesh.RecalculateTangents();
 
         return mesh;
     }
@@ -1681,6 +1690,9 @@ enum CraftstudioModelNodeUnwrap
 
 class CraftstudioModelAnimation
 {
+    public int index;
+    public bool export;
+
     public UInt16 duration;
     public bool holdLastKey;
     public List<CraftstudioModelAnimationNode> nodes = new List<CraftstudioModelAnimationNode>();

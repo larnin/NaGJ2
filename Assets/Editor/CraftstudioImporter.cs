@@ -782,7 +782,7 @@ public class CraftstudioImporter : OdinEditorWindow
 
                     if(rotNode != null)
                     {
-                        Vector3 rot = (node.rot * rotNode.value).eulerAngles;
+                        Vector3 rot = (Quaternion.Inverse(node.rot) * rotNode.value).eulerAngles;
 
                         rotX.AddKey(new Keyframe(time, rot.x, 0, 0, 0, 0));
                         rotY.AddKey(new Keyframe(time, rot.y, 0, 0, 0, 0));

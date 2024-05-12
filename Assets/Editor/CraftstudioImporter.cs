@@ -705,15 +705,15 @@ public class CraftstudioImporter : OdinEditorWindow
                 AnimationCurve posY = new AnimationCurve();
                 AnimationCurve posZ = new AnimationCurve();
 
+                AnimationCurve rotZ = new AnimationCurve();
                 AnimationCurve rotX = new AnimationCurve();
                 AnimationCurve rotY = new AnimationCurve();
-                AnimationCurve rotZ = new AnimationCurve();
 
                 AnimationCurve scaleX = new AnimationCurve();
                 AnimationCurve scaleY = new AnimationCurve();
                 AnimationCurve scaleZ = new AnimationCurve();
 
-                for(UInt16 i = 0; i < anim.duration; i++)
+                for(UInt16 i = 0; i <= anim.duration; i++)
                 {
                     CraftstudioModelAnimationNodeVector3 posNode = null;
                     CraftstudioModelAnimationNodeVector3 offsetNode = null;
@@ -782,7 +782,7 @@ public class CraftstudioImporter : OdinEditorWindow
 
                     if(rotNode != null)
                     {
-                        Vector3 rot = (rotNode.value * node.rot).eulerAngles;
+                        Vector3 rot = (node.rot * rotNode.value).eulerAngles;
 
                         rotX.AddKey(new Keyframe(time, rot.x, 0, 0, 0, 0));
                         rotY.AddKey(new Keyframe(time, rot.y, 0, 0, 0, 0));
@@ -800,6 +800,10 @@ public class CraftstudioImporter : OdinEditorWindow
                 SetCurveMode(rotY, anim.holdLastKey, duration);
                 SetCurveMode(rotZ, anim.holdLastKey, duration);
 
+                NormalizeRotation(rotX);
+                NormalizeRotation(rotY);
+                NormalizeRotation(rotZ);
+
                 var path = GetNodeFullPath(model, nodeIndex);
                 if (posX.length > 0)
                     clip.SetCurve(path, typeof(Transform), "localPosition.x", posX);
@@ -809,18 +813,18 @@ public class CraftstudioImporter : OdinEditorWindow
                     clip.SetCurve(path, typeof(Transform), "localPosition.z", posZ);
 
                 if (rotX.length > 0)
-                    clip.SetCurve(path, typeof(Transform), "localRotation.x", rotX);
+                    clip.SetCurve(path, typeof(Transform), "localEulerAnglesRaw.x", rotX);
                 if (rotY.length > 0)
-                    clip.SetCurve(path, typeof(Transform), "localRotation.x", rotY);
+                    clip.SetCurve(path, typeof(Transform), "localEulerAnglesRaw.y", rotY);
                 if (rotZ.length > 0)
-                    clip.SetCurve(path, typeof(Transform), "localRotation.x", rotZ);
+                    clip.SetCurve(path, typeof(Transform), "localEulerAnglesRaw.z", rotZ);
 
                 if (scaleX.length > 0)
                     clip.SetCurve(path, typeof(Transform), "localScale.x", scaleX);
                 if (scaleY.length > 0)
-                    clip.SetCurve(path, typeof(Transform), "localScale.x", scaleY);
+                    clip.SetCurve(path, typeof(Transform), "localScale.y", scaleY);
                 if (scaleZ.length > 0)
-                    clip.SetCurve(path, typeof(Transform), "localScale.x", scaleZ);
+                    clip.SetCurve(path, typeof(Transform), "localScale.z", scaleZ);
             }
         }
 
@@ -862,6 +866,32 @@ public class CraftstudioImporter : OdinEditorWindow
         
         for (int i = 0; i < curve.length; i++)
         {
+            AnimationUtility.SetKeyBroken(curve, i, true);
+            AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.Linear);
+            AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.Linear);
+        }
+    }
+
+    void NormalizeRotation(AnimationCurve curve)
+    {
+        if (curve.length == 0)
+            return;
+
+        float lastValue = curve.keys[0].value;
+
+        for(int i = 1; i < curve.length; i++)
+        {
+            float current = curve.keys[i].value;
+
+            while (current - lastValue < -180)
+                current += 360;
+            while (current - lastValue > 180)
+                current -= 360;
+
+            lastValue = current;
+
+            curve.MoveKey(i, new Keyframe(curve.keys[i].time, current, 0, 0, 0, 0));
+
             AnimationUtility.SetKeyBroken(curve, i, true);
             AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.Linear);
             AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.Linear);

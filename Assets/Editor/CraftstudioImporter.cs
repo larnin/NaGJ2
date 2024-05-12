@@ -13,7 +13,7 @@ using UnityEditor.Formats.Fbx.Exporter;
 
 public class CraftstudioImporter : OdinEditorWindow
 {
-    string m_path;
+    string m_path = "C:/Users/ni-la/AppData/Roaming/CraftStudio/CraftStudioServer/Projects/Backup";
     string m_projectName;
     string m_projectDescription;
     Vector2 m_scrollEntity;
@@ -36,6 +36,7 @@ public class CraftstudioImporter : OdinEditorWindow
     string m_exportPath;
     bool m_exportSkinned = true;
     bool m_exportAnimations = true;
+    bool m_exportTexture = true;
 
     [MenuItem("Game/Craftstudio Importer")]
     public static void OpenWindow()
@@ -456,9 +457,10 @@ public class CraftstudioImporter : OdinEditorWindow
         m_exportSkinned = GUILayout.Toggle(m_exportSkinned, "Export Skinned");
         if (m_exportSkinned)
             m_exportAnimations = GUILayout.Toggle(m_exportAnimations, "Export Animations");
+        m_exportTexture = GUILayout.Toggle(m_exportTexture, "Export Texture");
         GUILayout.EndHorizontal();
 
-        if (GUILayout.Button("Export", GUILayout.MaxWidth(80)))
+        if (GUILayout.Button("Export", GUILayout.MaxWidth(120)))
             Export();
 
         if (browse)
@@ -472,7 +474,7 @@ public class CraftstudioImporter : OdinEditorWindow
 
         string fileName = m_entities[m_currentIndex].name;
 
-        string path = EditorUtility.SaveFilePanelInProject("Save " + fileName, fileName, "fbx", "Save " + fileName);
+        string path = EditorUtility.SaveFolderPanel("Save " + fileName, "Assets", "Export");
         if (path != null && path.Length != 0)
             m_exportPath = path;
     }
@@ -488,17 +490,101 @@ public class CraftstudioImporter : OdinEditorWindow
         if (m_currentIndex < 0)
             return;
 
+        if (m_exportPath == null || m_exportPath.Length <= 0)
+            return;
+
+        string assetsPath = (string)m_exportPath.Clone();
+        int startPath = m_exportPath.IndexOf("Assets");
+        if (startPath >= 0)
+            assetsPath = m_exportPath.Substring(startPath);
+
+        if (!AssetDatabase.IsValidFolder(assetsPath))
+            return;
+
         string fileName = m_entities[m_currentIndex].name;
 
+        AssetDatabase.CreateFolder(assetsPath, fileName);
+
         GameObject exportObj = new GameObject(fileName);
+
+        Texture2D texture = null;
+        if(m_exportTexture)
+        {
+            string texturePath = assetsPath + "/" + fileName + "/" + fileName + "_Tex.png";
+            ExportTexture(texturePath);
+
+            texture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+            texture.filterMode = FilterMode.Point;
+
+            EditorUtility.SetDirty(texture);
+            AssetDatabase.SaveAssetIfDirty(texture);
+        }
+
+        Mesh mesh = null;
+        if (m_exportSkinned)
+        {
+            mesh = ExportSkined(exportObj, texture);
+
+            if (m_exportAnimations && (m_exportPath != null || m_exportPath.Length > 0))
+            {
+                string animPath = assetsPath + "/" + fileName;
+
+                for (int i = 0; i < m_currentModelAnimations.Count; i++)
+                {
+                    var anim = ExportAnimation(m_currentModel, m_currentModelAnimations[i]);
+
+                    ExportAnimation(anim, animPath);
+                }
+            }
+        }
+        else mesh = ExportSimple(exportObj, texture);
+
+        if(mesh != null)
+        {
+            string meshPath = assetsPath + "/" + fileName + "/" + fileName + "_Mesh.asset";
+
+            AssetDatabase.CreateAsset(mesh, meshPath);
+        }
+
+        Material[] materials = null;
+        {
+            var skinned = exportObj.GetComponent<SkinnedMeshRenderer>();
+            if (skinned != null)
+                materials = skinned.sharedMaterials;
+            else
+            {
+                var renderer = exportObj.GetComponent<MeshRenderer>();
+                if (renderer != null)
+                    materials = renderer.sharedMaterials;
+            }
+        }
+
+        if(materials != null)
+        {
+            for(int i = 0; i < materials.Length; i++)
+            {
+                string matPath = assetsPath + "/" + fileName + "/" + fileName;
+                if (materials.Length > 1)
+                    matPath += "_" + i.ToString();
+                matPath += "_Mat.asset";
+                AssetDatabase.CreateAsset(materials[i], matPath);
+            }
+        }
+
+        string realPath = assetsPath + "/" + fileName + "/" + fileName + ".prefab";
+        PrefabUtility.SaveAsPrefabAsset(exportObj, realPath);
+
+        GameObject.DestroyImmediate(exportObj);
+    }
+
+    Mesh ExportSkined(GameObject exportObj, Texture2D texture)
+    {
         var skinnedRenderer = exportObj.AddComponent<SkinnedMeshRenderer>();
 
-        List<ExportNodeData> nodes = null;
-        if(m_exportSkinned)
-            nodes = AddExportNode(exportObj, m_currentModel.tree);
-        if(nodes.Count > 0)
+        List<ExportNodeData> nodes = AddExportNode(exportObj, m_currentModel.tree);
+        if (nodes.Count > 0)
             skinnedRenderer.rootBone = nodes[0].node.transform;
-        
+
         Transform[] bones = new Transform[nodes.Count];
         Matrix4x4[] bindPoses = new Matrix4x4[bones.Length];
         for (int i = 0; i < nodes.Count; i++)
@@ -515,16 +601,16 @@ public class CraftstudioImporter : OdinEditorWindow
         for (int i = 0; i < m_currentModel.nodes.Count; i++)
         {
             int nodeIndex = -1;
-            for (int j = 0; j< nodes.Count; j++)
+            for (int j = 0; j < nodes.Count; j++)
             {
                 if (nodes[j].index == i)
                     nodeIndex = j;
             }
 
-            for(int j = 0; j < 24; j++)
+            for (int j = 0; j < 24; j++)
             {
                 int verticeIndex = i * 24 + j;
-                if(verticeIndex < meshWithBones.verticesSize)
+                if (verticeIndex < meshWithBones.verticesSize)
                 {
                     meshWithBones.vertices[verticeIndex].boneIndex = nodeIndex;
                     meshWithBones.vertices[verticeIndex].boneWeight = 1;
@@ -541,11 +627,273 @@ public class CraftstudioImporter : OdinEditorWindow
 
         Material[] mats = new Material[m_currentModel.submeshNb];
         for (int i = 0; i < mats.Length; i++)
-            mats[i] = GetExportMaterial();
+            mats[i] = GetExportMaterial(texture);
         skinnedRenderer.materials = mats;
 
-        skinnedRenderer.enabled = false;
-        skinnedRenderer.enabled = true;
+        return mesh;
+    }
+
+    void ExportAnimation(AnimationClip clip, string path)
+    {
+        string savePath = path + "/" + clip.name + "_Anim.asset";
+
+        AssetDatabase.CreateAsset(clip, savePath);
+    }
+
+    Mesh ExportSimple(GameObject exportObj, Texture2D texture)
+    {
+        var meshFilter = exportObj.AddComponent<MeshFilter>();
+        var meshRenderer = exportObj.AddComponent<MeshRenderer>();
+
+        var mesh = MakeMesh(null, m_currentModel, true);
+        meshFilter.mesh = mesh;
+
+        Material[] mats = new Material[m_currentModel.submeshNb];
+        for (int i = 0; i < mats.Length; i++)
+            mats[i] = GetExportMaterial(texture);
+        meshRenderer.materials = mats;
+
+        return mesh;
+    }
+
+    void ExportTexture(string path)
+    {
+        if(path == null || path.Length == 0)
+
+        if (m_currentModel == null)
+            return;
+
+        var texture = m_currentModel.texture;
+        if (texture == null)
+            return;
+
+        var bytes = ImageConversion.EncodeToPNG(m_currentModel.texture as Texture2D);
+
+        System.IO.File.WriteAllBytes(path, bytes);
+        Debug.Log(bytes.Length / 1024 + "Kb was saved as: " + path);
+        UnityEditor.AssetDatabase.Refresh();
+    }
+
+    AnimationClip ExportAnimation(CraftstudioModel model, CraftstudioModelAnimation anim)
+    {
+        var clip = new AnimationClip();
+
+        var entity = m_entities[anim.index];
+        clip.name = entity.name;
+        clip.frameRate = 30;
+        float duration = anim.duration / 30.0f;
+
+        if (anim.holdLastKey)
+            clip.wrapMode = WrapMode.ClampForever;
+        else clip.wrapMode = WrapMode.Loop;
+
+        foreach(var animNode in anim.nodes)
+        {
+            List<int> nodeIndexs = new List<int>();
+
+            for (int i = 0 ; i < model.nodes.Count; i++)
+            {
+                if (animNode.name == model.nodes[i].name)
+                    nodeIndexs.Add(i);
+            }
+
+            foreach(var nodeIndex in nodeIndexs)
+            {
+                var node = model.nodes[nodeIndex];
+
+                AnimationCurve posX = new AnimationCurve();
+                AnimationCurve posY = new AnimationCurve();
+                AnimationCurve posZ = new AnimationCurve();
+
+                AnimationCurve rotX = new AnimationCurve();
+                AnimationCurve rotY = new AnimationCurve();
+                AnimationCurve rotZ = new AnimationCurve();
+
+                AnimationCurve scaleX = new AnimationCurve();
+                AnimationCurve scaleY = new AnimationCurve();
+                AnimationCurve scaleZ = new AnimationCurve();
+
+                for(UInt16 i = 0; i < anim.duration; i++)
+                {
+                    CraftstudioModelAnimationNodeVector3 posNode = null;
+                    CraftstudioModelAnimationNodeVector3 offsetNode = null;
+                    CraftstudioModelAnimationNodeVector3 scaleNode = null;
+                    CraftstudioModelAnimationNodeQuaternion rotNode = null;
+
+                    float time = i / 30.0f;
+
+                    foreach (var p in animNode.pos)
+                    {
+                        if (p.keyTime == i)
+                        {
+                            posNode = p;
+                            break;
+                        }
+                    }
+
+                    foreach (var p in animNode.offset)
+                    {
+                        if (p.keyTime == i)
+                        {
+                            offsetNode = p;
+                            break;
+                        }
+                    }
+
+                    foreach (var p in animNode.scale)
+                    {
+                        if (p.keyTime == i)
+                        {
+                            scaleNode = p;
+                            break;
+                        }
+                    }
+
+                    foreach (var p in animNode.rot)
+                    {
+                        if (p.keyTime == i)
+                        {
+                            rotNode = p;
+                            break;
+                        }
+                    }
+
+                    if(posNode != null || offsetNode != null)
+                    {
+                        Vector3 pos = Vector3.zero;
+                        if (posNode != null)
+                            pos += posNode.value;
+                        if (offsetNode != null)
+                            pos += offsetNode.value;
+
+                        pos += node.pos + node.offset;
+
+                        posX.AddKey(new Keyframe(time, pos.x, 0, 0, 0, 0));
+                        posY.AddKey(new Keyframe(time, pos.y, 0, 0, 0, 0));
+                        posZ.AddKey(new Keyframe(time, pos.z, 0, 0, 0, 0));
+                    }
+
+                    if(scaleNode != null)
+                    {
+                        scaleX.AddKey(new Keyframe(time, scaleNode.value.x * node.scale.x, 0, 0, 0, 0));
+                        scaleY.AddKey(new Keyframe(time, scaleNode.value.y * node.scale.y, 0, 0, 0, 0));
+                        scaleZ.AddKey(new Keyframe(time, scaleNode.value.z * node.scale.z, 0, 0, 0, 0));
+                    }
+
+                    if(rotNode != null)
+                    {
+                        Vector3 rot = (rotNode.value * node.rot).eulerAngles;
+
+                        rotX.AddKey(new Keyframe(time, rot.x, 0, 0, 0, 0));
+                        rotY.AddKey(new Keyframe(time, rot.y, 0, 0, 0, 0));
+                        rotZ.AddKey(new Keyframe(time, rot.z, 0, 0, 0, 0));
+                    }
+                }
+
+                SetCurveMode(posX, anim.holdLastKey, duration);
+                SetCurveMode(posY, anim.holdLastKey, duration);
+                SetCurveMode(posZ, anim.holdLastKey, duration);
+                SetCurveMode(scaleX, anim.holdLastKey, duration);
+                SetCurveMode(scaleY, anim.holdLastKey, duration);
+                SetCurveMode(scaleZ, anim.holdLastKey, duration);
+                SetCurveMode(rotX, anim.holdLastKey, duration);
+                SetCurveMode(rotY, anim.holdLastKey, duration);
+                SetCurveMode(rotZ, anim.holdLastKey, duration);
+
+                var path = GetNodeFullPath(model, nodeIndex);
+                if (posX.length > 0)
+                    clip.SetCurve(path, typeof(Transform), "localPosition.x", posX);
+                if (posY.length > 0)
+                    clip.SetCurve(path, typeof(Transform), "localPosition.y", posY);
+                if (posZ.length > 0)
+                    clip.SetCurve(path, typeof(Transform), "localPosition.z", posZ);
+
+                if (rotX.length > 0)
+                    clip.SetCurve(path, typeof(Transform), "localRotation.x", rotX);
+                if (rotY.length > 0)
+                    clip.SetCurve(path, typeof(Transform), "localRotation.x", rotY);
+                if (rotZ.length > 0)
+                    clip.SetCurve(path, typeof(Transform), "localRotation.x", rotZ);
+
+                if (scaleX.length > 0)
+                    clip.SetCurve(path, typeof(Transform), "localScale.x", scaleX);
+                if (scaleY.length > 0)
+                    clip.SetCurve(path, typeof(Transform), "localScale.x", scaleY);
+                if (scaleZ.length > 0)
+                    clip.SetCurve(path, typeof(Transform), "localScale.x", scaleZ);
+            }
+        }
+
+        return clip;
+    }
+
+    void SetCurveMode(AnimationCurve curve, bool holdLastKey, float duration)
+    {
+        if(curve.length > 0)
+        {
+            var lastKey = curve.keys[curve.length - 1];
+            var firstKey = curve.keys[0];
+
+            if (holdLastKey)
+                curve.AddKey(new Keyframe(duration, lastKey.value, 0, 0, 0, 0));
+            else
+            {
+                if (Mathf.Abs(firstKey.time) < 0.001f)
+                {
+                    if (Mathf.Abs(lastKey.time - duration) > 0.001f)
+                        curve.AddKey(new Keyframe(duration, firstKey.value, 0, 0, 0, 0));
+                }
+                else if (Mathf.Abs(lastKey.time - duration) < 0.001f)
+                    curve.AddKey(new Keyframe(0, lastKey.value, 0, 0, 0, 0));
+                else
+                {
+                    float firstDistance = firstKey.time;
+                    float lastDistance = duration - lastKey.time;
+
+                    float totalDistance = firstDistance + lastDistance;
+
+                    float newValue = (firstKey.value * lastDistance + lastKey.value * firstDistance) / totalDistance;
+
+                    curve.AddKey(new Keyframe(0, newValue, 0, 0, 0, 0));
+                    curve.AddKey(new Keyframe(duration, newValue, 0, 0, 0, 0));
+                }    
+            }
+        }        
+        
+        for (int i = 0; i < curve.length; i++)
+        {
+            AnimationUtility.SetKeyBroken(curve, i, true);
+            AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.Linear);
+            AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.Linear);
+        }
+    }
+
+    string GetNodeFullPath(CraftstudioModel model, int index)
+    {
+        string path = "";
+
+        var node = model.nodes[index];
+        path += node.name;
+        while(node.parentID != CraftstudioEntityInfo.invalidID)
+        {
+            CraftstudioModelNode newNode = null;
+            foreach(var n in model.nodes)
+            {
+                if(n.ID == node.parentID)
+                {
+                    newNode = n;
+                    break;
+                }
+            }
+
+            if (newNode == null)
+                break;
+
+            path = newNode.name + '/' + path;
+            node = newNode;
+        }
+
+        return "Root/" + path;
     }
 
     List<ExportNodeData> AddExportNode(GameObject parent, CraftstudioModelNodeTree tree)
@@ -565,7 +913,7 @@ public class CraftstudioImporter : OdinEditorWindow
 
             obj = new GameObject(node.name);
             obj.transform.parent = parent.transform;
-            obj.transform.localPosition = node.pos;
+            obj.transform.localPosition = new Vector3(-node.pos.x, node.pos.y, node.pos.z);
             obj.transform.rotation = node.rot;
         }
 
@@ -604,10 +952,10 @@ public class CraftstudioImporter : OdinEditorWindow
         return mesh;
     }
 
-    Material GetExportMaterial()
+    Material GetExportMaterial(Texture2D texture)
     {
         var mat = new Material(Shader.Find("Standard"));
-        mat.SetTexture("_MainTex", m_currentModel.texture);
+        mat.SetTexture("_MainTex", texture);
         //mat.SetOverrideTag("RenderType", "TransparentCutout");
         //mat.EnableKeyword("_ALPHATEST_ON");
         //mat.renderQueue = 2449;

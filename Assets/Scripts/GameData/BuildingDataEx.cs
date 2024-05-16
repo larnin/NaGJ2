@@ -96,6 +96,8 @@ public static class BuildingDataEx
                 return buildings.drill.prefab;
             case BuildingType.Belt:
                 return buildings.belt.forwardPrefab;
+            case BuildingType.Pipe:
+                return buildings.pipe.ground.pipe_I;
             default:
                 return null;
         }
@@ -127,6 +129,8 @@ public static class BuildingDataEx
                 return buildings.smallMiningCenter.cost;
             case BuildingType.Belt:
                 return buildings.belt.cost;
+            case BuildingType.Pipe:
+                return buildings.pipe.cost;
             default:
                 return null;
         }
@@ -154,6 +158,8 @@ public static class BuildingDataEx
                 return buildings.smallMiningCenter.name;
             case BuildingType.Belt:
                 return buildings.belt.name;
+            case BuildingType.Pipe:
+                return buildings.pipe.name;
             default:
                 return "";
         }
@@ -181,6 +187,8 @@ public static class BuildingDataEx
                 return buildings.smallMiningCenter.description;
             case BuildingType.Belt:
                 return buildings.belt.description;
+            case BuildingType.Pipe:
+                return buildings.pipe.description;
             default:
                 return "";
         }

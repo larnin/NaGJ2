@@ -93,6 +93,7 @@ public enum BuildingType
     SmallMiningCenter,
     Drill,
     Belt,
+    Pipe,
 }
 
 [Serializable]
@@ -156,6 +157,32 @@ public class BeltData
 }
 
 [Serializable]
+public class OnePipeData
+{
+    public GameObject pipe_I;
+    public GameObject pipe_L;
+    public GameObject pipe_T;
+    public GameObject pipe_X;
+}
+
+[Serializable]
+public class PipeData
+{
+    public string name;
+    [Multiline]
+    public string description;
+    public ResourceCostData cost;
+    public OnePipeData ground;
+    public OnePipeData groundUp;
+    public OnePipeData air;
+    public OnePipeData airUp;
+    public OnePipeData airVertical;
+    public GameObject vertical;
+    public GameObject goUp;
+    public GameObject airGoUp;
+}
+
+[Serializable]
 public class AllBuildings
 {
     public TowerData tower0;
@@ -170,4 +197,6 @@ public class AllBuildings
     public DrillData drill;
 
     public BeltData belt;
+
+    public PipeData pipe;
 }

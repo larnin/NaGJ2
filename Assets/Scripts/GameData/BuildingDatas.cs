@@ -180,6 +180,7 @@ public class PipeData
     public GameObject vertical;
     public GameObject goUp;
     public GameObject airGoUp;
+    public GameObject end;
 }
 
 [Serializable]

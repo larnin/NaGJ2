@@ -25,6 +25,7 @@ public class EditorBuildings : MonoBehaviour
         m_subscriberList.Add(new Event<LoadEvent>.Subscriber(OnLoad));
         m_subscriberList.Add(new Event<NewLevelEvent>.Subscriber(OnNewLevel));
         m_subscriberList.Add(new Event<GetNearBeltsEvent>.Subscriber(GetNearBelts));
+        m_subscriberList.Add(new Event<GetNearPipesEvent>.Subscriber(GetNearPipes));
 
         m_subscriberList.Subscribe();
     }
@@ -131,8 +132,8 @@ public class EditorBuildings : MonoBehaviour
         m_buildings.Add(b);
         UpdateBuilding(b);
 
-        if(e.buildingType == BuildingType.Belt)
-            UpdateNearBelts(e.pos);
+        if (NeedUpdate(e.buildingType))
+        UpdateNearBuildings(e.pos);
     }
 
     void RemoveBuilding(EditorRemoveBuildingEvent e)
@@ -143,12 +144,12 @@ public class EditorBuildings : MonoBehaviour
             DestroyBuilding(b);
             m_buildings.Remove(b);            
             
-            if (b.buildingType == BuildingType.Belt)
-                UpdateNearBelts(b.pos);
+            if (NeedUpdate(b.buildingType))
+                UpdateNearBuildings(b.pos);
         }
     }
 
-    void UpdateNearBelts(Vector3Int pos)
+    void UpdateNearBuildings(Vector3Int pos)
     {
         for (int i = -1; i <= 1; i++)
         {
@@ -161,7 +162,7 @@ public class EditorBuildings : MonoBehaviour
 
                     var building = GetBuildingAt(pos + new Vector3Int(i, j, k));
 
-                    if (building == null || building.buildingType != BuildingType.Belt || building.instance == null)
+                    if (building == null || building.instance == null || !NeedUpdate(building.buildingType))
                         continue;
 
                     Event<EditorUpdateInstanceEvent>.Broadcast(new EditorUpdateInstanceEvent(), building.instance);
@@ -211,6 +212,11 @@ public class EditorBuildings : MonoBehaviour
         Destroy(b.instance);
     }
 
+    bool NeedUpdate(BuildingType b)
+    {
+        return b == BuildingType.Belt || b == BuildingType.Pipe;
+    }
+
     void GetNearBelts(GetNearBeltsEvent e)
     {
         for (int i = -1; i <= 1; i++)
@@ -232,6 +238,25 @@ public class EditorBuildings : MonoBehaviour
                     }
 
                     e.matrix.Set(data, i, j, k);
+                }
+            }
+        }
+    }
+
+    void GetNearPipes(GetNearPipesEvent e)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                for (int k = -1; k <= 1; k++)
+                {
+                    Vector3Int pos = e.pos + new Vector3Int(i, j, k);
+
+                    var building = GetBuildingAt(pos);
+                    if (building != null && building.buildingType == BuildingType.Pipe)
+                        e.matrix.Set(true, i, j, k);
+                    else e.matrix.Set(false, i, j, k);
                 }
             }
         }

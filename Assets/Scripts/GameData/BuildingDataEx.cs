@@ -262,6 +262,197 @@ public static class BuildingDataEx
         return obj;
     }
 
+    public static GameObject InstantiatePipe(Vector3Int pos, NearMatrix3<SimpleBlock> blocks, NearMatrix3<bool> pipes, Transform parent = null)
+    {
+        GameObject obj = null;
+        GameObject prefab = null;
+
+        Rotation rot = Rotation.rot_0;
+
+        bool needEnd = false;
+        Vector3Int endOffset = Vector3Int.zero;
+        bool needEnd2 = false;
+        Vector3Int endOffset2 = Vector3Int.zero;
+
+        var pipeData = Global.instance.allBuildings.pipe;
+
+        bool haveGround = blocks.Get(0, -1, 0).id == BlockType.ground;
+
+        bool up = pipes.Get(0, 1, 0);
+        bool down = pipes.Get(0, -1, 0);
+        bool right = pipes.Get(1, 0, 0);
+        bool left = pipes.Get(-1, 0, 0);
+        bool front = pipes.Get(0, 0, 1);
+        bool back = pipes.Get(0, 0, -1);
+
+        int nbSide = 0;
+        if (right)
+            nbSide++;
+        if (left)
+            nbSide++;
+        if (front)
+            nbSide++;
+        if (back)
+            nbSide++;
+
+        if (nbSide == 0)
+        {
+            if (!up && !down)
+            {
+                if (haveGround)
+                    prefab = pipeData.ground.pipe_I;
+                else prefab = pipeData.air.pipe_I;
+
+                needEnd = true;
+                endOffset = new Vector3Int(1, 0, 0);
+                needEnd2 = true;
+                endOffset2 = new Vector3Int(-1, 0, 0);
+            }
+            else
+            {
+                prefab = pipeData.vertical;
+                if (!up)
+                {
+                    needEnd = true;
+                    endOffset = new Vector3Int(0, 1, 0);
+                }
+                else if (!down)
+                {
+                    needEnd = true;
+                    endOffset = new Vector3Int(0, -1, 0);
+                }
+            }   
+        }
+        else if (nbSide == 1)
+        {
+            if(up)
+            {
+                if (down)
+                    prefab = pipeData.verticalSide;
+                else if (haveGround)
+                    prefab = pipeData.goUp;
+                else prefab = pipeData.airGoUp;
+            }
+            else if(down)
+            {
+                prefab = pipeData.airGoDown;
+            }
+            else
+            {
+                if (haveGround)
+                    prefab = pipeData.ground.pipe_I;
+                else prefab = pipeData.air.pipe_I;
+
+                rot = Rotation.rot_90;
+            }
+
+            needEnd = true;
+
+            if (right)
+            {
+                endOffset = new Vector3Int(1, 0, 0);
+                rot = RotationEx.Add(rot,Rotation.rot_270);
+            }
+            if (left)
+            {
+                endOffset = new Vector3Int(-1, 0, 0);
+                rot = RotationEx.Add(rot, Rotation.rot_90);
+            }
+            if (front)
+            {
+                endOffset = new Vector3Int(0, 0, 1);
+                rot = RotationEx.Add(rot, Rotation.rot_0);
+            }
+            if (back)
+            {
+                endOffset = new Vector3Int(0, 0, -1);
+                rot = RotationEx.Add(rot, Rotation.rot_180);
+            }
+        }
+        else
+        {
+            OnePipeData layer = null;
+
+            if (haveGround)
+                layer = up ? pipeData.groundUp : pipeData.ground;
+            else
+            {
+                if (up && !down)
+                    layer = pipeData.airUp;
+                else if (!up && down)
+                    layer = pipeData.airDown;
+                else if (up && down)
+                    layer = pipeData.airVertical;
+                else layer = pipeData.air;
+            }
+
+            if(nbSide == 2)
+            {
+                if(left && right)
+                    prefab = layer.pipe_I;
+                else if (front && back)
+                {
+                    prefab = layer.pipe_I;
+                    rot = Rotation.rot_90;
+                }
+                else
+                {
+                    prefab = layer.pipe_L;
+                    if (right && front)
+                        rot = Rotation.rot_270;
+                    if (front && left)
+                        rot = Rotation.rot_0;
+                    if (left && back)
+                        rot = Rotation.rot_90;
+                    if (back && right)
+                        rot = Rotation.rot_180;
+                }
+            }
+            else if(nbSide == 3)
+            {
+                prefab = layer.pipe_T;
+
+                if (!right)
+                    rot = Rotation.rot_0;
+                if (!left)
+                    rot = Rotation.rot_180;
+                if (!front)
+                    rot = Rotation.rot_90;
+                if (!back)
+                    rot = Rotation.rot_270;
+            }
+            else if(nbSide == 4)
+            {
+                prefab = layer.pipe_X;
+            }
+        }
+
+        if (prefab == null)
+            prefab = BuildingDataEx.GetBaseBuildingPrefab(BuildingType.Pipe);
+
+        if (prefab != null)
+        {
+            obj = GameObject.Instantiate(prefab);
+
+            var size = Global.instance.allBlocks.blockSize;
+            var realPos = new Vector3(size.x * pos.x, size.y * pos.y, size.z * pos.z);
+
+            if (parent != null)
+            {
+                obj.transform.parent = parent;
+                obj.transform.localPosition = realPos;
+                obj.transform.localRotation = RotationEx.ToQuaternion(rot);
+            }
+            else
+            {
+                obj.transform.position = realPos;
+                obj.transform.rotation = RotationEx.ToQuaternion(rot);
+            }
+        }
+
+        return obj;
+    }
+
     static bool IsBelt(NearMatrix3<SimpleBlock> blocks, NearMatrix3<SimpleBeltInfos> belts, Rotation rot)
     {
         var dir = RotationEx.ToVector3Int(rot);

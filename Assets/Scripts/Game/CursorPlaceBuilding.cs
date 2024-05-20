@@ -64,6 +64,8 @@ public class CursorPlaceBuilding : CursorBase
     {
         if (m_buildingType == BuildingType.Belt)
             return CanPlaceBelt(pos);
+        else if (m_buildingType == BuildingType.Pipe)
+            return CanPlacePipe(pos);
         else
         {
             var bounds = BuildingDataEx.GetBuildingBounds(m_buildingType, pos, m_rotation);
@@ -115,6 +117,38 @@ public class CursorPlaceBuilding : CursorBase
             var blockRot = BlockDataEx.ExtractDataRotation(downBlock.data);
             return blockRot == m_rotation || blockRot == RotationEx.Add(m_rotation, Rotation.rot_180);
         }
+
+        return false;
+    }
+
+    bool CanPlacePipe(Vector3Int pos)
+    {
+        var currentBlock = new GetBlockEvent(pos);
+        Event<GetBlockEvent>.Broadcast(currentBlock);
+        if (currentBlock.type != BlockType.air)
+            return false;
+
+        var downBlock = new GetBlockEvent(new Vector3Int(pos.x, pos.y - 1, pos.z));
+        Event<GetBlockEvent>.Broadcast(downBlock);
+
+        if (BlockDataEx.CanPlaceBuildingOnBlock(downBlock.type))
+            return true;
+
+        GetNearPipesEvent pipes = new GetNearPipesEvent(pos);
+        Event<GetNearPipesEvent>.Broadcast(pipes);
+
+        if (pipes.matrix.Get(0, 1, 0))
+            return true;
+        if (pipes.matrix.Get(0, -1, 0))
+            return true;
+        if (pipes.matrix.Get(1, 0, 0))
+            return true;
+        if (pipes.matrix.Get(-1, 0, 0))
+            return true;
+        if (pipes.matrix.Get(0, 0, 1))
+            return true;
+        if (pipes.matrix.Get(0, 0, -1))
+            return true;
 
         return false;
     }

@@ -176,10 +176,13 @@ public class PipeData
     public OnePipeData groundUp;
     public OnePipeData air;
     public OnePipeData airUp;
+    public OnePipeData airDown;
     public OnePipeData airVertical;
     public GameObject vertical;
+    public GameObject verticalSide;
     public GameObject goUp;
     public GameObject airGoUp;
+    public GameObject airGoDown;
     public GameObject end;
 }
 

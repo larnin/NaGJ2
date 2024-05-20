@@ -26,6 +26,7 @@ public class BuildingList : MonoBehaviour
 
         m_subscriberList.Add(new Event<GetBuildingBeltsEvent>.Subscriber(GetBelts));
         m_subscriberList.Add(new Event<GetNearBeltsEvent>.Subscriber(GetNearBelts));
+        m_subscriberList.Add(new Event<GetNearPipesEvent>.Subscriber(GetNearPipes));
 
         m_subscriberList.Add(new Event<SaveEvent>.Subscriber(OnSave));
         m_subscriberList.Add(new Event<LoadEvent>.Subscriber(OnLoad));
@@ -345,6 +346,25 @@ public class BuildingList : MonoBehaviour
                     }
 
                     e.matrix.Set(data, i, j, k);
+                }
+            }
+        }
+    }
+
+    void GetNearPipes(GetNearPipesEvent e)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                for (int k = -1; k <= 1; k++)
+                {
+                    Vector3Int pos = e.pos + new Vector3Int(i, j, k);
+
+                    var building = GetBuildingAt(pos);
+                    if (building != null && building.buildingType == BuildingType.Pipe)
+                        e.matrix.Set(true, i, j, k);
+                    else e.matrix.Set(false, i, j, k);
                 }
             }
         }

@@ -225,14 +225,21 @@ MonoBehaviour:
         pipe_L: {fileID: 1290367949308984783, guid: e4b7224d27bc4694895d4193459f61e4, type: 3}
         pipe_T: {fileID: 9012492763852811093, guid: 83e9be8e453e6a241922b942b29434aa, type: 3}
         pipe_X: {fileID: 322683581397963530, guid: b1a7257f81c5d25468779e23e6e8c9c8, type: 3}
+      airDown:
+        pipe_I: {fileID: 3841647078393731851, guid: 991a5c6673995214fb73df19a023f459, type: 3}
+        pipe_L: {fileID: 1290367949308984783, guid: b993339e4ecf2624eb4561cc96f72f80, type: 3}
+        pipe_T: {fileID: 9012492763852811093, guid: f792107384fae244796e4c777072f6b4, type: 3}
+        pipe_X: {fileID: 322683581397963530, guid: 55ab6a7f42864864b8a84c3ca95fa76b, type: 3}
       airVertical:
         pipe_I: {fileID: 8581186165545327119, guid: 26c690ca79f2ea746800a575ba36fcb1, type: 3}
         pipe_L: {fileID: 1659075610679533189, guid: d11840e2bbf5709449fb40d49035b6f2, type: 3}
         pipe_T: {fileID: 3147983584883807763, guid: 4dc320b54519c944c9a2102accbd2338, type: 3}
         pipe_X: {fileID: 1943672641501385515, guid: 94dc008ca57e0c2458442245744a4b12, type: 3}
       vertical: {fileID: 6212512143029473573, guid: 301fc52a2b10e3746b92e6d4b106100d, type: 3}
+      verticalSide: {fileID: 3007791983009779300, guid: 7950bd270e0656747984df168557d7ad, type: 3}
       goUp: {fileID: 920619667205205313, guid: c0d078a60fed9eb47ae3b0173dd2ffa7, type: 3}
       airGoUp: {fileID: 966585965830540625, guid: b5d67e45458a1834c832d8e88cb21ab3, type: 3}
+      airGoDown: {fileID: 966585965830540625, guid: f1ccdfcfbeeea9d4c88e2367137af070, type: 3}
       end: {fileID: 4923221076125534697, guid: f1d0c6cde44113c4b8d49ad89b1d068e, type: 3}
   m_allResources:
     beltResourceSpacing: 0.5

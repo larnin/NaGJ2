@@ -298,6 +298,8 @@ public class EditorCursorVisual : MonoBehaviour
     {
         if (type == BuildingType.Belt)
             return CanPlaceBelt(pos, rotation);
+        else if (type == BuildingType.Pipe)
+            return CanPlacePipe(pos, rotation);
         else
         {
             var bounds = BuildingDataEx.GetBuildingBounds(m_buildingType, pos, m_rotation);
@@ -354,6 +356,38 @@ public class EditorCursorVisual : MonoBehaviour
             var blockRot = BlockDataEx.ExtractDataRotation(downBlock.data);
             return blockRot == rot || blockRot == RotationEx.Add(rot, Rotation.rot_180);
         }
+
+        return false;
+    }
+
+    bool CanPlacePipe(Vector3Int pos, Rotation rot)
+    {
+        var currentBlock = new GetBlockEvent(pos);
+        Event<GetBlockEvent>.Broadcast(currentBlock);
+        if (currentBlock.type != BlockType.air)
+            return false;
+
+        var downBlock = new GetBlockEvent(new Vector3Int(pos.x, pos.y - 1, pos.z));
+        Event<GetBlockEvent>.Broadcast(downBlock);
+
+        if (BlockDataEx.CanPlaceBuildingOnBlock(downBlock.type))
+            return true;
+
+        GetNearPipesEvent pipes = new GetNearPipesEvent(pos);
+        Event<GetNearPipesEvent>.Broadcast(pipes);
+
+        if (pipes.matrix.Get(0, 1, 0))
+            return true;
+        if (pipes.matrix.Get(0, -1, 0))
+            return true;
+        if (pipes.matrix.Get(1, 0, 0))
+            return true;
+        if (pipes.matrix.Get(-1, 0, 0))
+            return true;
+        if (pipes.matrix.Get(0, 0, 1))
+            return true;
+        if (pipes.matrix.Get(0, 0, -1))
+            return true;
 
         return false;
     }

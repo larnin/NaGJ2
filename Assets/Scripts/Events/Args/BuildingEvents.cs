@@ -147,3 +147,14 @@ public class GetNearBeltsEvent
                     matrix.Set(data, i, j, k);
     }
 }
+
+public class GetNearPipesEvent
+{
+    public Vector3Int pos;
+    public NearMatrix3<bool> matrix = new NearMatrix3<bool>();
+
+    public GetNearPipesEvent(Vector3Int _pos)
+    {
+        pos = _pos;
+    }
+}

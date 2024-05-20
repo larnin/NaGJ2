@@ -60,6 +60,11 @@ public class EditorBuildingComponent : MonoBehaviour
             SetBelt();
             return;
         }
+        else if(m_type == BuildingType.Pipe)
+        {
+            SetPipe();
+            return;
+        }
 
         var prefab = BuildingDataEx.GetBaseBuildingPrefab(m_type);
 
@@ -81,6 +86,21 @@ public class EditorBuildingComponent : MonoBehaviour
 
         BeltDirection dir;
         var obj = BuildingDataEx.InstantiateBelt(Vector3Int.zero, blocks.matrix, belts.matrix, out dir);
+        obj.transform.parent = transform;
+        obj.transform.localPosition = Vector3.zero;
+
+        m_instance = obj;
+    }
+
+    void SetPipe()
+    {
+        GetNearBlocsEvent blocks = new GetNearBlocsEvent(m_pos);
+        Event<GetNearBlocsEvent>.Broadcast(blocks);
+
+        GetNearPipesEvent pipes = new GetNearPipesEvent(m_pos);
+        Event<GetNearPipesEvent>.Broadcast(pipes);
+
+        var obj = BuildingDataEx.InstantiatePipe(Vector3Int.zero, blocks.matrix, pipes.matrix);
         obj.transform.parent = transform;
         obj.transform.localPosition = Vector3.zero;
 

@@ -3739,7 +3739,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1863431748}
   m_HandleRect: {fileID: 1863431747}
   m_Direction: 2
-  m_Value: 1.0000004
+  m_Value: 1
   m_Size: 0.7099237
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3855,7 +3855,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b40f157c6a3c7f448ea5e03ff78101e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_defaultLevel: {fileID: 11400000, guid: 8863f6c29d0981a48b030919abbb9bd8, type: 2}
+  m_defaultLevel: {fileID: 11400000, guid: f1603390473c2c443a0c3b8580d181cd, type: 2}
   m_placeBuildingCursor: {fileID: 578462516}
   m_selectCursor: {fileID: 1879385287}
 --- !u!4 &1730742395

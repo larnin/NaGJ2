@@ -328,7 +328,10 @@ public static class BuildingDataEx
             if(up)
             {
                 if (down)
+                {
                     prefab = pipeData.verticalSide;
+                    rot = Rotation.rot_270;
+                }
                 else if (haveGround)
                     prefab = pipeData.goUp;
                 else prefab = pipeData.airGoUp;

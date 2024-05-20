@@ -86,7 +86,30 @@ public class BuildingList : MonoBehaviour
 
         GameObject instance = null;
 
-        if(b.buildingType != BuildingType.Belt)
+        if(b.buildingType == BuildingType.Belt)
+        {
+            GetNearBlocsEvent blocks = new GetNearBlocsEvent(b.pos);
+            Event<GetNearBlocsEvent>.Broadcast(blocks);
+
+            GetNearBeltsEvent belts = new GetNearBeltsEvent(b.pos);
+            Event<GetNearBeltsEvent>.Broadcast(belts);
+
+            BeltDirection dir;
+            instance = BuildingDataEx.InstantiateBelt(b.pos, blocks.matrix, belts.matrix, out dir, transform);
+            b.beltDirection = dir;
+        }
+        else if(b.buildingType == BuildingType.Pipe)
+        {
+            GetNearBlocsEvent blocks = new GetNearBlocsEvent(b.pos);
+            Event<GetNearBlocsEvent>.Broadcast(blocks);
+
+            GetNearPipesEvent pipes = new GetNearPipesEvent(b.pos);
+            Event<GetNearPipesEvent>.Broadcast(pipes);
+
+            instance = BuildingDataEx.InstantiatePipe(b.pos, blocks.matrix, pipes.matrix, transform);
+            b.beltDirection = BeltDirection.Horizontal;
+        }
+        else
         {
             var prefab = BuildingDataEx.GetBaseBuildingPrefab(b.buildingType, b.level);
             if (prefab == null)
@@ -99,18 +122,6 @@ public class BuildingList : MonoBehaviour
             instance.transform.localPosition = offset;
             instance.transform.localRotation = RotationEx.ToQuaternion(b.rotation);
             b.beltDirection = BeltDirection.Horizontal;
-        }
-        else
-        {
-            GetNearBlocsEvent blocks = new GetNearBlocsEvent(b.pos);
-            Event<GetNearBlocsEvent>.Broadcast(blocks);
-
-            GetNearBeltsEvent belts = new GetNearBeltsEvent(b.pos);
-            Event<GetNearBeltsEvent>.Broadcast(belts);
-
-            BeltDirection dir;
-            instance = BuildingDataEx.InstantiateBelt(b.pos, blocks.matrix, belts.matrix, out dir, transform);
-            b.beltDirection = dir;
         }
 
         var buildingID = instance.GetComponent<BuildingID>();

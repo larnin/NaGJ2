@@ -107,7 +107,7 @@ public class GameMenu : MonoBehaviour
         {
             var nameTxt = nameObj.GetComponent<TMP_Text>();
             if (nameTxt != null)
-                nameTxt.SetText(BuildingDataEx.GetName(type));
+                nameTxt.SetText(BuildingDataEx.GetName(type).GetText());
         }
 
         var descObj = m_detailInterface.transform.Find("Description");
@@ -115,7 +115,7 @@ public class GameMenu : MonoBehaviour
         {
             var descTxt = descObj.GetComponent<TMP_Text>();
             if (descTxt != null)
-                descTxt.SetText(BuildingDataEx.GetDescription(type));
+                descTxt.SetText(BuildingDataEx.GetDescription(type).GetText());
         }
 
         var resources = Global.instance.allResources;

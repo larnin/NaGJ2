@@ -1,9 +1,18 @@
-﻿using System;
+﻿using Sirenix.OdinInspector;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using NLocalization;
+
+public enum BuildingUpdateType
+{
+    added,
+    removed,
+    updated,
+}
 
 public enum BuildingPortDirection
 {
@@ -23,6 +32,8 @@ public enum ResourceFilterType
 public class ResourceFilter
 {
     public ResourceFilterType type;
+    public bool liquid;
+    [HideIf("type", ResourceFilterType.everything)]
     public List<ResourceType> resources = new List<ResourceType>();
 
     public ResourceFilter Copy()
@@ -35,6 +46,9 @@ public class ResourceFilter
 
     public bool IsValid(ResourceType resource)
     {
+        if (ResourceDataEx.IsLiquid(resource) != liquid)
+            return false;
+
         if (type == ResourceFilterType.everything)
             return true;
 
@@ -46,31 +60,19 @@ public class ResourceFilter
 }
 
 [Serializable]
-public class BuildingContainer
+public class BuildingContainerData
 {
-    [HideInInspector] public int id; //building ID
-    [HideInInspector] public int index; //container index in building
-
-    public BuildingPortDirection direction;
     public ResourceFilter filter;
-    public int count;
+    public float count;
+    public List<BuildingPortData> ports;
 }
 
 [Serializable]
-public class BuildingOnePortData
+public class BuildingPortData
 {
     public Vector3Int pos;
     public Rotation rotation;
     public BuildingPortDirection direction;
-    public int containerIndex;
-}
-
-[Serializable]
-public class BuildingOneBeltData
-{
-    public Vector3Int pos;
-    public Rotation rotation;
-    public BeltDirection direction;
 }
 
 public enum Team
@@ -107,32 +109,31 @@ public class OneTowerData
 [Serializable]
 public class TowerData
 {
-    public string name;
-    [Multiline]
-    public string description;
+    public LocText name;
+    public LocText description;
     public List<OneTowerData> levels;
 }
 
 [Serializable]
 public class OperationCenterData
 {
-    public string name;
-    [Multiline]
-    public string description;
+    public LocText name;
+    public LocText description;
     public GameObject prefab;
     public Vector3Int size = new Vector3Int(1, 1, 1);
+    public List<BuildingContainerData> containers;
 }
 
 [Serializable]
 public class MiningCenterData
 {
-    public string name;
-    [Multiline]
-    public string description;
+    public LocText name;
+    public LocText description;
     public ResourceCostData cost;
     public GameObject prefab;
     public Vector3Int size = new Vector3Int(1, 1, 1);
     public int mineDistance = 1;
+    public List<BuildingContainerData> containers;
 }
 
 [Serializable]
@@ -145,9 +146,8 @@ public class DrillData
 [Serializable]
 public class BeltData
 {
-    public string name;
-    [Multiline]
-    public string description;
+    public LocText name;
+    public LocText description;
     public ResourceCostData cost;
     public GameObject forwardPrefab;
     public GameObject leftPrefab;
@@ -168,9 +168,8 @@ public class OnePipeData
 [Serializable]
 public class PipeData
 {
-    public string name;
-    [Multiline]
-    public string description;
+    public LocText name;
+    public LocText description;
     public ResourceCostData cost;
     public OnePipeData ground;
     public OnePipeData groundUp;

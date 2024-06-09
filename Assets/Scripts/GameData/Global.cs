@@ -22,6 +22,9 @@ public class Global : ScriptableObject
     [SerializeField] AllResources m_allResources;
     public AllResources allResources { get { return m_allResources; } }
 
+    [SerializeField] LevelListDatas m_levels;
+    public LevelListDatas allLevels { get { return m_levels; } } 
+
     static Global m_instance;
 
     static string s_path = "World";

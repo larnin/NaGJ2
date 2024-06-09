@@ -7,26 +7,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum LevelSelectDifficulty
-{
-    easy,
-    medium,
-    hard,
-    impossible
-}
-
-[Serializable]
-public class LevelSelectOneLevel
-{
-    public string name;
-    public LevelScriptableObject level;
-    public Sprite preview;
-    public LevelSelectDifficulty difficulty;
-}
-
 public class LevelSelect : MonoBehaviour
 {
-    [SerializeField] List<LevelSelectOneLevel> m_levels;
+    [SerializeField] List<OneLevelDatas> m_levels;
     [SerializeField] GameObject m_leftButton;
     [SerializeField] GameObject m_rightButton;
     [SerializeField] string m_previousMenuName;
@@ -90,7 +73,7 @@ public class LevelSelect : MonoBehaviour
             {
                 var titleText = titleObj.GetComponent<TMP_Text>();
                 if (titleText != null)
-                    titleText.text = level.name;
+                    titleText.text = level.ID;
             }
 
             var difficultyObj = obj.transform.Find("DifficultyText");

@@ -328,7 +328,7 @@ public class BuildingList : MonoBehaviour
 
             if (b.buildingType == BuildingType.Belt)
             {
-                var data = new BuildingOneBeltData();
+                var data = new BuildingOneBeltDataOLD();
                 data.pos = b.pos;
                 data.rotation = b.rotation;
                 data.direction = b.beltDirection;

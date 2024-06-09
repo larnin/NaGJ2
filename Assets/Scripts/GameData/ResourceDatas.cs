@@ -11,6 +11,7 @@ public enum ResourceType
     Iron,
     Copper,
     Crystal,
+    Water,
 }
 
 [Serializable]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLocalization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -136,7 +137,7 @@ public static class BuildingDataEx
         }
     }
 
-    public static string GetName(BuildingType type)
+    public static LocText GetName(BuildingType type)
     {
         var buildings = Global.instance.allBuildings;
 
@@ -161,11 +162,11 @@ public static class BuildingDataEx
             case BuildingType.Pipe:
                 return buildings.pipe.name;
             default:
-                return "";
+                return new LocText();
         }
     }
 
-    public static string GetDescription(BuildingType type)
+    public static LocText GetDescription(BuildingType type)
     {
         var buildings = Global.instance.allBuildings;
 
@@ -190,7 +191,26 @@ public static class BuildingDataEx
             case BuildingType.Pipe:
                 return buildings.pipe.description;
             default:
-                return "";
+                return new LocText();
+        }
+    }
+
+    public static List<BuildingContainerData> GetContainer(BuildingType type)
+    {
+        var buildings = Global.instance.allBuildings;
+
+        switch (type)
+        {
+            case BuildingType.OperationCenter:
+                return buildings.operationCenter.containers;
+            case BuildingType.BigMiningCenter:
+                return buildings.bigMiningCenter.containers;
+            case BuildingType.MediumMiningCenter:
+                return buildings.mediumMiningCenter.containers;
+            case BuildingType.SmallMiningCenter:
+                return buildings.smallMiningCenter.containers;
+            default:
+                return null;
         }
     }
 

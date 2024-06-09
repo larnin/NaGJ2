@@ -92,8 +92,8 @@ public class GetBuildingByIndexEvent
 
 public class GetBuildingPortsEvent
 {
-    public List<BuildingOnePortData> ports = new List<BuildingOnePortData>();
-    public List<BuildingContainer> containers = new List<BuildingContainer>();
+    public List<BuildingOnePortDataOLD> ports = new List<BuildingOnePortDataOLD>();
+    public List<BuildingContainerOLD> containers = new List<BuildingContainerOLD>();
 }
 
 public class SetBuildingInstanceIDEvent
@@ -113,9 +113,9 @@ public class GetBuildingInstanceIDEvent
 
 public class GetBuildingBeltsEvent
 {
-    public List<BuildingContainer> containers = new List<BuildingContainer>();
-    public List<BuildingOnePortData> ports = new List<BuildingOnePortData>();
-    public List<BuildingOneBeltData> belts = new List<BuildingOneBeltData>();
+    public List<BuildingContainerOLD> containers = new List<BuildingContainerOLD>();
+    public List<BuildingOnePortDataOLD> ports = new List<BuildingOnePortDataOLD>();
+    public List<BuildingOneBeltDataOLD> belts = new List<BuildingOneBeltDataOLD>();
 }
 
 public class BuildingUpdatedEvent

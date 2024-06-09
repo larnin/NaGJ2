@@ -28,7 +28,7 @@ public struct SimpleBlock
     public BlockType id;
     public byte data;
 
-    SimpleBlock(BlockType _id, byte _data)
+    public SimpleBlock(BlockType _id, byte _data)
     {
         id = _id;
         data = _data;

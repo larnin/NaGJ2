@@ -8,8 +8,8 @@ using UnityEngine;
 
 public class BuildingPortList : MonoBehaviour
 {
-    [SerializeField] List<BuildingContainer> m_containers = new List<BuildingContainer>();
-    [SerializeField] List<BuildingOnePortData> m_portList = new List<BuildingOnePortData>();
+    [SerializeField] List<BuildingContainerOLD> m_containers = new List<BuildingContainerOLD>();
+    [SerializeField] List<BuildingOnePortDataOLD> m_portList = new List<BuildingOnePortDataOLD>();
 
     SubscriberList m_subsciberList = new SubscriberList();
 
@@ -31,15 +31,15 @@ public class BuildingPortList : MonoBehaviour
         e.containers = GetContainers();
     }
 
-    List<BuildingContainer> GetContainers()
+    List<BuildingContainerOLD> GetContainers()
     {
         GetBuildingInstanceIDEvent idData = new GetBuildingInstanceIDEvent();
         Event<GetBuildingInstanceIDEvent>.Broadcast(idData, gameObject);
 
-        List<BuildingContainer> containers = new List<BuildingContainer>();
+        List<BuildingContainerOLD> containers = new List<BuildingContainerOLD>();
         for(int i = 0; i < m_containers.Count; i++)
         {
-            var c = new BuildingContainer();
+            var c = new BuildingContainerOLD();
             c.direction = m_containers[i].direction;
             c.id = idData.ID;
             c.index = i;
@@ -52,7 +52,7 @@ public class BuildingPortList : MonoBehaviour
         return containers;
     }
 
-    List<BuildingOnePortData> GetPorts()
+    List<BuildingOnePortDataOLD> GetPorts()
     {
         GetBuildingInstanceIDEvent idData = new GetBuildingInstanceIDEvent();
         Event<GetBuildingInstanceIDEvent>.Broadcast(idData, gameObject);
@@ -82,10 +82,10 @@ public class BuildingPortList : MonoBehaviour
             pos = buildingData.element.pos; new Vector3(buildingData.element.pos.x * scale.x, buildingData.element.pos.y * scale.y, buildingData.element.pos.z * scale.z);
         }
 
-        List<BuildingOnePortData> ports = new List<BuildingOnePortData>();
+        List<BuildingOnePortDataOLD> ports = new List<BuildingOnePortDataOLD>();
         foreach (var p in m_portList)
         {
-            BuildingOnePortData data = new BuildingOnePortData();
+            BuildingOnePortDataOLD data = new BuildingOnePortDataOLD();
             data.containerIndex = p.containerIndex;
             data.rotation = RotationEx.Add(rot, p.rotation);
             data.direction = p.direction;

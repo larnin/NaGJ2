@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NRand;
 
 public class GameOneWorld
 {
+    const float saveTimeActive = 5;
+    const float saveTimeInactive = 60;
+
     OneLevelDatas m_levelInitialData;
 
-    GameLevel m_level;
+    GameLevel m_level = new GameLevel();
 
     bool m_visited = false;
     float m_time = 0;
+    float m_saveTimer = 0;
+
+    bool m_active = false;
 
     public GameOneWorld(OneLevelDatas level)
     {
@@ -22,7 +29,7 @@ public class GameOneWorld
     {
         Reset();
 
-
+        LoadSave();
     }
 
     public void Start()
@@ -34,11 +41,30 @@ public class GameOneWorld
     {
         m_visited = false;
         m_time = 0;
+
+        m_saveTimer = new UniformFloatDistribution(saveTimeInactive).Next(new StaticRandomGenerator<MT19937>());
+
+        var doc = Json.ReadFromString(m_levelInitialData.level.data);
+
+        if (doc != null)
+            m_level.Load(doc);
     }
 
     public void Update(float deltaTime)
     {
+        if (m_visited)
+        {
+            m_time += deltaTime;
+            m_level.Process(deltaTime);
+        }
 
+        m_saveTimer += deltaTime;
+        float maxTimer = m_active ? saveTimeActive : saveTimeInactive;
+        if(m_saveTimer >= maxTimer)
+        {
+            WriteSave();
+            m_saveTimer = 0;
+        }
     }
 
     public void Destroy()
@@ -145,5 +171,18 @@ public class GameOneWorld
 
             Json.WriteToFile(path, doc);
         }
+    }
+
+    public void SetActive(bool active)
+    {
+        if (active)
+            m_visited = true;
+
+        m_level.active = active;
+    }
+
+    public bool IsActive()
+    {
+        return m_active;
     }
 }

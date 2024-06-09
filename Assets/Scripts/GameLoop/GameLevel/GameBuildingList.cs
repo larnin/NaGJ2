@@ -151,7 +151,7 @@ public class GameBuildingList
 
         building.Start();
 
-        m_level.OnBuildingUpdate(building.GetID(), BuildingUpdateType.added);
+        m_level.OnBuildingUpdate(building.GetID(), ElementUpdateType.added);
 
         return true;
     }
@@ -195,7 +195,7 @@ public class GameBuildingList
                 m_posDictionary[k] = value - 1;
         }
 
-        m_level.OnBuildingUpdate(ID, BuildingUpdateType.removed);
+        m_level.OnBuildingUpdate(ID, ElementUpdateType.removed);
 
         return true;
     }

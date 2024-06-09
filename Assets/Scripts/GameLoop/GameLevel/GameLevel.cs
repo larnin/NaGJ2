@@ -15,6 +15,9 @@ public class GameLevel
     GameBeltSystem m_beltSystem;
     public GameBeltSystem beltSystem { get { return m_beltSystem; } }
 
+    bool m_active;
+    public bool active { get { return m_active; } set { m_active = value; } }
+
     public GameLevel()
     {
         m_grid = new GameGrid();
@@ -26,6 +29,7 @@ public class GameLevel
     {
         m_grid.Load(doc);
         m_buildingList.Load(doc);
+        m_beltSystem.Load(doc);
 
         m_beltSystem.AfterLoad();
     }
@@ -34,6 +38,7 @@ public class GameLevel
     {
         m_grid.Save(doc);
         m_buildingList.Save(doc);
+        m_beltSystem.Save(doc);
     }
 
     public void Process(float deltaTime)
@@ -45,8 +50,17 @@ public class GameLevel
         m_beltSystem.Process(deltaTime);
     }
 
-    public void OnBuildingUpdate(int buildingID, BuildingUpdateType type)
+    public void OnBuildingUpdate(int buildingID, ElementUpdateType type)
     {
         m_beltSystem.OnBuildingUpdate(buildingID, type);
+
+        if (m_active)
+            Event<BuildingUpdateEvent>.Broadcast(new BuildingUpdateEvent(buildingID, type));
+    }
+
+    public void OnResourceUpdate(int resourceID, ElementUpdateType type)
+    {
+        if (m_active)
+            Event<ResourceUpdateEvent>.Broadcast(new ResourceUpdateEvent(resourceID, type));
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using NLocalization;
 
-public enum BuildingUpdateType
+public enum ElementUpdateType
 {
     added,
     removed,

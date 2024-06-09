@@ -74,8 +74,15 @@ public class GameWorld
             lock (m_worldsLock)
             {
                 foreach (var world in m_worlds)
+                {
                     world.Update(time);
+                    if (m_stopped)
+                        break;
+                }
             }
+
+            if (m_stopped)
+                break;
 
             lock (m_timerLock)
             {
@@ -86,5 +93,46 @@ public class GameWorld
             if(waitTime > 0.001f) //1ms
                 Thread.Sleep((int)(waitTime * 1000));
         }
+    }
+
+    public void SetCurrentWorldIndex(int index)
+    {
+        GameOneWorld nextWorld = null;
+
+        if (index >= 0 && index < Global.instance.allLevels.levels.Count)
+        {
+            var level = Global.instance.allLevels.levels[index];
+
+            if (m_currentWorld != null && m_currentWorld.GetLevelData() == level)
+                return;
+
+            foreach (var w in m_worlds)
+            {
+                if (w.GetLevelData() == level)
+                {
+                    nextWorld = w;
+                    break;
+                }
+            }
+        }
+
+        if (m_currentWorld == null && nextWorld == null)
+            return;
+
+        lock (m_worldsLock)
+        {
+            if (m_currentWorld != null)
+            {
+                m_worlds.Add(m_currentWorld);
+                m_currentWorld = null;
+            }
+
+            if (nextWorld != null)
+            {
+                m_currentWorld = nextWorld;
+                m_worlds.Remove(nextWorld);
+            }
+        }
+
     }
 }

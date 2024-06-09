@@ -13,6 +13,32 @@ public class Resource
     public Vector3 pos;
     public int beltIndex;
     public Rotation startDirection;
+
+    public void Save(JsonObject obj)
+    {
+        obj.AddElement("Type", resource.ToString());
+        obj.AddElement("ID", ID);
+        obj.AddElement("Pos", Json.FromVector3(pos));
+        obj.AddElement("Belt", beltIndex);
+        obj.AddElement("StartDir", startDirection.ToString());
+    }
+
+    public void Load(JsonObject obj)
+    {
+        string str = obj.GetElement("Type")?.String();
+        if(str != null)
+            Enum.TryParse(str, out resource);
+
+        ID = obj.GetElement("ID")?.Int() ?? 0;
+
+        pos = Json.ToVector3(obj.GetElement("Pos")?.JsonArray(), Vector3.zero);
+
+        beltIndex = obj.GetElement("Belt")?.Int() ?? 0;
+
+        str = obj.GetElement("StartDir")?.String();
+        if (str != null)
+            Enum.TryParse(str, out startDirection);
+    }
 }
 
 public class GameBeltSystem
@@ -141,6 +167,50 @@ public class GameBeltSystem
 
             return popped;
         }
+
+        public void Save(JsonObject obj)
+        {
+            obj.AddElement("ID", buildingID);
+            obj.AddElement("Index", containerIndex);
+
+            var resourcesArray = new JsonArray();
+            obj.AddElement("Resources", resourcesArray);
+
+            foreach(var r in resources)
+            {
+                var resource = new JsonObject();
+                resourcesArray.Add(resource);
+
+                resource.AddElement("T", r.resouce.ToString());
+                resource.AddElement("C", r.value);
+            }
+        }
+
+        public void Load(JsonObject obj)
+        {
+            buildingID = obj.GetElement("ID")?.Int() ?? 0;
+            containerIndex = obj.GetElement("Index")?.Int() ?? 0;
+
+            var resourcesElt = obj.GetElement("Resources");
+            if(resourcesElt != null && resourcesElt.IsJsonArray())
+            {
+                var resourcesArray = resourcesElt.JsonArray();
+
+                foreach(var r in resourcesArray)
+                {
+                    var resource = new ResouceContainer();
+                    
+                    string str = obj.GetElement("T")?.String();
+                    if (str == null)
+                        continue;
+                    if (!Enum.TryParse(str, out resource.resouce))
+                        continue;
+                    resource.value = obj.GetElement("C")?.Float() ?? 0.0f;
+
+                    resources.Add(resource);
+                }
+            }
+        }
     }
 
     class BeltNode
@@ -176,9 +246,9 @@ public class GameBeltSystem
         UpdateBelts();
     }
 
-    public void OnBuildingUpdate(int buildingID, BuildingUpdateType type)
+    public void OnBuildingUpdate(int buildingID, ElementUpdateType type)
     {
-        if (type == BuildingUpdateType.removed)
+        if (type == ElementUpdateType.removed)
             UpdateBelts();
         else
         {
@@ -517,7 +587,10 @@ public class GameBeltSystem
         }
 
         foreach (var id in removeIDs)
+        {
             m_resources.Remove(id);
+            m_level.OnResourceUpdate(id, ElementUpdateType.removed);
+        }
     }
 
     Container GetContainer(int buildingID, int containerIndex)
@@ -534,6 +607,60 @@ public class GameBeltSystem
     public void Process(float deltaTime)
     {
         ProcessBelts(deltaTime);
+    }
+
+    public void Save(JsonDocument doc)
+    {
+        var root = doc.GetRoot();
+        if (root != null && root.IsJsonObject())
+        {
+            var rootObject = root.JsonObject();
+
+            var resourcesObject = new JsonObject();
+            rootObject.AddElement("Resources", resourcesObject);
+
+            var resourcesArray = new JsonArray();
+            resourcesObject.AddElement("List", resourcesArray);
+            resourcesObject.AddElement("NextID", new JsonNumber(m_nextID));
+
+            foreach (var r in m_resources)
+            {
+                var resourceObject = new JsonObject();
+                resourcesArray.Add(resourceObject);
+                r.Value.Save(resourceObject);
+            }
+        }
+    }
+
+    public void Load(JsonDocument doc)
+    {
+        var root = doc.GetRoot();
+        if (root != null && root.IsJsonObject())
+        {
+            var rootObject = root.JsonObject();
+
+            var resourcesObject = rootObject.GetElement("Resources")?.JsonObject();
+            if (resourcesObject != null)
+            {
+                m_nextID = resourcesObject.GetElement("NextID")?.Int() ?? 0;
+
+                var dataArray = resourcesObject.GetElement("List")?.JsonArray();
+                if (dataArray != null)
+                {
+                    foreach (var elem in dataArray)
+                    {
+                        var resourceObject = elem.JsonObject();
+                        if (resourceObject != null)
+                        {
+                            Resource r = new Resource();
+                            r.Load(resourceObject);
+                            if (r.ID > 0)
+                                m_resources.Add(r.ID, r);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     class BeltMove
@@ -580,10 +707,10 @@ public class GameBeltSystem
 
                             r.beltIndex = -1;
 
-
                             container.AddResource(r.resource, 1);
                             belt.resources.RemoveAt(j);
                             m_resources.Remove(r.ID);
+                            m_level.OnResourceUpdate(r.ID, ElementUpdateType.removed);
                             j--;
 
                             continue;
@@ -765,5 +892,7 @@ public class GameBeltSystem
         node.resources.Add(r);
 
         m_resources.Add(r.ID, r);
+
+        m_level.OnResourceUpdate(r.ID, ElementUpdateType.added);
     }
 }

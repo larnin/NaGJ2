@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class GameLevel
 {
@@ -20,7 +21,7 @@ public class GameLevel
 
     public GameLevel()
     {
-        m_grid = new GameGrid();
+        m_grid = new GameGrid(this);
         m_buildingList = new GameBuildingList(this);
         m_beltSystem = new GameBeltSystem(this);
     }
@@ -62,5 +63,11 @@ public class GameLevel
     {
         if (m_active)
             Event<ResourceUpdateEvent>.Broadcast(new ResourceUpdateEvent(resourceID, type));
+    }
+
+    public void OnBlockUpdate(Vector3Int pos)
+    {
+        if (m_active)
+            Event<BlockUpdateEvent>.Broadcast(new BlockUpdateEvent(pos));
     }
 }

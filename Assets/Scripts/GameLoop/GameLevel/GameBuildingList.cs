@@ -200,6 +200,16 @@ public class GameBuildingList
         return true;
     }
 
+    public int GetBuildingIndex(int ID)
+    {
+        int index = -1;
+
+        if (!m_idDictionary.TryGetValue(ID, out index))
+            return -1;
+
+        return index;
+    }
+
     public BuildingBase GetBuilding(int ID)
     {
         int index = -1;
@@ -223,6 +233,17 @@ public class GameBuildingList
         return m_buildings[index];
     }
 
+    public int GetBuildingIndexAt(Vector3Int pos)
+    {
+        var id = PosToID(pos);
+
+        int index = -1;
+        if (!m_posDictionary.TryGetValue(id, out index))
+            return -1;
+
+        return index;
+    }
+
     public BuildingBase GetBuildingAt(Vector3Int pos)
     {
         var id = PosToID(pos);
@@ -232,6 +253,63 @@ public class GameBuildingList
             return null;
 
         return m_buildings[index];
+    }
+
+    public void GetNearBelts(Vector3Int pos, NearMatrix3<SimpleBeltInfos> beltsInfos)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                for (int k = -1; k <= 1; k++)
+                {
+                    var data = new SimpleBeltInfos { haveBelt = false };
+
+                    Vector3Int currentPos = pos + new Vector3Int(i, j, k);
+
+                    var building = GetBuildingAt(currentPos);
+                    if (building != null)
+                    {
+                        var infos = building.GetInfos();
+
+                        if (infos.buildingType == BuildingType.Belt)
+                        {
+                            data.haveBelt = true;
+                            data.rotation = infos.rotation;
+                        }
+                    }
+
+                    beltsInfos.Set(data, i, j, k);
+                }
+            }
+        }
+    }
+
+    public void GetNearPipes(Vector3Int pos, NearMatrix3<bool> pipeInfos)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                for (int k = -1; k <= 1; k++)
+                {
+                    Vector3Int currentPos = pos + new Vector3Int(i, j, k);
+
+                    bool havePipe = false;
+
+                    var building = GetBuildingAt(currentPos);
+                    if (building != null)
+                    {
+                        var infos = building.GetInfos();
+
+                        if (infos.buildingType == BuildingType.Pipe)
+                            havePipe = true;
+                    }
+
+                    pipeInfos.Set(havePipe, i, j, k);
+                }
+            }
+        }
     }
 
     public List<int> GetAllBeltID()

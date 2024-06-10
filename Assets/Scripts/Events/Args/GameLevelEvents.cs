@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class BuildingUpdateEvent
 {
@@ -27,3 +28,27 @@ public class ResourceUpdateEvent
         type = _type;
     }
 }
+
+public class BlockUpdateEvent
+{
+    public Vector3Int pos;
+
+    public BlockUpdateEvent(Vector3Int _pos)
+    {
+        pos = _pos;
+    }
+}
+
+public class GameSetCurrentLevelEvent
+{
+    public GameLevel level;
+
+    public GameSetCurrentLevelEvent(GameLevel _level)
+    {
+        level = _level;
+    }
+}
+
+public class GameLoadEvent { }
+
+public class GameResetEvent { }

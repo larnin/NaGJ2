@@ -7,7 +7,14 @@ using UnityEngine;
 
 public class GameGrid
 {
+    GameLevel m_level;
+
     ResizableMatrix3<SimpleBlock> m_grid = new ResizableMatrix3<SimpleBlock>(1, 1, 1);
+
+    public GameGrid(GameLevel level)
+    {
+        m_level = level;
+    }
 
     public void Reset()
     {
@@ -22,6 +29,7 @@ public class GameGrid
     public void SetBlock(Vector3Int pos, SimpleBlock block)
     {
         m_grid.Set(block, pos.x, pos.y, pos.z);
+        m_level.OnBlockUpdate(pos);
     }
 
     public SimpleBlock GetBlock(Vector3Int pos)
@@ -156,5 +164,25 @@ public class GameGrid
                 }
             }
         }
+    }
+
+    public int MinX() { return m_grid.MinX(); }
+
+    public int MinY() { return m_grid.MinY(); }
+
+    public int MinZ() { return m_grid.MinZ(); }
+
+    public int MaxX() { return m_grid.MaxX(); }
+
+    public int MaxY() { return m_grid.MaxY(); }
+
+    public int MaxZ() { return m_grid.MaxZ(); }
+
+    public BoundsInt Bounds()
+    {
+        Vector3Int pos = new Vector3Int(MinX(), MinY(), MinZ());
+        Vector3Int size = new Vector3Int(m_grid.Width(), m_grid.Height(), m_grid.Depth());
+
+        return new BoundsInt(pos, size);
     }
 }

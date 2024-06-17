@@ -41,6 +41,17 @@ public class Resource
     }
 }
 
+public class BeltNodeInfo
+{
+    public Vector3Int pos = Vector3Int.zero;
+    public Rotation rotation = Rotation.rot_0;
+    public BeltDirection direction = BeltDirection.Horizontal;
+    public int nextIndex = -1;
+    public List<int> previousIndexs = new List<int>();
+    public int containerIndex = -1;
+    public int portIndex = -1;
+}
+
 public class GameBeltSystem
 {
     class ResouceContainer
@@ -215,13 +226,7 @@ public class GameBeltSystem
 
     class BeltNode
     {
-        public Vector3Int pos = Vector3Int.zero;
-        public Rotation rotation = Rotation.rot_0;
-        public BeltDirection direction = BeltDirection.Horizontal;
-        public int nextIndex = -1;
-        public List<int> previousIndexs = new List<int>();
-        public int containerIndex = -1;
-        public int portIndex = -1;
+        public BeltNodeInfo node = new BeltNodeInfo();
 
         public List<Resource> resources = new List<Resource>();
     }
@@ -367,6 +372,18 @@ public class GameBeltSystem
         return resources;
     }
 
+    public int GetNodeNb()
+    {
+        return m_beltNodes.Count();
+    }
+
+    public BeltNodeInfo GetNode(int index)
+    {
+        if (index < 0 || index >= m_beltNodes.Count)
+            return null;
+        return m_beltNodes[index].node;
+    }
+
     void UpdateBelts()
     {
         var beltsId = m_level.buildingList.GetAllBeltID();
@@ -437,9 +454,9 @@ public class GameBeltSystem
             var b = beltInfos[i];
 
             var newNode = new BeltNode();
-            newNode.pos = b.pos;
-            newNode.rotation = b.rotation;
-            newNode.direction = b.beltDirection;
+            newNode.node.pos = b.pos;
+            newNode.node.rotation = b.rotation;
+            newNode.node.direction = b.beltDirection;
 
             for(int j = 0; j < beltCount; j++)
             {
@@ -452,10 +469,10 @@ public class GameBeltSystem
 
                 if (MathF.Abs(offset.x) + MathF.Abs(offset.z) == 1 && Mathf.Abs(offset.y) <= 1)
                 {
-                    if (newNode.nextIndex < 0 && IsForward(b, b2))
-                        newNode.nextIndex = j;
+                    if (newNode.node.nextIndex < 0 && IsForward(b, b2))
+                        newNode.node.nextIndex = j;
                     else if (IsForward(b2, b))
-                        newNode.previousIndexs.Add(j);
+                        newNode.node.previousIndexs.Add(j);
                 }
             }
 
@@ -477,7 +494,7 @@ public class GameBeltSystem
                 int beltIndex = -1;
                 for(int k = 0; k < newBelts.Count; k++)
                 {
-                    if (newBelts[k].pos == nextPos)
+                    if (newBelts[k].node.pos == nextPos)
                     {
                         beltIndex = k;
                         break;
@@ -485,45 +502,45 @@ public class GameBeltSystem
                 }
 
                 var newNode = new BeltNode();
-                newNode.pos = pos;
-                newNode.containerIndex = i;
-                newNode.portIndex = j;
+                newNode.node.pos = pos;
+                newNode.node.containerIndex = i;
+                newNode.node.portIndex = j;
 
                 if (port.direction == BuildingPortDirection.output || port.direction == BuildingPortDirection.inout)
-                    newNode.rotation = port.rotation;
+                    newNode.node.rotation = port.rotation;
                 else if (port.direction == BuildingPortDirection.input)
-                    newNode.rotation = RotationEx.Add(port.rotation, Rotation.rot_180);
+                    newNode.node.rotation = RotationEx.Add(port.rotation, Rotation.rot_180);
 
                 if (beltIndex >= 0)
                 {
                     var belt = newBelts[beltIndex];
                     if (port.direction == BuildingPortDirection.output)
                     {
-                        if (belt.rotation != RotationEx.Add(port.rotation, Rotation.rot_180))
+                        if (belt.node.rotation != RotationEx.Add(port.rotation, Rotation.rot_180))
                         {
-                            newNode.nextIndex = beltIndex;
-                            belt.previousIndexs.Add(nextIndex);
+                            newNode.node.nextIndex = beltIndex;
+                            belt.node.previousIndexs.Add(nextIndex);
                         }
                     }
                     else if (port.direction == BuildingPortDirection.inout)
                     {
-                        if (belt.rotation == RotationEx.Add(port.rotation, Rotation.rot_180))
+                        if (belt.node.rotation == RotationEx.Add(port.rotation, Rotation.rot_180))
                         {
-                            belt.nextIndex = nextIndex;
-                            newNode.previousIndexs.Add(beltIndex);
+                            belt.node.nextIndex = nextIndex;
+                            newNode.node.previousIndexs.Add(beltIndex);
                         }
                         else
                         {
-                            newNode.nextIndex = beltIndex;
-                            belt.previousIndexs.Add(nextIndex);
+                            newNode.node.nextIndex = beltIndex;
+                            belt.node.previousIndexs.Add(nextIndex);
                         }
                     }
                     else if (port.direction == BuildingPortDirection.input)
                     {
-                        if (belt.rotation == RotationEx.Add(port.rotation, Rotation.rot_180))
+                        if (belt.node.rotation == RotationEx.Add(port.rotation, Rotation.rot_180))
                         {
-                            belt.nextIndex = nextIndex;
-                            newNode.previousIndexs.Add(beltIndex);
+                            belt.node.nextIndex = nextIndex;
+                            newNode.node.previousIndexs.Add(beltIndex);
                         }
                     }
                 }
@@ -571,7 +588,7 @@ public class GameBeltSystem
             int beltIndex = -1;
             for (int j = 0; j < m_beltNodes.Count; j++)
             {
-                if (m_beltNodes[j].pos == pos)
+                if (m_beltNodes[j].node.pos == pos)
                 {
                     beltIndex = j;
                     break;
@@ -681,7 +698,7 @@ public class GameBeltSystem
             {
                 var r = belt.resources[j];
 
-                var beltPos = new Vector3(belt.pos.x, belt.pos.y, belt.pos.z);
+                var beltPos = new Vector3(belt.node.pos.x, belt.node.pos.y, belt.node.pos.z);
 
                 var dir = r.pos - beltPos;
                 float dist = dir.magnitude;
@@ -689,14 +706,14 @@ public class GameBeltSystem
 
                 var target = beltPos;
 
-                if (rot == belt.rotation || dist < 0.001f)
+                if (rot == belt.node.rotation || dist < 0.001f)
                 {
-                    if (belt.portIndex >= 0)
+                    if (belt.node.portIndex >= 0)
                     {
-                        var port = m_containers[belt.containerIndex].buildingContainer.ports[belt.portIndex];
+                        var port = m_containers[belt.node.containerIndex].buildingContainer.ports[belt.node.portIndex];
                         if (port.direction == BuildingPortDirection.inout || port.direction == BuildingPortDirection.input)
                         {
-                            var container = m_containers[belt.containerIndex];
+                            var container = m_containers[belt.node.containerIndex];
 
                             float nbFree = container.GetFreeSpace();
 
@@ -717,7 +734,7 @@ public class GameBeltSystem
                         }
                     }
 
-                    target = beltPos + RotationEx.ToVector3(belt.rotation);
+                    target = beltPos + RotationEx.ToVector3(belt.node.rotation);
                 }
 
                 dir = target - r.pos;
@@ -731,8 +748,8 @@ public class GameBeltSystem
                 var newPos = r.pos + distMove * dir;
 
                 BeltNode nextBelt = null;
-                if (belt.nextIndex >= 0)
-                    nextBelt = m_beltNodes[belt.nextIndex];
+                if (belt.node.nextIndex >= 0)
+                    nextBelt = m_beltNodes[belt.node.nextIndex];
 
                 m_tempList.Clear();
                 foreach (var otherR in belt.resources)
@@ -750,17 +767,17 @@ public class GameBeltSystem
                     continue;
 
                 Vector3Int newPosI = new Vector3Int(Mathf.RoundToInt(newPos.x), Mathf.RoundToInt(newPos.y), Mathf.RoundToInt(newPos.z));
-                if (newPosI != belt.pos)
+                if (newPosI != belt.node.pos)
                 {
                     if (nextBelt == null)
                         continue;
 
-                    if (nextBelt.pos.y != belt.pos.y)
-                        newPos.y = nextBelt.pos.y;
+                    if (nextBelt.node.pos.y != belt.node.pos.y)
+                        newPos.y = nextBelt.node.pos.y;
 
                     var beltMove = new BeltMove();
                     beltMove.resource = r;
-                    beltMove.newBeltIndex = belt.nextIndex;
+                    beltMove.newBeltIndex = belt.node.nextIndex;
 
                     movingResources.Add(beltMove);
                 }
@@ -768,15 +785,15 @@ public class GameBeltSystem
                 r.pos = newPos;
             }
 
-            if (belt.portIndex >= 0)
+            if (belt.node.portIndex >= 0)
             {
-                var port = m_containers[belt.containerIndex].buildingContainer.ports[belt.portIndex];
+                var port = m_containers[belt.node.containerIndex].buildingContainer.ports[belt.node.portIndex];
                 if (port.direction == BuildingPortDirection.input)
                     continue;
-                if (port.direction == BuildingPortDirection.inout && belt.nextIndex < 0)
+                if (port.direction == BuildingPortDirection.inout && belt.node.nextIndex < 0)
                     continue;
 
-                var container = m_containers[belt.containerIndex];
+                var container = m_containers[belt.node.containerIndex];
                 ResourceType resourceType;
                 float count = container.GetFirstResource(false, out resourceType);
 
@@ -799,7 +816,7 @@ public class GameBeltSystem
             if (b.resource.beltIndex >= 0)
             {
                 var belt = m_beltNodes[b.resource.beltIndex];
-                b.resource.startDirection = RotationEx.Add(belt.rotation, Rotation.rot_180);
+                b.resource.startDirection = RotationEx.Add(belt.node.rotation, Rotation.rot_180);
                 belt.resources.Remove(b.resource);
             }
 
@@ -812,7 +829,7 @@ public class GameBeltSystem
     {
         float space = Global.instance.allResources.beltResourceSpacing;
 
-        var beltPos = m_beltNodes[current.beltIndex].pos;
+        var beltPos = m_beltNodes[current.beltIndex].node.pos;
         var target = GetTarget(current);
         var targetF = new Vector3(target.x, target.y, target.z);
         bool isSelfBlockTarget = target == beltPos;
@@ -845,16 +862,16 @@ public class GameBeltSystem
     {
         var belt = m_beltNodes[r.beltIndex];
 
-        Vector3 beltPos = new Vector3(belt.pos.x, belt.pos.y, belt.pos.z);
+        Vector3 beltPos = new Vector3(belt.node.pos.x, belt.node.pos.y, belt.node.pos.z);
 
         var dir = r.pos - beltPos;
         float sqrDist = dir.magnitude;
 
-        var target = belt.pos;
+        var target = belt.node.pos;
 
         var rot = RotationEx.FromVector(dir);
-        if (rot == belt.rotation || sqrDist < 0.1f * 0.1f)
-            target = belt.pos + RotationEx.ToVector3Int(belt.rotation);
+        if (rot == belt.node.rotation || sqrDist < 0.1f * 0.1f)
+            target = belt.node.pos + RotationEx.ToVector3Int(belt.node.rotation);
 
         return target;
     }
@@ -865,7 +882,7 @@ public class GameBeltSystem
 
         float space = Global.instance.allResources.beltResourceSpacing;
 
-        Vector3 pos = new Vector3(node.pos.x, node.pos.y, node.pos.z);
+        Vector3 pos = new Vector3(node.node.pos.x, node.node.pos.y, node.node.pos.z);
 
         foreach (var r in node.resources)
         {
@@ -886,8 +903,8 @@ public class GameBeltSystem
         m_nextID++;
         r.resource = type;
         r.beltIndex = beltIndex;
-        r.pos = new Vector3(node.pos.x, node.pos.y, node.pos.z);
-        r.startDirection = RotationEx.Add(node.rotation, Rotation.rot_180);
+        r.pos = new Vector3(node.node.pos.x, node.node.pos.y, node.node.pos.z);
+        r.startDirection = RotationEx.Add(node.node.rotation, Rotation.rot_180);
 
         node.resources.Add(r);
 

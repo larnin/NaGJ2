@@ -81,6 +81,92 @@ public static class Collisions
         return false;
     }
 
+    public static bool Raycast(Shape shape, Vector3 pos, Vector3 dir, out Vector3 hit, out Vector3 normal)
+    {
+        hit = Vector3.zero;
+        normal = Vector3.up;
+
+        int nbTriangle = shape.indexs.Count / 3;
+
+        Vector3 bestHit = Vector3.zero;
+        float bestDist = 0;
+        int hitIndex = -1;
+
+        for(int i = 0; i < nbTriangle; i++)
+        {
+            var p1 = shape.points[shape.indexs[i * 3]];
+            var p2 = shape.points[shape.indexs[i * 3 + 1]];
+            var p3 = shape.points[shape.indexs[i * 3 + 2]];
+
+            Vector3 localHit;
+            bool hitLocal = RaycastTriangle(p1, p2, p3, pos, dir, out localHit);
+            if (!hitLocal)
+                continue;
+
+            float localDist = (localHit - pos).sqrMagnitude;
+            if(hitIndex < 0 || bestDist > localDist)
+            {
+                bestHit = localHit;
+                bestDist = localDist;
+                hitIndex = i;
+            }
+        }
+
+        if(hitIndex >= 0)
+        {
+            hit = bestHit;
+
+            var p1 = shape.points[shape.indexs[hitIndex * 3]];
+            var p2 = shape.points[shape.indexs[hitIndex * 3 + 1]];
+            var p3 = shape.points[shape.indexs[hitIndex * 3 + 2]];
+
+            normal = Normal(p1, p2, p3);
+
+            return true;
+        }
+        return false;
+    }
+
+    public static bool RaycastTriangle(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 rayStart, Vector3 rayDir, out Vector3 hit)
+    {
+        //https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+
+        hit = Vector3.zero;
+
+        float epsilon = float.Epsilon;
+
+        Vector3 edge1 = p2 - p1;
+        Vector3 edge2 = p3 - p1;
+        Vector3 rayCrossE2 = Vector3.Cross(rayDir, edge2);
+        float det = Vector3.Dot(edge1, rayCrossE2);
+
+        if (det > -epsilon && det < epsilon)
+            return false;
+
+        float invDet = 1.0f / det;
+        Vector3 s = rayStart - p1;
+        float u = invDet * Vector3.Dot(s, rayCrossE2);
+
+        if (u < 0 || u > 1)
+            return false;
+
+        Vector3 sCrossE1 = Vector3.Cross(s, edge1);
+        float v = invDet * Vector3.Dot(rayDir, sCrossE1);
+
+        if (v < 0 || u + v > 1)
+            return false;
+
+        // At this stage we can compute t to find out where the intersection point is on the line.
+        float t = invDet * Vector3.Dot(edge2, sCrossE1);
+        if (t > epsilon)
+        {
+            hit = rayStart + rayDir * t;
+            return true;
+        }
+
+        return false;
+    }
+
     public static Vector3 Normal(Vector3 pos1, Vector3 pos2, Vector3 pos3)
     {
         Vector3 a = pos2 - pos1;

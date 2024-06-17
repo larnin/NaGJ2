@@ -185,4 +185,134 @@ public class GameGrid
 
         return new BoundsInt(pos, size);
     }
+
+    public bool RaycastWorld(Vector3 pos, Vector3 dir, out Vector3 hit, out Vector3 normal)
+    {
+        hit = Vector3.zero;
+        normal = Vector3.up;
+
+        var size = Global.instance.allBlocks.blockSize;
+
+        pos.x /= size.x;
+        pos.y /= size.y;
+        pos.z /= size.z;
+
+        dir.x /= size.x;
+        dir.y /= size.y;
+        dir.z /= size.z;
+
+        bool result = RaycastLocal(pos, dir, out hit, out normal);
+
+        if (!result)
+            return result;
+
+        hit.x *= size.x;
+        hit.y *= size.y;
+        hit.z *= size.z;
+
+        normal.x *= size.x;
+        normal.y *= size.y;
+        normal.z *= size.z;
+
+        return result;
+    }
+
+    public bool RaycastLocal(Vector3 pos, Vector3 dir, out Vector3 hit, out Vector3 normal)
+    {
+        hit = Vector3.zero;
+        normal = Vector3.zero;
+
+        dir = dir.normalized;
+
+        Bounds gridBounds = new Bounds();
+        gridBounds.min = new Vector3(m_grid.MinX(), m_grid.MinY() - 0.5f, m_grid.MinZ());
+        gridBounds.size = new Vector3(m_grid.Width(), m_grid.Height(), m_grid.Depth());
+
+        Vector3 gridHitStart, gridHitEnd, gridNormal;
+        var gridShape = Collisions.GetShape(gridBounds);
+        bool hitGrid = Collisions.Raycast(gridShape, pos, dir, out gridHitStart, out gridNormal);
+        if (!hitGrid)
+            return false;
+
+        Vector3 endPos = gridHitStart + dir * (gridBounds.size.x + gridBounds.size.y + gridBounds.size.z);
+        hitGrid = Collisions.Raycast(gridShape, endPos, -dir, out gridHitEnd, out gridNormal);
+        if (!hitGrid) //must not happen
+            gridHitEnd = endPos;
+
+        float length = (gridHitEnd - gridHitStart).magnitude;
+        const float maxStep = 6;
+        int nbStep = Mathf.CeilToInt(length / maxStep);
+        float step = length / nbStep;
+
+        for(int i = 0; i < nbStep; i++)
+        {
+            Vector3 start = gridHitStart + dir * step * i / nbStep;
+            Vector3 end = gridHitStart + dir * step * (i + 1) / nbStep;
+
+            bool localHit = RaycastStep(start, end, out hit, out normal);
+            if (localHit)
+                return true;
+        }
+
+        return false;
+    }
+
+    bool RaycastStep(Vector3 start, Vector3 end, out Vector3 hit, out Vector3 normal)
+    {
+        hit = Vector3.zero;
+        normal = Vector3.zero;
+
+        Vector3Int min = new Vector3Int(Mathf.FloorToInt(start.x), Mathf.FloorToInt(start.y), Mathf.FloorToInt(start.z));
+        Vector3Int max = new Vector3Int(Mathf.CeilToInt(start.x), Mathf.CeilToInt(start.y), Mathf.CeilToInt(start.z));
+
+        if (end.x < start.x) min.x = Mathf.FloorToInt(end.x);
+        else max.x = Mathf.CeilToInt(end.x);
+        if (end.y < start.y) min.y = Mathf.FloorToInt(end.y);
+        else max.y = Mathf.CeilToInt(end.y);
+        if (end.z < start.z) min.z = Mathf.FloorToInt(end.z);
+        else max.z = Mathf.CeilToInt(end.z);
+
+        Vector3 dir = (end - start).normalized;
+
+        bool oneHit = false;
+        float hitDistance = 0;
+
+        for(int i = min.x; i <= max.x; i++)
+        {
+            for(int j = min.y; j <= max.y; j++)
+            {
+                for(int k = min.z; k <= max.z; k++)
+                {
+                    if (m_grid.Get(i, j, k).id == BlockType.air)
+                        continue;
+
+                    var b = GetBounds(new Vector3Int(i, j, k));
+
+                    Vector3 localHit, localNormal;
+                    bool haveHit = Collisions.Raycast(Collisions.GetShape(b), start, dir, out localHit, out localNormal);
+                    if(haveHit)
+                    {
+                        float d = (localHit - start).sqrMagnitude;
+                        if(!oneHit || d < hitDistance)
+                        {
+                            hitDistance = d;
+                            hit = localHit;
+                            normal = localNormal;
+                            oneHit = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return oneHit;
+    }
+
+    Bounds GetBounds(Vector3Int pos)
+    {
+        Bounds b = new Bounds();
+        b.center = new Vector3(pos.x, pos.y - 0.5f, pos.z);
+        b.size = Vector3.one;
+        return b;
+    }
 }

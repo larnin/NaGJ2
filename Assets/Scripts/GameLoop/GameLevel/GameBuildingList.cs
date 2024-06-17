@@ -344,6 +344,47 @@ public class GameBuildingList
         return ids;
     }
 
+    public bool Raycast(Vector3 pos, Vector3 dir, out Vector3 hit, out Vector3 normal, out int buildingID)
+    {
+        hit = Vector3.zero;
+        normal = Vector3.zero;
+        buildingID = 0;
+
+        dir = dir.normalized;
+
+        var size = Global.instance.allBlocks.blockSize;
+
+        bool haveHit = false;
+        float distance = 0;
+
+        foreach(var b in m_buildings)
+        {
+            var infos = b.GetInfos();
+
+            var boundint = BuildingDataEx.GetBuildingBounds(infos.buildingType, infos.pos, infos.rotation, infos.level);
+            var bounds = new Bounds(new Vector3(boundint.center.x * size.x, (boundint.center.y - 0.5f) * size.y, boundint.center.z * size.z),
+                new Vector3(boundint.size.x * size.x, boundint.size.y * size.y, boundint.size.z * size.z));
+
+            Vector3 localpos, localNormal;
+            var shape = Collisions.GetShape(bounds);
+            bool localHit = Collisions.Raycast(shape, pos, dir, out localpos, out localNormal);
+            if(localHit)
+            {
+                float localDistance = (localpos - pos).sqrMagnitude;
+                if(!haveHit || localDistance < distance)
+                {
+                    haveHit = true;
+                    distance = localDistance;
+                    normal = localNormal;
+                    hit = localpos;
+                    buildingID = b.GetID();
+                }
+            }
+        }
+
+        return haveHit;
+    }
+
     ulong PosToID(Vector3Int pos)
     {
         const int powLimit = 20;

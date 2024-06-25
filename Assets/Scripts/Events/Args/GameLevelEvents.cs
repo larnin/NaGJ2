@@ -49,6 +49,11 @@ public class GameSetCurrentLevelEvent
     }
 }
 
+public class GameGetCurrentLevelEvent
+{
+    public GameLevel level;
+}
+
 public class GameLoadEvent { }
 
 public class GameResetEvent { }

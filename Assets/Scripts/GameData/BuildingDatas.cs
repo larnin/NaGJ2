@@ -104,6 +104,7 @@ public class OneTowerData
     public ResourceCostData cost;
     public GameObject prefab;
     public Vector3Int size = new Vector3Int(1, 1, 1);
+    public Sprite sprite;
 }
 
 [Serializable]
@@ -122,6 +123,7 @@ public class OperationCenterData
     public GameObject prefab;
     public Vector3Int size = new Vector3Int(1, 1, 1);
     public List<BuildingContainerData> containers;
+    public Sprite sprite;
 }
 
 [Serializable]
@@ -134,6 +136,7 @@ public class MiningCenterData
     public Vector3Int size = new Vector3Int(1, 1, 1);
     public int mineDistance = 1;
     public List<BuildingContainerData> containers;
+    public Sprite sprite;
 }
 
 [Serializable]
@@ -141,6 +144,7 @@ public class DrillData
 {
     public GameObject prefab;
     public Vector3Int size = new Vector3Int(1, 1, 1);
+    public Sprite sprite;
 }
 
 [Serializable]
@@ -154,6 +158,7 @@ public class BeltData
     public GameObject rightPrefab;
     public GameObject upPrefab;
     public GameObject downPrefab;
+    public Sprite sprite;
 }
 
 [Serializable]
@@ -183,6 +188,7 @@ public class PipeData
     public GameObject airGoUp;
     public GameObject airGoDown;
     public GameObject end;
+    public Sprite sprite;
 }
 
 [Serializable]

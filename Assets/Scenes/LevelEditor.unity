@@ -608,7 +608,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2082721240}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -888,8 +888,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 169554413}
-  - component: {fileID: 169554412}
-  - component: {fileID: 169554411}
+  - component: {fileID: 169554415}
+  - component: {fileID: 169554414}
   m_Layer: 0
   m_Name: Cursor
   m_TagString: Untagged
@@ -897,34 +897,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &169554411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 169554410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23aeb6e2666cfbd4dac65101f8971ea8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_cursorPrefab: {fileID: 4604711523887298088, guid: ea5c2c340efc82e4398421bc967a2aaf, type: 3}
---- !u!114 &169554412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 169554410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9b64060411e936479a7406384a578b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_groundLayer:
-    serializedVersion: 2
-    m_Bits: 256
 --- !u!4 &169554413
 Transform:
   m_ObjectHideFlags: 0
@@ -940,6 +912,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &169554414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169554410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539d5ef762fabb94ca60acafe8b16da5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_cursorPrefab: {fileID: 4604711523887298088, guid: ea5c2c340efc82e4398421bc967a2aaf, type: 3}
+--- !u!114 &169554415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169554410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f226803cdaa6fb540a9c9393b7a97d82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &173846708
 GameObject:
   m_ObjectHideFlags: 0
@@ -1178,7 +1175,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
         m_MethodName: OnOpenListClick
         m_Mode: 3
         m_Arguments:
@@ -1239,6 +1236,7 @@ GameObject:
   - component: {fileID: 225986027}
   - component: {fileID: 225986026}
   - component: {fileID: 225986025}
+  - component: {fileID: 225986028}
   m_Layer: 5
   m_Name: Copper_ore
   m_TagString: Untagged
@@ -1311,10 +1309,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 225986028}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1361,6 +1359,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 225986023}
   m_CullTransparentMesh: 1
+--- !u!114 &225986028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225986023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 9
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &260079772
 GameObject:
   m_ObjectHideFlags: 0
@@ -1373,6 +1388,7 @@ GameObject:
   - component: {fileID: 260079776}
   - component: {fileID: 260079775}
   - component: {fileID: 260079774}
+  - component: {fileID: 260079777}
   m_Layer: 5
   m_Name: GroundSlope
   m_TagString: Untagged
@@ -1445,10 +1461,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 260079777}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1495,6 +1511,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 260079772}
   m_CullTransparentMesh: 1
+--- !u!114 &260079777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 260079772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 2
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &273089854
 GameObject:
   m_ObjectHideFlags: 0
@@ -1507,6 +1540,7 @@ GameObject:
   - component: {fileID: 273089858}
   - component: {fileID: 273089857}
   - component: {fileID: 273089856}
+  - component: {fileID: 273089859}
   m_Layer: 5
   m_Name: Iron_ore
   m_TagString: Untagged
@@ -1579,10 +1613,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 273089859}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1629,6 +1663,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 273089854}
   m_CullTransparentMesh: 1
+--- !u!114 &273089859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 273089854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 8
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &304851780
 GameObject:
   m_ObjectHideFlags: 0
@@ -2251,7 +2302,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1807476387}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2672,7 +2723,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 489361733}
-  - component: {fileID: 489361732}
+  - component: {fileID: 489361735}
   - component: {fileID: 489361734}
   m_Layer: 0
   m_Name: Grid
@@ -2681,18 +2732,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &489361732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 489361731}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ee49cae7e26ea849b31102e8d48cfd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &489361733
 Transform:
   m_ObjectHideFlags: 0
@@ -2717,7 +2756,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 489361731}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1c188d749f262d4ea5d726c9da6b987, type: 3}
+  m_Script: {fileID: 11500000, guid: 611795169b613b94a9c8360d59b8bdf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &489361735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489361731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3a1f299759068d488ef16af4554eca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &490779435
@@ -2732,6 +2783,7 @@ GameObject:
   - component: {fileID: 490779439}
   - component: {fileID: 490779438}
   - component: {fileID: 490779437}
+  - component: {fileID: 490779440}
   m_Layer: 5
   m_Name: Crystal
   m_TagString: Untagged
@@ -2804,10 +2856,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 490779440}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2854,6 +2906,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 490779435}
   m_CullTransparentMesh: 1
+--- !u!114 &490779440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 490779435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 10
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &492877491
 GameObject:
   m_ObjectHideFlags: 0
@@ -2939,7 +3008,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
         m_MethodName: OnSave
         m_Mode: 1
         m_Arguments:
@@ -3200,7 +3269,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
         m_MethodName: OnOpenListClick
         m_Mode: 3
         m_Arguments:
@@ -3472,6 +3541,7 @@ GameObject:
   - component: {fileID: 643605669}
   - component: {fileID: 643605668}
   - component: {fileID: 643605667}
+  - component: {fileID: 643605670}
   m_Layer: 5
   m_Name: Ground
   m_TagString: Untagged
@@ -3544,10 +3614,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 643605670}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3594,6 +3664,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 643605665}
   m_CullTransparentMesh: 1
+--- !u!114 &643605670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 643605665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 1
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &644698406
 GameObject:
   m_ObjectHideFlags: 0
@@ -3679,7 +3766,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
         m_MethodName: OnOpenListClick
         m_Mode: 3
         m_Arguments:
@@ -3948,7 +4035,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
         m_MethodName: OnOpenListClick
         m_Mode: 3
         m_Arguments:
@@ -4082,9 +4169,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
+        m_MethodName: OnEmptyClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4474,6 +4561,7 @@ GameObject:
   - component: {fileID: 813243079}
   - component: {fileID: 813243078}
   - component: {fileID: 813243077}
+  - component: {fileID: 813243080}
   m_Layer: 5
   m_Name: Tower0
   m_TagString: Untagged
@@ -4546,10 +4634,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBuildingClick
-        m_Mode: 3
+      - m_Target: {fileID: 813243080}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4596,6 +4684,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 813243075}
   m_CullTransparentMesh: 1
+--- !u!114 &813243080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 813243075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 1
+  m_blockType: 0
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &824727935
 GameObject:
   m_ObjectHideFlags: 0
@@ -4681,7 +4786,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
         m_MethodName: OnNew
         m_Mode: 1
         m_Arguments:
@@ -4818,6 +4923,7 @@ GameObject:
   - component: {fileID: 864110242}
   - component: {fileID: 864110241}
   - component: {fileID: 864110240}
+  - component: {fileID: 864110243}
   m_Layer: 5
   m_Name: Tower2
   m_TagString: Untagged
@@ -4890,10 +4996,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBuildingClick
-        m_Mode: 3
+      - m_Target: {fileID: 864110243}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4940,6 +5046,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 864110238}
   m_CullTransparentMesh: 1
+--- !u!114 &864110243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 864110238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 1
+  m_blockType: 0
+  m_blockData: 0
+  m_buildingType: 2
+  m_buildingLevel: 0
 --- !u!1 &869682106
 GameObject:
   m_ObjectHideFlags: 0
@@ -5057,7 +5180,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 869682106}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 206e9803089bdb54dabd3c8813d77379, type: 3}
+  m_Script: {fileID: 11500000, guid: d642af65770afd64b9cb7de4ab68d5c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_itemLists:
@@ -5066,65 +5189,6 @@ MonoBehaviour:
   - {fileID: 52550538}
   - {fileID: 392247333}
   - {fileID: 2067177825}
-  m_blocks:
-  - block: 1
-    additionalData: 0
-    texture: {fileID: 21300000, guid: c1bcbb3d630a5884696ce2b41822b1c5, type: 3}
-  - block: 2
-    additionalData: 0
-    texture: {fileID: 21300000, guid: 537eb5aea64c34a488d364768fb3958a, type: 3}
-  - block: 3
-    additionalData: 0
-    texture: {fileID: 21300000, guid: f048d563bc9f43a49a19b70afc708238, type: 3}
-  - block: 4
-    additionalData: 0
-    texture: {fileID: 21300000, guid: 2af2b864aafae3c4a9f31ca39d4740a9, type: 3}
-  - block: 7
-    additionalData: 0
-    texture: {fileID: 21300000, guid: 06fcae06a8cecb24585d4d65c8fbb44b, type: 3}
-  - block: 7
-    additionalData: 1
-    texture: {fileID: 21300000, guid: 91e6e8ecbb1b5fc409c07e0bee9a9b6a, type: 3}
-  - block: 6
-    additionalData: 0
-    texture: {fileID: 21300000, guid: 869bd8f291c9e834dba628605bf2893a, type: 3}
-  - block: 11
-    additionalData: 0
-    texture: {fileID: 21300000, guid: a41d44369f2dc9743b87316f57fe493c, type: 3}
-  - block: 11
-    additionalData: 1
-    texture: {fileID: 21300000, guid: 0e0994efae5387447ba55f68293f5563, type: 3}
-  - block: 11
-    additionalData: 2
-    texture: {fileID: 21300000, guid: 3763942e63c1b064b96c00b3020b05b0, type: 3}
-  - block: 8
-    additionalData: 0
-    texture: {fileID: 21300000, guid: dbba39572e1dcc64ea0885e2912cf6f3, type: 3}
-  - block: 9
-    additionalData: 0
-    texture: {fileID: 21300000, guid: 6f225e165d5f9214c8ceee58eaeb272a, type: 3}
-  - block: 10
-    additionalData: 0
-    texture: {fileID: 21300000, guid: 0eabeee364a93e24785bb3068d7c73cc, type: 3}
-  m_buildings:
-  - building: 3
-    texture: {fileID: 21300000, guid: cf0b7587d9373994f81d8c776e29fd29, type: 3}
-  - building: 8
-    texture: {fileID: 21300000, guid: 8f1d53d0f04479a46887a5f447c90c6a, type: 3}
-  - building: 4
-    texture: {fileID: 21300000, guid: 2333c760cc29d2b44bac38fad55aa901, type: 3}
-  - building: 5
-    texture: {fileID: 21300000, guid: e3077d67ee3f6c042b72199a263f05e5, type: 3}
-  - building: 6
-    texture: {fileID: 21300000, guid: 7b10ba4936168f04b873b6f881c2002e, type: 3}
-  - building: 0
-    texture: {fileID: 21300000, guid: 1e74f6accd68e5c448d7376c79f5e8bc, type: 3}
-  - building: 1
-    texture: {fileID: 21300000, guid: dfa0f5ff7278d1c42aee6d7ac131948c, type: 3}
-  - building: 2
-    texture: {fileID: 21300000, guid: 2124890a6ea4e3e4c9c45965f6a1f883, type: 3}
-  - building: 9
-    texture: {fileID: 21300000, guid: 1a384740b4471e545a1e11986fb9da03, type: 3}
   m_currentElementImage: {fileID: 455641421}
   m_filename: {fileID: 647264247}
   menuName: MainMenu
@@ -5277,6 +5341,7 @@ GameObject:
   - component: {fileID: 893090292}
   - component: {fileID: 893090291}
   - component: {fileID: 893090290}
+  - component: {fileID: 893090293}
   m_Layer: 5
   m_Name: Belt
   m_TagString: Untagged
@@ -5349,10 +5414,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBuildingClick
-        m_Mode: 3
+      - m_Target: {fileID: 893090293}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -5399,6 +5464,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 893090288}
   m_CullTransparentMesh: 1
+--- !u!114 &893090293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 893090288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 1
+  m_blockType: 0
+  m_blockData: 0
+  m_buildingType: 8
+  m_buildingLevel: 0
 --- !u!1 &911534578
 GameObject:
   m_ObjectHideFlags: 0
@@ -5411,6 +5493,7 @@ GameObject:
   - component: {fileID: 911534582}
   - component: {fileID: 911534581}
   - component: {fileID: 911534580}
+  - component: {fileID: 911534583}
   m_Layer: 5
   m_Name: Grass
   m_TagString: Untagged
@@ -5483,10 +5566,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 911534583}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -5533,6 +5616,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 911534578}
   m_CullTransparentMesh: 1
+--- !u!114 &911534583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 911534578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 7
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &918828640
 GameObject:
   m_ObjectHideFlags: 0
@@ -5701,6 +5801,7 @@ GameObject:
   - component: {fileID: 1029187732}
   - component: {fileID: 1029187731}
   - component: {fileID: 1029187730}
+  - component: {fileID: 1029187733}
   m_Layer: 5
   m_Name: MedMiningCenter
   m_TagString: Untagged
@@ -5773,10 +5874,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBuildingClick
-        m_Mode: 3
+      - m_Target: {fileID: 1029187733}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -5823,6 +5924,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1029187728}
   m_CullTransparentMesh: 1
+--- !u!114 &1029187733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1029187728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 1
+  m_blockType: 0
+  m_blockData: 0
+  m_buildingType: 5
+  m_buildingLevel: 0
 --- !u!1 &1115815119
 GameObject:
   m_ObjectHideFlags: 0
@@ -5835,6 +5953,7 @@ GameObject:
   - component: {fileID: 1115815123}
   - component: {fileID: 1115815122}
   - component: {fileID: 1115815121}
+  - component: {fileID: 1115815124}
   m_Layer: 5
   m_Name: OperationCenter
   m_TagString: Untagged
@@ -5907,10 +6026,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBuildingClick
-        m_Mode: 3
+      - m_Target: {fileID: 1115815124}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -5957,6 +6076,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1115815119}
   m_CullTransparentMesh: 1
+--- !u!114 &1115815124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1115815119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 1
+  m_blockType: 0
+  m_blockData: 0
+  m_buildingType: 3
+  m_buildingLevel: 0
 --- !u!1 &1139324347
 GameObject:
   m_ObjectHideFlags: 0
@@ -6568,7 +6704,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
         m_MethodName: OnOpenListClick
         m_Mode: 3
         m_Arguments:
@@ -7125,6 +7261,7 @@ GameObject:
   - component: {fileID: 1344612980}
   - component: {fileID: 1344612979}
   - component: {fileID: 1344612978}
+  - component: {fileID: 1344612981}
   m_Layer: 5
   m_Name: Lake
   m_TagString: Untagged
@@ -7197,10 +7334,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 1344612981}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -7247,6 +7384,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1344612976}
   m_CullTransparentMesh: 1
+--- !u!114 &1344612981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1344612976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 3
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &1418597680
 GameObject:
   m_ObjectHideFlags: 0
@@ -7453,7 +7607,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
         m_MethodName: OnLoad
         m_Mode: 1
         m_Arguments:
@@ -7514,6 +7668,7 @@ GameObject:
   - component: {fileID: 1598157248}
   - component: {fileID: 1598157247}
   - component: {fileID: 1598157246}
+  - component: {fileID: 1598157249}
   m_Layer: 5
   m_Name: Road
   m_TagString: Untagged
@@ -7586,10 +7741,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 1598157249}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -7636,6 +7791,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1598157244}
   m_CullTransparentMesh: 1
+--- !u!114 &1598157249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1598157244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 6
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &1608765491
 GameObject:
   m_ObjectHideFlags: 0
@@ -7979,6 +8151,7 @@ GameObject:
   - component: {fileID: 1647915241}
   - component: {fileID: 1647915240}
   - component: {fileID: 1647915239}
+  - component: {fileID: 1647915242}
   m_Layer: 5
   m_Name: Pipe
   m_TagString: Untagged
@@ -8051,10 +8224,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBuildingClick
-        m_Mode: 3
+      - m_Target: {fileID: 1647915242}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8101,6 +8274,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1647915237}
   m_CullTransparentMesh: 1
+--- !u!114 &1647915242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1647915237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 1
+  m_blockType: 0
+  m_blockData: 0
+  m_buildingType: 9
+  m_buildingLevel: 0
 --- !u!1 &1653572441
 GameObject:
   m_ObjectHideFlags: 0
@@ -8383,6 +8573,7 @@ GameObject:
   - component: {fileID: 1679659546}
   - component: {fileID: 1679659545}
   - component: {fileID: 1679659544}
+  - component: {fileID: 1679659547}
   m_Layer: 5
   m_Name: SmallMiningCenter
   m_TagString: Untagged
@@ -8455,10 +8646,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBuildingClick
-        m_Mode: 3
+      - m_Target: {fileID: 1679659547}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8505,6 +8696,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1679659542}
   m_CullTransparentMesh: 1
+--- !u!114 &1679659547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679659542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 1
+  m_blockType: 0
+  m_blockData: 0
+  m_buildingType: 6
+  m_buildingLevel: 0
 --- !u!1 &1706432532
 GameObject:
   m_ObjectHideFlags: 0
@@ -8517,6 +8725,7 @@ GameObject:
   - component: {fileID: 1706432536}
   - component: {fileID: 1706432535}
   - component: {fileID: 1706432534}
+  - component: {fileID: 1706432537}
   m_Layer: 5
   m_Name: Flowers
   m_TagString: Untagged
@@ -8589,10 +8798,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 1706432537}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8639,6 +8848,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1706432532}
   m_CullTransparentMesh: 1
+--- !u!114 &1706432537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706432532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 7
+  m_blockData: 1
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &1715723705
 GameObject:
   m_ObjectHideFlags: 0
@@ -8651,6 +8877,7 @@ GameObject:
   - component: {fileID: 1715723709}
   - component: {fileID: 1715723708}
   - component: {fileID: 1715723707}
+  - component: {fileID: 1715723710}
   m_Layer: 5
   m_Name: Tower1
   m_TagString: Untagged
@@ -8723,10 +8950,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBuildingClick
-        m_Mode: 3
+      - m_Target: {fileID: 1715723710}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8773,6 +9000,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1715723705}
   m_CullTransparentMesh: 1
+--- !u!114 &1715723710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715723705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 1
+  m_blockType: 0
+  m_blockData: 0
+  m_buildingType: 1
+  m_buildingLevel: 0
 --- !u!1 &1724393606
 GameObject:
   m_ObjectHideFlags: 0
@@ -8959,6 +9203,7 @@ GameObject:
   - component: {fileID: 1748847645}
   - component: {fileID: 1748847644}
   - component: {fileID: 1748847643}
+  - component: {fileID: 1748847646}
   m_Layer: 5
   m_Name: River
   m_TagString: Untagged
@@ -9031,10 +9276,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 1748847646}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -9081,6 +9326,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1748847641}
   m_CullTransparentMesh: 1
+--- !u!114 &1748847646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748847641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 4
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &1754829015
 GameObject:
   m_ObjectHideFlags: 0
@@ -9242,7 +9504,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
         m_MethodName: OnQuit
         m_Mode: 1
         m_Arguments:
@@ -9379,6 +9641,7 @@ GameObject:
   - component: {fileID: 1826601299}
   - component: {fileID: 1826601298}
   - component: {fileID: 1826601297}
+  - component: {fileID: 1826601300}
   m_Layer: 5
   m_Name: Tree0
   m_TagString: Untagged
@@ -9451,10 +9714,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 1826601300}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -9501,6 +9764,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1826601295}
   m_CullTransparentMesh: 1
+--- !u!114 &1826601300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1826601295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 11
+  m_blockData: 1
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &1851721582
 GameObject:
   m_ObjectHideFlags: 0
@@ -9665,6 +9945,7 @@ GameObject:
   - component: {fileID: 1879222178}
   - component: {fileID: 1879222177}
   - component: {fileID: 1879222176}
+  - component: {fileID: 1879222179}
   m_Layer: 5
   m_Name: BigMiningCenter
   m_TagString: Untagged
@@ -9737,10 +10018,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBuildingClick
-        m_Mode: 3
+      - m_Target: {fileID: 1879222179}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -9787,6 +10068,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1879222174}
   m_CullTransparentMesh: 1
+--- !u!114 &1879222179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879222174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 1
+  m_blockType: 0
+  m_blockData: 0
+  m_buildingType: 4
+  m_buildingLevel: 0
 --- !u!1 &1888417260
 GameObject:
   m_ObjectHideFlags: 0
@@ -9799,6 +10097,7 @@ GameObject:
   - component: {fileID: 1888417264}
   - component: {fileID: 1888417263}
   - component: {fileID: 1888417262}
+  - component: {fileID: 1888417265}
   m_Layer: 5
   m_Name: Stump
   m_TagString: Untagged
@@ -9871,10 +10170,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 1888417265}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -9921,6 +10220,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888417260}
   m_CullTransparentMesh: 1
+--- !u!114 &1888417265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888417260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 11
+  m_blockData: 0
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &1890144618
 GameObject:
   m_ObjectHideFlags: 0
@@ -10218,7 +10534,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1625437691}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10557,7 +10873,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
+        m_TargetAssemblyTypeName: GameEditorInterface, Assembly-CSharp
         m_MethodName: OnSaveAs
         m_Mode: 1
         m_Arguments:
@@ -10871,6 +11187,7 @@ GameObject:
   - component: {fileID: 2106353773}
   - component: {fileID: 2106353772}
   - component: {fileID: 2106353771}
+  - component: {fileID: 2106353774}
   m_Layer: 5
   m_Name: Tree1
   m_TagString: Untagged
@@ -10943,10 +11260,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 869682111}
-        m_TargetAssemblyTypeName: EditorInterface, Assembly-CSharp
-        m_MethodName: OnBlockClick
-        m_Mode: 3
+      - m_Target: {fileID: 2106353774}
+        m_TargetAssemblyTypeName: GameEditorElementButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -10993,6 +11310,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2106353769}
   m_CullTransparentMesh: 1
+--- !u!114 &2106353774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106353769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac19396ec5a505c42be1869ae43a6db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buttonType: 0
+  m_blockType: 11
+  m_blockData: 2
+  m_buildingType: 0
+  m_buildingLevel: 0
 --- !u!1 &2106834656
 GameObject:
   m_ObjectHideFlags: 0

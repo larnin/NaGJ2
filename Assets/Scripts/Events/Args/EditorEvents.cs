@@ -9,6 +9,7 @@ public class EditorCurstorGetPosEvent
 {
     public Vector3Int pos = Vector3Int.zero;
     public Vector3Int blockPos = Vector3Int.zero;
+    public int buildingID = 0;
 }
 
 public enum EditorCursorClickType
@@ -25,6 +26,11 @@ public class EditorCursorClickEvent
     {
         clickType = _clickType;
     }
+}
+
+public class EditorGetCursorTypeEvent
+{
+    public EditorCursorType cursorType;
 }
 
 public class EditorSetCursorBlockEvent
@@ -49,10 +55,12 @@ public class EditorGetCursorBlockEvent
 public class EditorSetCursorBuildingEvent
 {
     public BuildingType type;
+    public int level;
 
-    public EditorSetCursorBuildingEvent(BuildingType _type)
+    public EditorSetCursorBuildingEvent(BuildingType _type, int _level)
     {
         type = _type;
+        level = _level;
     }
 }
 
@@ -60,6 +68,7 @@ public class EditorGetCursorBuildingEvent
 {
     public BuildingType type;
     public Rotation rotation;
+    public int level;
 }
 
 public class EditorHaveBuildingEvent
@@ -154,3 +163,27 @@ public class EditorSetBuildingInstanceEvent
 }
 
 public class EditorUpdateInstanceEvent { }
+
+public class EditorSelectBlockTypeEvent
+{
+    public BlockType type;
+    public int value;
+
+    public EditorSelectBlockTypeEvent(BlockType _type, int _value)
+    {
+        type = _type;
+        value = _value;
+    }
+}
+
+public class EditorSelectBuildingTypeEvent
+{
+    public BuildingType type;
+    public int level;
+
+    public EditorSelectBuildingTypeEvent(BuildingType _type, int _level)
+    {
+        type = _type;
+        level = _level;
+    }
+}

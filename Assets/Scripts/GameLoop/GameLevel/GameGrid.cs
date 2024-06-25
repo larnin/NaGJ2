@@ -21,7 +21,7 @@ public class GameGrid
         m_grid.Reset(1, 1, 1);
     }
 
-    public void SetBlock(Vector3Int pos, BlockType id, byte data)
+    public void SetBlock(Vector3Int pos, BlockType id, byte data = 0)
     {
         SetBlock(pos, new SimpleBlock(id, data));
     }

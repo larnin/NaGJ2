@@ -214,6 +214,49 @@ public static class BuildingDataEx
         }
     }
 
+    public static Sprite GetSprite(BuildingType type, int level)
+    {
+        var buildings = Global.instance.allBuildings;
+
+        switch(type)
+        {
+            case BuildingType.Tower0:
+            {
+                if (level < 0 || level >= buildings.tower0.levels.Count)
+                    return null;
+                return buildings.tower0.levels[level].sprite;
+            }
+            case BuildingType.Tower1:
+            {
+                if (level < 0 || level >= buildings.tower1.levels.Count)
+                    return null;
+                return buildings.tower1.levels[level].sprite;
+            }
+            case BuildingType.Tower2:
+            {
+                if (level < 0 || level >= buildings.tower2.levels.Count)
+                    return null;
+                return buildings.tower2.levels[level].sprite;
+            }
+            case BuildingType.OperationCenter:
+                return buildings.operationCenter.sprite;
+            case BuildingType.BigMiningCenter:
+                return buildings.bigMiningCenter.sprite;
+            case BuildingType.MediumMiningCenter:
+                return buildings.mediumMiningCenter.sprite;
+            case BuildingType.SmallMiningCenter:
+                return buildings.smallMiningCenter.sprite;
+            case BuildingType.Drill:
+                return buildings.drill.sprite;
+            case BuildingType.Belt:
+                return buildings.belt.sprite;
+            case BuildingType.Pipe:
+                return buildings.pipe.sprite;
+        }
+
+        return null;
+    }
+
     public static GameObject InstantiateBelt(Vector3Int pos, NearMatrix3<SimpleBlock> blocks, NearMatrix3<SimpleBeltInfos> belts, out BeltDirection direction, Transform parent = null)
     {
         GameObject obj = null;

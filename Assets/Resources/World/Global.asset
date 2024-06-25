@@ -44,11 +44,13 @@ MonoBehaviour:
         line: {fileID: 2748226503450804616, guid: 7a80d26ec8fbca1448907a561b920f66, type: 3}
         treeSide: {fileID: 6145982102503155055, guid: 5023d511b6bd16f4fb00baab22d377f1, type: 3}
         full: {fileID: 7007301684908017005, guid: 4fdc1d99473483341a5bb77a1cdc3e33, type: 3}
+      sprite: {fileID: 21300000, guid: c1bcbb3d630a5884696ce2b41822b1c5, type: 3}
     groundSlope:
       single: {fileID: 2422801480280022577, guid: 1267fcf0f57779846bfbdf45554748fc, type: 3}
       left: {fileID: 1625936375580345051, guid: aba1d5b94e6438447974e644eed9c5da, type: 3}
       right: {fileID: 1625936375580345051, guid: 8e893f35a6feaa0459c268a648131cbc, type: 3}
       center: {fileID: 9077495960246464690, guid: 2f53fd7d0a9430244ac0ddc9717823bf, type: 3}
+      sprite: {fileID: 21300000, guid: 537eb5aea64c34a488d364768fb3958a, type: 3}
     lake:
       single: {fileID: 4816340819082946688, guid: 01913a0958390494e9faf3ad710e7350, type: 3}
       oneSide: {fileID: 5837140008063463356, guid: 09b85c263ce9e714e9f3a5dee42ba83e, type: 3}
@@ -67,6 +69,7 @@ MonoBehaviour:
       lineOnly: {fileID: 1607730873128676241, guid: 843cccc223c405440a991bce400b679a, type: 3}
       lakeIn: {fileID: 3680626247911190041, guid: f7e1bcfc2bd9e0c42b6bc36107186516, type: 3}
       lakeOut: {fileID: 64746744192597758, guid: 6a4f7a28c24da6b4696b54b50616584a, type: 3}
+      sprite: {fileID: 21300000, guid: f048d563bc9f43a49a19b70afc708238, type: 3}
     river:
       line: {fileID: 4650325058061426538, guid: 285a91a4e3a13674589a8ec9ce21832b, type: 3}
       cornerRight: {fileID: 6419804331209503673, guid: 2a9a1b1f41c4ec84484173a4a97551d9, type: 3}
@@ -81,6 +84,8 @@ MonoBehaviour:
       waterfallDown: {fileID: 6426643056748241952, guid: d58cf2c1c196d9c4699d2c5b396de1ec, type: 3}
       waterfallEnd: {fileID: 6754256699760259838, guid: 4b36fe79b7fee6443b15c75597a62a9e, type: 3}
       waterfallSize: 5
+      riverSprite: {fileID: 21300000, guid: 2af2b864aafae3c4a9f31ca39d4740a9, type: 3}
+      waterfallSprite: {fileID: 0}
     road:
       single: {fileID: 2454492567947961080, guid: 41aa18aba4d08234087132585562d669, type: 3}
       start: {fileID: 9053168988011746481, guid: 59409c37f1cf6344684683253f036f91, type: 3}
@@ -90,109 +95,170 @@ MonoBehaviour:
       cross: {fileID: 6507531961537146496, guid: d0c348aa10c4454448c1008eceda5c8f, type: 3}
       slope: {fileID: 1251092583484978174, guid: 6a6c294370c96e741a6abfa6bcf1e9a8, type: 3}
       bridge: {fileID: 8240620271064500968, guid: 4a0eb926019d4b948b129011a73c4aae, type: 3}
+      roadSprite: {fileID: 21300000, guid: 869bd8f291c9e834dba628605bf2893a, type: 3}
+      bridgeSprite: {fileID: 0}
     grass:
       variants:
-      - {fileID: 455439823602350376, guid: 3e5218aad8e22324fbab020a18ffcf5a, type: 3}
-      - {fileID: 1797872309044152712, guid: d15fd059907d78c4085e3ad1781f91ff, type: 3}
+      - instance: {fileID: 455439823602350376, guid: 3e5218aad8e22324fbab020a18ffcf5a, type: 3}
+        sprite: {fileID: 21300000, guid: 06fcae06a8cecb24585d4d65c8fbb44b, type: 3}
+      - instance: {fileID: 1797872309044152712, guid: d15fd059907d78c4085e3ad1781f91ff, type: 3}
+        sprite: {fileID: 21300000, guid: 91e6e8ecbb1b5fc409c07e0bee9a9b6a, type: 3}
     ironOre:
       variants:
-      - {fileID: 1053624260744082883, guid: fc79ae251a8b8bf44bb664b9681a6efe, type: 3}
+      - instance: {fileID: 1053624260744082883, guid: fc79ae251a8b8bf44bb664b9681a6efe, type: 3}
+        sprite: {fileID: 21300000, guid: dbba39572e1dcc64ea0885e2912cf6f3, type: 3}
     copperOre:
       variants:
-      - {fileID: 1927427942470581613, guid: 67309c9b86577e241be1bd635f412585, type: 3}
+      - instance: {fileID: 1927427942470581613, guid: 67309c9b86577e241be1bd635f412585, type: 3}
+        sprite: {fileID: 21300000, guid: 6f225e165d5f9214c8ceee58eaeb272a, type: 3}
     crystal:
       variants:
-      - {fileID: 2529202727124458788, guid: 39da2dba811005348835c7909ecd0d08, type: 3}
-      - {fileID: 5884493882779455304, guid: f5b1ffb94762e814392d65806a9222fa, type: 3}
+      - instance: {fileID: 2529202727124458788, guid: 39da2dba811005348835c7909ecd0d08, type: 3}
+        sprite: {fileID: 21300000, guid: 0eabeee364a93e24785bb3068d7c73cc, type: 3}
+      - instance: {fileID: 5884493882779455304, guid: f5b1ffb94762e814392d65806a9222fa, type: 3}
+        sprite: {fileID: 21300000, guid: 0eabeee364a93e24785bb3068d7c73cc, type: 3}
     tree:
       variants:
-      - {fileID: 3566894212013922056, guid: 267ed8446dd3683458dd3a6600b447ff, type: 3}
-      - {fileID: 8958695042441432280, guid: 35ead6a65afd48f4193226ed4e3e5e80, type: 3}
-      - {fileID: 9116754217208307827, guid: ded4cb87c36d19b489eb182a79da18ac, type: 3}
+      - instance: {fileID: 3566894212013922056, guid: 267ed8446dd3683458dd3a6600b447ff, type: 3}
+        sprite: {fileID: 21300000, guid: a41d44369f2dc9743b87316f57fe493c, type: 3}
+      - instance: {fileID: 8958695042441432280, guid: 35ead6a65afd48f4193226ed4e3e5e80, type: 3}
+        sprite: {fileID: 21300000, guid: 0e0994efae5387447ba55f68293f5563, type: 3}
+      - instance: {fileID: 9116754217208307827, guid: ded4cb87c36d19b489eb182a79da18ac, type: 3}
+        sprite: {fileID: 21300000, guid: 3763942e63c1b064b96c00b3020b05b0, type: 3}
   m_allBuildings:
     tower0:
-      name: 
-      description: 
+      name:
+        m_id: -1
+        m_textID: 
+      description:
+        m_id: -1
+        m_textID: 
       levels:
       - cost:
           costs: []
         prefab: {fileID: 4535419702433975566, guid: 8eba797e36303fc4aa4ec8400d1deb92, type: 3}
         size: {x: 1, y: 1, z: 1}
+        sprite: {fileID: 0}
       - cost:
           costs: []
         prefab: {fileID: 8171400753975530231, guid: 42253ed23eebbc747bcebdae98221ba7, type: 3}
         size: {x: 1, y: 1, z: 1}
+        sprite: {fileID: 0}
       - cost:
           costs: []
         prefab: {fileID: 5130323494322073348, guid: 15be08370ff54b2409be2305201e73d8, type: 3}
         size: {x: 1, y: 1, z: 1}
+        sprite: {fileID: 0}
     tower1:
-      name: 
-      description: 
+      name:
+        m_id: -1
+        m_textID: 
+      description:
+        m_id: -1
+        m_textID: 
       levels:
       - cost:
           costs: []
         prefab: {fileID: 2804463719667612666, guid: 63ad6f79d00a9c94f82a0132797ea959, type: 3}
         size: {x: 1, y: 1, z: 1}
+        sprite: {fileID: 0}
       - cost:
           costs: []
         prefab: {fileID: 8935526912260626739, guid: 2152d0ec59fa0c14d8317538fdb6edd6, type: 3}
         size: {x: 1, y: 1, z: 1}
+        sprite: {fileID: 0}
       - cost:
           costs: []
         prefab: {fileID: 532560842359466614, guid: 205779148b503094da400989405f7c22, type: 3}
         size: {x: 1, y: 1, z: 1}
+        sprite: {fileID: 0}
     tower2:
-      name: 
-      description: 
+      name:
+        m_id: -1
+        m_textID: 
+      description:
+        m_id: -1
+        m_textID: 
       levels:
       - cost:
           costs: []
         prefab: {fileID: 7160437945480003331, guid: 09065f8190b0fe5408ed028f25dbfddc, type: 3}
         size: {x: 1, y: 1, z: 1}
+        sprite: {fileID: 0}
       - cost:
           costs: []
         prefab: {fileID: 1825012431092698692, guid: 721e76d0363e07d4c8ef6e87b3c1b75f, type: 3}
         size: {x: 1, y: 1, z: 1}
+        sprite: {fileID: 0}
       - cost:
           costs: []
         prefab: {fileID: 6388430207544002530, guid: 88f900441c0c20847b9995c01267d562, type: 3}
         size: {x: 1, y: 1, z: 1}
+        sprite: {fileID: 0}
     operationCenter:
-      name: 
-      description: 
+      name:
+        m_id: -1
+        m_textID: 
+      description:
+        m_id: -1
+        m_textID: 
       prefab: {fileID: 5759554216005528630, guid: b06ee74c9d891a04bb479dd096499d3a, type: 3}
       size: {x: 3, y: 2, z: 3}
+      containers: []
+      sprite: {fileID: 0}
     bigMiningCenter:
-      name: 
-      description: 
+      name:
+        m_id: -1
+        m_textID: 
+      description:
+        m_id: -1
+        m_textID: 
       cost:
         costs: []
       prefab: {fileID: 3619161916175125052, guid: 04db2099d619be3498e878be5aa5cc70, type: 3}
       size: {x: 2, y: 1, z: 2}
       mineDistance: 2
+      containers: []
+      sprite: {fileID: 0}
     mediumMiningCenter:
-      name: 
-      description: 
+      name:
+        m_id: -1
+        m_textID: 
+      description:
+        m_id: -1
+        m_textID: 
       cost:
         costs: []
       prefab: {fileID: 4356035782417431393, guid: 5027ba4ce40e0444a94c294084c2cac6, type: 3}
       size: {x: 1, y: 1, z: 2}
       mineDistance: 1
+      containers: []
+      sprite: {fileID: 0}
     smallMiningCenter:
-      name: 
-      description: 
+      name:
+        m_id: -1
+        m_textID: 
+      description:
+        m_id: -1
+        m_textID: 
       cost:
         costs: []
       prefab: {fileID: 218631143579773238, guid: 764274524090d4c4a9ea6e9371297f16, type: 3}
       size: {x: 1, y: 1, z: 1}
       mineDistance: 1
+      containers: []
+      sprite: {fileID: 0}
     drill:
       prefab: {fileID: 0}
       size: {x: 1, y: 1, z: 1}
+      sprite: {fileID: 0}
     belt:
-      name: 
-      description: 
+      name:
+        m_id: -1
+        m_textID: 
+      description:
+        m_id: -1
+        m_textID: 
       cost:
         costs: []
       forwardPrefab: {fileID: 8274155206733211446, guid: 0d1fd9e753fad9e45987aade37fa5e03, type: 3}
@@ -200,9 +266,14 @@ MonoBehaviour:
       rightPrefab: {fileID: 4338920473469947020, guid: ed780448c37d6f6428c35c9372fca578, type: 3}
       upPrefab: {fileID: 2051107364912174009, guid: a37b2a95172eb104e99bc27029f04084, type: 3}
       downPrefab: {fileID: 6040769600941238851, guid: 9e2bcb3ddcac7b343947bec2f576d3a8, type: 3}
+      sprite: {fileID: 0}
     pipe:
-      name: 
-      description: 
+      name:
+        m_id: -1
+        m_textID: 
+      description:
+        m_id: -1
+        m_textID: 
       cost:
         costs: []
       ground:
@@ -241,6 +312,7 @@ MonoBehaviour:
       airGoUp: {fileID: 966585965830540625, guid: b5d67e45458a1834c832d8e88cb21ab3, type: 3}
       airGoDown: {fileID: 966585965830540625, guid: f1ccdfcfbeeea9d4c88e2367137af070, type: 3}
       end: {fileID: 4923221076125534697, guid: f1d0c6cde44113c4b8d49ad89b1d068e, type: 3}
+      sprite: {fileID: 0}
   m_allResources:
     beltResourceSpacing: 0.5
     beltSpeed: 1
@@ -257,3 +329,5 @@ MonoBehaviour:
     - type: 3
       prefab: {fileID: 8598079328801901074, guid: fcf6d97175fb21645b815c4e1e4f69d1, type: 3}
       sprite: {fileID: 0}
+  m_levels:
+    levels: []

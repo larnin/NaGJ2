@@ -18,7 +18,7 @@ public enum BlockType
     ironOre,
     copperOre,
     crystal,
-    Tree
+    tree
 }
 
 public struct SimpleBlock
@@ -47,20 +47,13 @@ public class BlockLayerData
 }
 
 [Serializable]
-public class BlockConnexionData
-{
-
-}
-
-[Serializable]
 public class BlockFullData
 {
     public BlockLayerData solo;
     public BlockLayerData top;
     public BlockLayerData middle;
     public BlockLayerData bottom;
-
-    public BlockConnexionData connexion;
+    public Sprite sprite;
 }
 
 [Serializable]
@@ -70,6 +63,7 @@ public class SlopeBlockData
     public GameObject left;
     public GameObject right;
     public GameObject center;
+    public Sprite sprite;
 }
 
 [Serializable]
@@ -92,6 +86,7 @@ public class LakeBlockData
     public GameObject lineOnly;
     public GameObject lakeIn;
     public GameObject lakeOut;
+    public Sprite sprite;
 }
 
 [Serializable]
@@ -110,6 +105,8 @@ public class RiverBlockData
     public GameObject waterfallDown;
     public GameObject waterfallEnd;
     public int waterfallSize = 5;
+    public Sprite riverSprite;
+    public Sprite waterfallSprite;
 }
 
 [Serializable]
@@ -123,12 +120,21 @@ public class RoadBlockData
     public GameObject cross;
     public GameObject slope;
     public GameObject bridge;
+    public Sprite roadSprite;
+    public Sprite bridgeSprite;
+}
+
+[Serializable]
+public class SimpleBlockVariant
+{
+    public GameObject instance;
+    public Sprite sprite;
 }
 
 [Serializable]
 public class SimpleBlockData
 {
-    public List<GameObject> variants = new List<GameObject>();
+    public List<SimpleBlockVariant> variants = new List<SimpleBlockVariant>();
 }
 
 [Serializable]

@@ -41,7 +41,7 @@ public static class BlockDataEx
             case BlockType.crystal:
                 GetBlockInfoCrystal(data, mat, out prefab, out outRot);
                 break;
-            case BlockType.Tree:
+            case BlockType.tree:
                 GetBlockInfoTree(data, mat, out prefab, out outRot);
                 break;
             default:
@@ -555,7 +555,7 @@ public static class BlockDataEx
         outRot = RotationEx.ToQuaternion(rot);
     }
 
-    static void GetBlockInfoVariants(List<GameObject> variants, byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
+    static void GetBlockInfoVariants(List<SimpleBlockVariant> variants, byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
     {
         Rotation rot = ExtractDataRotation(data);
         int value = ExtractDataValue(data);
@@ -564,7 +564,7 @@ public static class BlockDataEx
 
         if (variants == null || value >= variants.Count || value < 0)
             prefab = null;
-        else prefab = variants[value];
+        else prefab = variants[value].instance;
     }
 
     static void GetBlockInfoGrass(byte data, NearMatrix3<SimpleBlock> mat, out GameObject prefab, out Quaternion outRot)
@@ -616,6 +616,111 @@ public static class BlockDataEx
 
     // ---------------------------------------
 
+    public static bool GetValidPos(GameLevel level, BlockType type, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    {
+        switch (type)
+        {
+            case BlockType.ground:
+            case BlockType.groundSlope:
+                return GetValidPosGround(level, type, blockPos, pos, out outPos);
+            case BlockType.river:
+            case BlockType.lake:
+                return GetValidPosPaint(level, type, blockPos, pos, out outPos);
+            case BlockType.grass:
+            case BlockType.road:
+            case BlockType.ironOre:
+            case BlockType.copperOre:
+            case BlockType.crystal:
+            case BlockType.tree:
+                return GetValidPosDecoration(level, type, blockPos, pos, out outPos);
+            case BlockType.air:
+                return GetValidPosAir(level, blockPos, pos, out outPos);
+            default:
+                outPos = Vector3Int.zero;
+                return false;
+        }
+    }
+
+    static bool GetValidPosAir(GameLevel level, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    {
+        var b1 = level.grid.GetBlock(blockPos);
+        var b2 = level.grid.GetBlock(pos);
+
+        if (b2.id != BlockType.air)
+        {
+            outPos = pos;
+            return true;
+        }
+
+        if (b1.id != BlockType.air)
+        {
+            outPos = blockPos;
+            return true;
+        }
+
+        outPos = Vector3Int.zero;
+        return false;
+    }
+
+    static bool GetValidPosGround(GameLevel level, BlockType current, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    {
+        var b1 = level.grid.GetBlock(blockPos);
+        var b2 = level.grid.GetBlock(pos);
+
+        if (b1.id == BlockType.air)
+        {
+            outPos = blockPos;
+            return true;
+        }
+
+        if (b2.id != current)
+        {
+            outPos = pos;
+            return true;
+        }
+
+        outPos = Vector3Int.zero;
+        return false;
+    }
+
+    static bool GetValidPosPaint(GameLevel level, BlockType current, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    {
+        var b1 = level.grid.GetBlock(blockPos);
+        var b2 = level.grid.GetBlock(pos);
+
+        if ((IsBlockFull(b1.id) || b1.id == BlockType.air || b1.id == BlockType.waterfall) && current != b1.id)
+        {
+            outPos = blockPos;
+            return true;
+        }
+
+        outPos = Vector3Int.zero;
+        return false;
+    }
+
+    static bool GetValidPosDecoration(GameLevel level, BlockType current, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
+    {
+        var b1 = level.grid.GetBlock(blockPos);
+        var b2 = level.grid.GetBlock(pos);
+
+        if (!IsBlockFull(b1.id))
+        {
+            outPos = blockPos;
+            return true;
+        }
+
+        if (b2.id != current)
+        {
+            outPos = pos;
+            return true;
+        }
+
+        outPos = Vector3Int.zero;
+        return false;
+    }
+
+
+
     public static bool GetValidPos(BlockType type, Vector3Int blockPos, Vector3Int pos, out Vector3Int outPos)
     {
         switch(type)
@@ -631,7 +736,7 @@ public static class BlockDataEx
             case BlockType.ironOre:
             case BlockType.copperOre:
             case BlockType.crystal:
-            case BlockType.Tree:
+            case BlockType.tree:
                 return GetValidPosDecoration(type, blockPos, pos, out outPos);
             case BlockType.air:
                 return GetValidPosAir(blockPos, pos, out outPos);
@@ -732,6 +837,107 @@ public static class BlockDataEx
     }
 
     // ------------------------------------------
+
+    public static void SetBlock(GameLevel level, BlockType type, Vector3Int pos)
+    {
+        SetBlock(level, type, (byte)0, pos);
+    }
+
+    public static void SetBlock(GameLevel level, BlockType type, Rotation rot, Vector3Int pos)
+    {
+        SetBlock(level, type, rot, pos);
+    }
+
+    public static void SetBlock(GameLevel level, BlockType type, Rotation rot, int value, Vector3Int pos)
+    {
+        byte data = BlockDataEx.MakeData(rot, value);
+
+        SetBlock(level, type, data, pos);
+    }
+
+    public static void SetBlock(GameLevel level, BlockType type, byte data, Vector3Int pos)
+    {
+        RemoveCustomBlocksFrom(level, pos);
+        level.grid.SetBlock(pos, type, data);
+        AddCustomBlocksFrom(level, pos);
+    }
+
+    // ------------------------------------------
+
+    public static void RemoveCustomBlocksFrom(GameLevel level, Vector3Int pos)
+    {
+        var block = level.grid.GetBlock(pos);
+
+        switch (block.id)
+        {
+            case BlockType.river:
+                RemoveCustomBlocksRiverFrom(level, pos, block.data);
+                break;
+            case BlockType.waterfall:
+                RemoveCustomBlockWaterfallFrom(level, pos);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static void RemoveCustomBlocksRiverFrom(GameLevel level, Vector3Int pos, byte data)
+    {
+        Rotation rot = ExtractDataRotation(data);
+
+        Vector3Int front = RotationEx.ToVector3Int(rot) + pos;
+        var block = level.grid.GetBlock(front);
+        SetBlockEvent setBlock = new SetBlockEvent(front, BlockType.air);
+        while (block.id == BlockType.waterfall)
+        {
+            level.grid.SetBlock(front, BlockType.air);
+            front.y--;
+            block = level.grid.GetBlock(front);
+        }
+    }
+
+    public static void RemoveCustomBlockWaterfallFrom(GameLevel level, Vector3Int pos)
+    {
+        var block = level.grid.GetBlock(pos);
+        SetBlockEvent setBlock = new SetBlockEvent(pos, BlockType.air);
+        while (block.id == BlockType.waterfall)
+        {
+            level.grid.SetBlock(pos, BlockType.air);
+            pos.y--;
+            block = level.grid.GetBlock(pos);
+        }
+    }
+
+    public static void AddCustomBlocksFrom(GameLevel level, Vector3Int pos)
+    {
+        var block = level.grid.GetBlock(pos);
+
+        switch (block.id)
+        {
+            case BlockType.river:
+                AddCustomBlocksRiverFrom(level, pos, block.data);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static void AddCustomBlocksRiverFrom(GameLevel level, Vector3Int pos, byte data)
+    {
+        Rotation rot = ExtractDataRotation(data);
+
+        Vector3Int front = RotationEx.ToVector3Int(rot) + pos;
+        var block = level.grid.GetBlock(front);
+        int nbMax = Global.instance.allBlocks.river.waterfallSize;
+        var waterfallData = MakeData(rot, 0);
+
+        for (int i = 0; i < nbMax && block.id == BlockType.air; i++)
+        {
+            level.grid.SetBlock(front, BlockType.waterfall, waterfallData);
+            front.y--;
+            block = level.grid.GetBlock(front);
+        }
+    }
 
     public static void SetBlock(BlockType type, Vector3Int pos)
     {
@@ -861,6 +1067,47 @@ public static class BlockDataEx
     public static bool CanPlaceBuildingOnBlock(BlockType type)
     {
         return type == BlockType.ground;
+    }
+
+    public static Sprite GetVariantSprite(List<SimpleBlockVariant> variants, int value)
+    {
+        if (value >= variants.Count || value == 0)
+            return null;
+
+        return variants[value].sprite;
+    }
+
+    public static Sprite GetSprite(BlockType type, int value)
+    {
+        var blocks = Global.instance.allBlocks;
+
+        switch (type)
+        {
+            case BlockType.ground:
+                return blocks.ground.sprite;
+            case BlockType.groundSlope:
+                return blocks.groundSlope.sprite;
+            case BlockType.lake:
+                return blocks.lake.sprite;
+            case BlockType.river:
+                return blocks.river.riverSprite;
+            case BlockType.waterfall:
+                return blocks.river.waterfallSprite;
+            case BlockType.road:
+                return blocks.road.roadSprite;
+            case BlockType.grass:
+                return GetVariantSprite(blocks.grass.variants, value);
+            case BlockType.ironOre:
+                return GetVariantSprite(blocks.ironOre.variants, value);
+            case BlockType.copperOre:
+                return GetVariantSprite(blocks.copperOre.variants, value);
+            case BlockType.crystal:
+                return GetVariantSprite(blocks.crystal.variants, value);
+            case BlockType.tree:
+                return GetVariantSprite(blocks.tree.variants, value);
+        }
+
+        return null;
     }
 
     public static Rotation ExtractDataRotation(byte data)

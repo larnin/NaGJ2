@@ -149,7 +149,7 @@ public class CursorSelect : CursorBase
 
             Bounds bounds = new Bounds(new Vector3((posInt.x - 0.5f) * size.x, (posInt.y - 1) * size.y, (posInt.z - 0.5f) * size.z), new Vector3(sizeInt.x * size.x, sizeInt.y * size.y, sizeInt.z * size.z));
 
-            Shape s2 = Collisions.GetShape(bounds);
+            Shape s2 = Collisions.GetSelectionShape(bounds);
 
             if (Collisions.Intersect(s, s2))
             {

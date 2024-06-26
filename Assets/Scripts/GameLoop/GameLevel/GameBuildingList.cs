@@ -101,6 +101,15 @@ public class GameBuildingList
         }
     }
 
+    public void Reset()
+    {
+        m_buildings.Clear();
+        m_posDictionary.Clear();
+        m_idDictionary.Clear();
+
+        m_nextID = 1;
+    }
+
     public void Process(float deltaTime)
     {
         foreach (var b in m_buildings)
@@ -366,7 +375,7 @@ public class GameBuildingList
                 new Vector3(boundint.size.x * size.x, boundint.size.y * size.y, boundint.size.z * size.z));
 
             Vector3 localpos, localNormal;
-            var shape = Collisions.GetShape(bounds);
+            var shape = Collisions.GetFullShape(bounds);
             bool localHit = Collisions.Raycast(shape, pos, dir, out localpos, out localNormal);
             if(localHit)
             {

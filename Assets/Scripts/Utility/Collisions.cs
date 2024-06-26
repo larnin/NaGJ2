@@ -14,7 +14,7 @@ public class Shape
 
 public static class Collisions
 {
-    public static Shape GetShape(Bounds bounds)
+    public static Shape GetSelectionShape(Bounds bounds)
     {
         var min = bounds.min;
         var max = bounds.max;
@@ -35,6 +35,42 @@ public static class Collisions
         s.indexs.Add(2); s.indexs.Add(3); s.indexs.Add(6);
         s.indexs.Add(0); s.indexs.Add(2); s.indexs.Add(4);
         s.indexs.Add(1); s.indexs.Add(5); s.indexs.Add(3);
+
+        return s;
+    }
+
+    public static Shape GetFullShape(Bounds bounds)
+    {
+        var min = bounds.min;
+        var max = bounds.max;
+
+        Shape s = new Shape();
+        s.points.Add(min);
+        s.points.Add(new Vector3(min.x, min.y, max.z));
+        s.points.Add(new Vector3(min.x, max.y, min.z));
+        s.points.Add(new Vector3(min.x, max.y, max.z));
+        s.points.Add(new Vector3(max.x, min.y, min.z));
+        s.points.Add(new Vector3(max.x, min.y, max.z));
+        s.points.Add(new Vector3(max.x, max.y, min.z));
+        s.points.Add(max);
+
+        s.indexs.Add(0); s.indexs.Add(1); s.indexs.Add(2);
+        s.indexs.Add(3); s.indexs.Add(2); s.indexs.Add(1);
+
+        s.indexs.Add(4); s.indexs.Add(6); s.indexs.Add(5);
+        s.indexs.Add(5); s.indexs.Add(6); s.indexs.Add(7);
+
+        s.indexs.Add(0); s.indexs.Add(4); s.indexs.Add(1);
+        s.indexs.Add(5); s.indexs.Add(1); s.indexs.Add(4);
+
+        s.indexs.Add(2); s.indexs.Add(3); s.indexs.Add(6);
+        s.indexs.Add(3); s.indexs.Add(7); s.indexs.Add(6);
+
+        s.indexs.Add(0); s.indexs.Add(2); s.indexs.Add(4);
+        s.indexs.Add(2); s.indexs.Add(6); s.indexs.Add(4);
+
+        s.indexs.Add(1); s.indexs.Add(5); s.indexs.Add(3);
+        s.indexs.Add(5); s.indexs.Add(7); s.indexs.Add(3);
 
         return s;
     }

@@ -224,16 +224,16 @@ public class GameGrid
 
         dir = dir.normalized;
 
-        Bounds gridBounds = new Bounds();
-        gridBounds.min = new Vector3(m_grid.MinX(), m_grid.MinY() - 0.5f, m_grid.MinZ());
-        gridBounds.size = new Vector3(m_grid.Width(), m_grid.Height(), m_grid.Depth());
+        Vector3 min = new Vector3(m_grid.MinX() - 0.5f, m_grid.MinY() - 1.0f, m_grid.MinZ() - 0.5f);
+        Vector3 size = new Vector3(m_grid.Width(), m_grid.Height(), m_grid.Depth());
+        Bounds gridBounds = new Bounds(min + size / 2, size);
 
         Vector3 gridHitStart, gridHitEnd, gridNormal;
-        var gridShape = Collisions.GetShape(gridBounds);
+        var gridShape = Collisions.GetFullShape(gridBounds);
         bool hitGrid = Collisions.Raycast(gridShape, pos, dir, out gridHitStart, out gridNormal);
         if (!hitGrid)
             return false;
-
+        
         Vector3 endPos = gridHitStart + dir * (gridBounds.size.x + gridBounds.size.y + gridBounds.size.z);
         hitGrid = Collisions.Raycast(gridShape, endPos, -dir, out gridHitEnd, out gridNormal);
         if (!hitGrid) //must not happen
@@ -249,7 +249,7 @@ public class GameGrid
             Vector3 start = gridHitStart + dir * step * i / nbStep;
             Vector3 end = gridHitStart + dir * step * (i + 1) / nbStep;
 
-            bool localHit = RaycastStep(start, end, out hit, out normal);
+            bool localHit = RaycastStep(pos, start, end, out hit, out normal);
             if (localHit)
                 return true;
         }
@@ -257,7 +257,7 @@ public class GameGrid
         return false;
     }
 
-    bool RaycastStep(Vector3 start, Vector3 end, out Vector3 hit, out Vector3 normal)
+    bool RaycastStep(Vector3 realStart, Vector3 start, Vector3 end, out Vector3 hit, out Vector3 normal)
     {
         hit = Vector3.zero;
         normal = Vector3.zero;
@@ -289,7 +289,7 @@ public class GameGrid
                     var b = GetBounds(new Vector3Int(i, j, k));
 
                     Vector3 localHit, localNormal;
-                    bool haveHit = Collisions.Raycast(Collisions.GetShape(b), start, dir, out localHit, out localNormal);
+                    bool haveHit = Collisions.Raycast(Collisions.GetFullShape(b), realStart, dir, out localHit, out localNormal);
                     if(haveHit)
                     {
                         float d = (localHit - start).sqrMagnitude;

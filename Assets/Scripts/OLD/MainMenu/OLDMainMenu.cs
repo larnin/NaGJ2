@@ -51,8 +51,8 @@ public class OLDMainMenu : MonoBehaviour
 #if UNITY_WEBGL
             Destroy(m_QuitButton);
 #else
-            var button = m_QuitButton.GetComponent<ButtonHit>();
-            button?.onClick.AddListener(OnQuitClick);
+            //var button = m_QuitButton.GetComponent<ButtonHit>();
+            //button?.onClick.AddListener(OnQuitClick);
 #endif
         }
     }

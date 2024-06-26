@@ -680,6 +680,15 @@ public class GameBeltSystem
         }
     }
 
+    public void Reset()
+    {
+        m_nextID = 1;
+
+        m_containers.Clear();
+        m_beltNodes.Clear();
+        m_resources.Clear();
+    }
+
     class BeltMove
     {
         public Resource resource;

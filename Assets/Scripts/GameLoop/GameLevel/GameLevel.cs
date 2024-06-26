@@ -42,6 +42,13 @@ public class GameLevel
         m_beltSystem.Save(doc);
     }
 
+    public void Reset()
+    {
+        m_grid.Reset();
+        m_buildingList.Reset();
+        m_beltSystem.Reset();
+    }
+
     public void Process(float deltaTime)
     {
         if (Gamestate.instance.paused)

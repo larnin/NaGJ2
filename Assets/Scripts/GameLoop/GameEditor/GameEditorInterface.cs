@@ -14,7 +14,7 @@ public  class GameEditorInterface : MonoBehaviour
     [SerializeField] TMP_Text m_filename;
     [SerializeField] string menuName;
 
-    GameLevel m_level;
+    GameLevel m_level = new GameLevel();
 
     SubscriberList m_subscriberList = new SubscriberList();
 
@@ -30,6 +30,7 @@ public  class GameEditorInterface : MonoBehaviour
 
         m_subscriberList.Subscribe();
 
+        m_level.active = true;
     }
 
     private void OnDestroy()
@@ -39,6 +40,11 @@ public  class GameEditorInterface : MonoBehaviour
 
     private void Start()
     {
+        Event<GameSetCurrentLevelEvent>.Broadcast(new GameSetCurrentLevelEvent(m_level));
+
+        Event<GameResetEvent>.Broadcast(new GameResetEvent());
+        Event<GameLoadEvent>.Broadcast(new GameLoadEvent());
+
         OnOpenListClick(-1);
         UpdateFilename();
     }
@@ -141,6 +147,8 @@ public  class GameEditorInterface : MonoBehaviour
     {
         m_currentPath = "";
         UpdateFilename();
+
+        m_level.Reset();
 
         Event<GameResetEvent>.Broadcast(new GameResetEvent());
         Event<GameLoadEvent>.Broadcast(new GameLoadEvent());

@@ -90,8 +90,8 @@ class GameEditorCursor : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && !Utility.MouseOverUI())
             Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.rightClick));
         
-        //DebugDrawPos(m_pos, Color.red);
-        //DebugDrawPos(m_blockPos, Color.blue);
+        DebugDrawPos(m_pos, Color.red);
+        DebugDrawPos(m_blockPos, Color.blue);
     }
 
     void DebugDrawPos(Vector3Int pos, Color c)
@@ -112,7 +112,13 @@ class GameEditorCursor : MonoBehaviour
 
     void SetPos(Vector3 pos, Vector3 normal)
     {
-        Vector3Int posInt = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
+        normal.Normalize();
+
+        var size = Global.instance.allBlocks.blockSize;
+        pos -= normal * 0.5f;
+        Vector3Int posInt = new Vector3Int(Mathf.RoundToInt(pos.x * size.x), Mathf.RoundToInt(pos.y * size.y), Mathf.RoundToInt(pos.z * size.z));
+
+        DebugDraw.Sphere(pos, 0.25f, Color.red);
 
         Vector3 absNormal = new Vector3(Mathf.Abs(normal.x), Mathf.Abs(normal.y), Mathf.Abs(normal.z));
         Vector3Int dir = Vector3Int.zero;

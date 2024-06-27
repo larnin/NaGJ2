@@ -112,13 +112,15 @@ class GameEditorCursor : MonoBehaviour
 
     void SetPos(Vector3 pos, Vector3 normal)
     {
-        normal.Normalize();
-
         var size = Global.instance.allBlocks.blockSize;
-        pos -= normal * 0.5f;
-        Vector3Int posInt = new Vector3Int(Mathf.RoundToInt(pos.x * size.x), Mathf.RoundToInt(pos.y * size.y), Mathf.RoundToInt(pos.z * size.z));
+        pos.x /= size.x;
+        pos.y /= size.y;
+        pos.z /= size.z;
 
-        DebugDraw.Sphere(pos, 0.25f, Color.red);
+        normal.x /= size.x;
+        normal.y /= size.y;
+        normal.z /= size.z;
+        normal.Normalize();
 
         Vector3 absNormal = new Vector3(Mathf.Abs(normal.x), Mathf.Abs(normal.y), Mathf.Abs(normal.z));
         Vector3Int dir = Vector3Int.zero;
@@ -129,6 +131,10 @@ class GameEditorCursor : MonoBehaviour
             dir.y = normal.y < 0 ? -1 : 1;
         else dir.z = normal.z < 0 ? -1 : 1;
 
+        pos.y += 0.5f;
+        pos -= normal * 0.5f;
+        Vector3Int posInt = new Vector3Int(Mathf.RoundToInt(pos.x * size.x), Mathf.RoundToInt(pos.y * size.y), Mathf.RoundToInt(pos.z * size.z));
+        
         m_pos = posInt;
         m_blockPos = posInt + dir;
     }

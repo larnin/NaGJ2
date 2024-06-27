@@ -159,7 +159,7 @@ public class GameEditorCursorVisual : MonoBehaviour
         if (building != null)
             return;
 
-        BlockDataEx.SetBlock(BlockType.air, pos);
+        BlockDataEx.SetBlock(getLevel.level, BlockType.air, pos);
     }
 
     void OnClickForBuilding(EditorCursorClickType click, Vector3Int pos, Vector3Int blockPos)

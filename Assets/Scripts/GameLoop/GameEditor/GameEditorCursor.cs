@@ -89,18 +89,6 @@ class GameEditorCursor : MonoBehaviour
             Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.leftClick));
         if (Input.GetMouseButtonDown(1) && !Utility.MouseOverUI())
             Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.rightClick));
-        
-        DebugDrawPos(m_pos, Color.red);
-        DebugDrawPos(m_blockPos, Color.blue);
-    }
-
-    void DebugDrawPos(Vector3Int pos, Color c)
-    {
-        var size = Global.instance.allBlocks.blockSize;
-
-        Vector3 realPos = new Vector3(pos.x * size.x, (pos.y - 0.5f) * size.y, pos.z * size.z);
-
-        DebugDraw.CentredBox(realPos, size, c);
     }
 
     void GetStatus(EditorCurstorGetPosEvent e)
@@ -133,7 +121,7 @@ class GameEditorCursor : MonoBehaviour
 
         pos.y += 0.5f;
         pos -= normal * 0.5f;
-        Vector3Int posInt = new Vector3Int(Mathf.RoundToInt(pos.x * size.x), Mathf.RoundToInt(pos.y * size.y), Mathf.RoundToInt(pos.z * size.z));
+        Vector3Int posInt = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
         
         m_pos = posInt;
         m_blockPos = posInt + dir;

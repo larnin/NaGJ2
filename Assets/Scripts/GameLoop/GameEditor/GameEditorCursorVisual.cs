@@ -299,7 +299,7 @@ public class GameEditorCursorVisual : MonoBehaviour
         if (m_buildingCursor != null)
             Destroy(m_buildingCursor);
 
-        var prefab = BuildingDataEx.GetBaseBuildingPrefab(m_buildingType);
+        var prefab = BuildingDataEx.GetBaseBuildingPrefab(m_buildingType, m_buildingLevel);
 
         m_buildingCursor = Instantiate(prefab);
         m_buildingCursor.transform.parent = transform;
@@ -357,7 +357,7 @@ public class GameEditorCursorVisual : MonoBehaviour
                             return false;
 
                         var eBuilding = getLevel.level.buildingList.GetBuildingAt(new Vector3Int(i, j, k));
-                        if (eBuilding == null)
+                        if (eBuilding != null)
                             return false;
                     }
 

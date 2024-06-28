@@ -67,7 +67,7 @@ public class GameBuildingListView : MonoBehaviour
         GameObject oldInstance = null;
         m_buildings.TryGetValue(e.ID, out oldInstance);
         BuildingBase oldBuilding = null;
-        if (m_buildings != null)
+        if (oldInstance != null)
             oldBuilding = oldInstance.GetComponent<GameBuildingView>()?.GetBuildng();
         var oldInfos = oldBuilding == null ? null : oldBuilding.GetInfos();
 
@@ -94,21 +94,31 @@ public class GameBuildingListView : MonoBehaviour
                 {
                     for (int k = -1; k <= 1; k++)
                     {
-                        if (Mathf.Abs(i) + Mathf.Abs(j) + Mathf.Abs(k) > 2)
+                        if (Mathf.Abs(i) + Mathf.Abs(j) + Mathf.Abs(k) != 1)
                             continue;
 
                         Vector3Int currentPos = new Vector3Int(pos.x + i, pos.y + j, pos.z + k);
-                        UpdateRender(currentPos);
+                        UpdateRender(m_level.buildingList.GetBuildingIndexAt(currentPos));
                     }
                 }
             }
         }
-        else UpdateRender(pos);
+
+        if (e.type == ElementUpdateType.removed)
+            RemoveRender(e.ID);
+        else UpdateRender(m_level.buildingList.GetBuildingIndexAt(pos));
     }
 
-    void UpdateRender(Vector3Int pos)
+
+    void RemoveRender(int ID)
     {
-        UpdateRender(m_level.buildingList.GetBuildingIndexAt(pos));
+        GameObject oldInstance = null;
+        m_buildings.TryGetValue(ID, out oldInstance);
+
+        if (oldInstance != null)
+            Destroy(oldInstance);
+
+        m_buildings.Remove(ID);
     }
 
     void UpdateRender(int buildingIndex)

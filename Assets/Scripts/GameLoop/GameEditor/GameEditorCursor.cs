@@ -123,7 +123,7 @@ class GameEditorCursor : MonoBehaviour
         pos -= normal * 0.5f;
         Vector3Int posInt = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
         
-        m_pos = posInt;
-        m_blockPos = posInt + dir;
+        m_pos = posInt + dir;
+        m_blockPos = posInt;
     }
 }

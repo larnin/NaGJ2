@@ -189,6 +189,8 @@ public class GameBuildingList
             }
         }
 
+        m_idDictionary.Remove(ID);
+
         //move next keys
         foreach (var k in m_idDictionary.Keys.ToList())
         {

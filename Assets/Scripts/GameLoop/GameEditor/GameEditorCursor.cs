@@ -64,9 +64,9 @@ class GameEditorCursor : MonoBehaviour
                 m_blockPos = posInt;
             }
         }
-        else if (hitGrid)
+        else if (!hitBuildings)
             SetPos(posGrid, normalGrid);
-        else if (hitBuildings)
+        else if (!hitGrid)
         {
             SetPos(posBuildings, normalBuildings);
             m_buildingID = buildingID;

@@ -373,7 +373,7 @@ public class GameBuildingList
             var infos = b.GetInfos();
 
             var boundint = BuildingDataEx.GetBuildingBounds(infos.buildingType, infos.pos, infos.rotation, infos.level);
-            var bounds = new Bounds(new Vector3(boundint.center.x * size.x, (boundint.center.y - 0.5f) * size.y, boundint.center.z * size.z),
+            var bounds = new Bounds(new Vector3((boundint.center.x - 0.5f) * size.x, (boundint.center.y - 1.0f) * size.y, (boundint.center.z - 0.5f) * size.z),
                 new Vector3(boundint.size.x * size.x, boundint.size.y * size.y, boundint.size.z * size.z));
 
             Vector3 localpos, localNormal;

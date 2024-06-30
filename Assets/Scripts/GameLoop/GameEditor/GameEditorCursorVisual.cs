@@ -198,7 +198,7 @@ public class GameEditorCursorVisual : MonoBehaviour
         var building = getLevel.level.buildingList.GetBuildingAt(pos);
         if (building == null)
         {
-            building = getLevel.level.buildingList.GetBuildingAt(pos);
+            building = getLevel.level.buildingList.GetBuildingAt(blockPos);
             if (building == null)
                 return false;
         }

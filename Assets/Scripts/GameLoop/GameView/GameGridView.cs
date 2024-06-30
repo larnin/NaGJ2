@@ -84,8 +84,8 @@ public class GameGridView : MonoBehaviour
                     if (prefab == null)
                         continue;
 
-                    var obj = InstantiateAndPlaceBlock(prefab, rot, pos);
-                    m_grid.Set(obj, pos.x, pos.y, pos.z);
+                    var obj = InstantiateAndPlaceBlock(prefab, rot, new Vector3Int(i, j, k));
+                    m_grid.Set(obj, i, j, k);
                 }
             }
         }

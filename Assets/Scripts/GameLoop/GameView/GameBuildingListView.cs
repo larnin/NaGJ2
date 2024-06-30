@@ -60,6 +60,13 @@ public class GameBuildingListView : MonoBehaviour
     {
         ResetData();
 
+        if (m_level == null)
+            return;
+
+        int nbBuilding = m_level.buildingList.GetBuildingNb();
+
+        for(int i = 0; i < nbBuilding; i++)
+            UpdateRender(i);
     }
 
     void OnBuildingUpdate(BuildingUpdateEvent e)

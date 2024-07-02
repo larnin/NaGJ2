@@ -1069,6 +1069,19 @@ public static class BlockDataEx
         return type == BlockType.ground;
     }
 
+    public static bool CanDrill(BlockType type)
+    {
+        switch(type)
+        {
+            case BlockType.ironOre:
+            case BlockType.copperOre:
+            case BlockType.crystal:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public static Sprite GetVariantSprite(List<SimpleBlockVariant> variants, int value)
     {
         if (value >= variants.Count || value == 0)

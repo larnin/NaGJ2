@@ -27,9 +27,8 @@ public class BuildingBase
         m_level = level;
     }
 
-    public virtual void Init() { }
     public virtual void Start() { }
-    public virtual void Destroy() { }
+    public virtual void Destroy(bool fromReset) { }
     public virtual void Process(float deltaTime) { }
 
     public virtual void Load(JsonObject obj) 
@@ -78,6 +77,10 @@ public class BuildingBase
     {
         switch(infos.buildingType)
         {
+            case BuildingType.SmallMiningCenter:
+            case BuildingType.MediumMiningCenter:
+            case BuildingType.BigMiningCenter:
+                return new BuildingMiningCenter(infos, level);
             default:
                 return new BuildingBase(infos, level);
         }

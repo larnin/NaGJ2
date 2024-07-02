@@ -106,7 +106,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 116157187859362625}
-  - component: {fileID: 8459137976395486587}
   m_Layer: 9
   m_Name: BigMiningCenter
   m_TagString: Untagged
@@ -130,32 +129,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8459137976395486587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3619161916175125052}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f3f34bb2eca15445a4f89838ac5d183, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_containers:
-  - id: 0
-    index: 0
-    direction: 1
-    filter:
-      type: 0
-      resources: 
-    count: 5
-  m_portList:
-  - pos: {x: 1, y: 0, z: 1}
-    rotation: 1
-    direction: 1
-    containerIndex: 0
-  - pos: {x: 0, y: 0, z: 1}
-    rotation: 1
-    direction: 1
-    containerIndex: 0

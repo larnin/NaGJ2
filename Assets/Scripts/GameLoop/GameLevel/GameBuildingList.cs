@@ -103,6 +103,9 @@ public class GameBuildingList
 
     public void Reset()
     {
+        foreach (var b in m_buildings)
+            b.Destroy(true);
+
         m_buildings.Clear();
         m_posDictionary.Clear();
         m_idDictionary.Clear();
@@ -205,6 +208,8 @@ public class GameBuildingList
             if (value > index)
                 m_posDictionary[k] = value - 1;
         }
+
+        building.Destroy(false);
 
         m_level.OnBuildingUpdate(ID, ElementUpdateType.removed);
 

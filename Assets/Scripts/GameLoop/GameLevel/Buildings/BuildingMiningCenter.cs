@@ -4,10 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using NRand;
 
 public class BuildingMiningCenter : BuildingBase
 {
-    List<int> m_drillsID = new List<int>();
+    class DrillInfo
+    {
+        public int drillID;
+        public BlockType block;
+    }
+
+    List<DrillInfo> m_drillsID = new List<DrillInfo>();
+
+    float m_timer = 0;
 
     public BuildingMiningCenter(BuildingInfos infos, GameLevel level) : base(infos, level)
     {
@@ -30,7 +39,11 @@ public class BuildingMiningCenter : BuildingBase
 
                 int value = elt.Int();
                 if (value > 0)
-                    m_drillsID.Add(value);
+                {
+                    DrillInfo d = new DrillInfo();
+                    d.drillID = value;
+                    m_drillsID.Add(d);
+                }
             }
         }
     }
@@ -43,12 +56,25 @@ public class BuildingMiningCenter : BuildingBase
         obj.AddElement("Drills", array);
 
         foreach (var d in m_drillsID)
-            array.Add(d);
+            array.Add(d.drillID);
     }
 
     public override void Start()
     {
         base.Start();
+
+        for(int i = 0; i < m_drillsID.Count; i++)
+        {
+            var d = m_drillsID[i];
+            var b = m_level.buildingList.GetBuilding(d.drillID);
+            if(b != null)
+                d.block = m_level.grid.GetBlockID(b.GetInfos().pos);
+            else
+            {
+                m_drillsID.RemoveAt(i);
+                i--;
+            }
+        }
 
         var points = GetDrillsPos();
 
@@ -156,13 +182,13 @@ public class BuildingMiningCenter : BuildingBase
 
         foreach(var d in m_drillsID)
         {
-            var drill = m_level.buildingList.GetBuilding(d);
+            var drill = m_level.buildingList.GetBuilding(d.drillID);
             if (drill == null)
                 continue;
 
             removedDrills.Add(drill.GetInfos().pos);
 
-            m_level.buildingList.Remove(d);
+            m_level.buildingList.Remove(d.drillID);
         }
 
         int nbBuildings = m_level.buildingList.GetBuildingNb();
@@ -214,7 +240,11 @@ public class BuildingMiningCenter : BuildingBase
         var drill = BuildingBase.Create(GenerateDrill(pos), m_level);
         m_level.buildingList.Add(drill);
 
-        m_drillsID.Add(drill.GetID());
+        var infos = new DrillInfo();
+        infos.drillID = drill.GetID();
+        infos.block = b.id;
+
+        m_drillsID.Add(infos);
 
         return true;
     }
@@ -223,6 +253,71 @@ public class BuildingMiningCenter : BuildingBase
     {
         base.Process(deltaTime);
 
-        //todo
+        if (m_drillsID.Count == 0)
+            return;
+
+        float efficiency = 1;
+        if (m_infos.buildingType == BuildingType.SmallMiningCenter)
+            efficiency = Global.instance.allBuildings.smallMiningCenter.efficiency;
+        else if (m_infos.buildingType == BuildingType.MediumMiningCenter)
+            efficiency = Global.instance.allBuildings.mediumMiningCenter.efficiency;
+        else if (m_infos.buildingType == BuildingType.BigMiningCenter)
+            efficiency = Global.instance.allBuildings.bigMiningCenter.efficiency;
+
+        float speed = 0;
+        bool allSames = true;
+        foreach(var d in m_drillsID)
+        {
+            var collect = BlockDataEx.GetCollectData(d.block);
+            if (collect != null)
+                speed += collect.speed;
+            if (d.block != m_drillsID[0].block)
+                allSames = false;
+        }
+
+        m_timer += deltaTime * speed * efficiency;
+
+        if (allSames)
+        {
+            while(m_timer >= 1)
+            {
+                m_timer--;
+                AddResourceFromBlock(m_drillsID[0].block);
+            }
+        }
+        else
+        {
+            var distrib = new UniformFloatDistribution(0, speed);
+            var rand = new StaticRandomGenerator<MT19937>();
+
+            while (m_timer >= 1)
+            {
+                m_timer--;
+
+                float weight = distrib.Next(rand);
+
+                foreach (var d in m_drillsID)
+                {
+                    var collect = BlockDataEx.GetCollectData(d.block);
+                    if (collect != null)
+                        weight -= collect.speed;
+
+                    if (weight <= 0)
+                    {
+                        AddResourceFromBlock(d.block);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    void AddResourceFromBlock(BlockType type)
+    {
+        var collect = BlockDataEx.GetCollectData(type);
+        if (collect == null)
+            return;
+
+        m_level.beltSystem.ContainerAddResource(collect.resource, 1, m_ID, 0);
     }
 }

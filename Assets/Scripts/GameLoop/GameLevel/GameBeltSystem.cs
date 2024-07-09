@@ -185,7 +185,7 @@ public class GameBeltSystem
             obj.AddElement("Index", containerIndex);
 
             var resourcesArray = new JsonArray();
-            obj.AddElement("Resources", resourcesArray);
+            obj.AddElement("BeltResources", resourcesArray);
 
             foreach(var r in resources)
             {
@@ -202,7 +202,7 @@ public class GameBeltSystem
             buildingID = obj.GetElement("ID")?.Int() ?? 0;
             containerIndex = obj.GetElement("Index")?.Int() ?? 0;
 
-            var resourcesElt = obj.GetElement("Resources");
+            var resourcesElt = obj.GetElement("BeltResources");
             if(resourcesElt != null && resourcesElt.IsJsonArray())
             {
                 var resourcesArray = resourcesElt.JsonArray();

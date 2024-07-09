@@ -137,6 +137,7 @@ public class MiningCenterData
     public int mineDistance = 1;
     public List<BuildingContainerData> containers;
     public Sprite sprite;
+    public float efficiency;
 }
 
 [Serializable]

@@ -81,6 +81,8 @@ public class BuildingBase
             case BuildingType.MediumMiningCenter:
             case BuildingType.BigMiningCenter:
                 return new BuildingMiningCenter(infos, level);
+            case BuildingType.OperationCenter:
+                return new BuildingOperationCenter(infos, level);
             default:
                 return new BuildingBase(infos, level);
         }

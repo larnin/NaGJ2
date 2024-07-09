@@ -36,6 +36,13 @@ public struct SimpleBlock
 }
 
 [Serializable]
+public class BlockCollectResourceData
+{
+    public ResourceType resource;
+    public float speed;
+}
+
+[Serializable]
 public class BlockLayerData
 {
     public GameObject solo;
@@ -87,6 +94,7 @@ public class LakeBlockData
     public GameObject lakeIn;
     public GameObject lakeOut;
     public Sprite sprite;
+    public BlockCollectResourceData collect;
 }
 
 [Serializable]
@@ -107,6 +115,7 @@ public class RiverBlockData
     public int waterfallSize = 5;
     public Sprite riverSprite;
     public Sprite waterfallSprite;
+    public BlockCollectResourceData collect;
 }
 
 [Serializable]
@@ -138,6 +147,13 @@ public class SimpleBlockData
 }
 
 [Serializable]
+public class ResourceBlockData
+{
+    public List<SimpleBlockVariant> variants = new List<SimpleBlockVariant>();
+    public BlockCollectResourceData collect;
+}
+
+[Serializable]
 public class AllBlocks
 {
     public Vector3 blockSize = Vector3.one;
@@ -147,8 +163,8 @@ public class AllBlocks
     public RiverBlockData river;
     public RoadBlockData road;
     public SimpleBlockData grass;
-    public SimpleBlockData ironOre;
-    public SimpleBlockData copperOre;
-    public SimpleBlockData crystal;
     public SimpleBlockData tree;
+    public ResourceBlockData ironOre;
+    public ResourceBlockData copperOre;
+    public ResourceBlockData crystal;
 }

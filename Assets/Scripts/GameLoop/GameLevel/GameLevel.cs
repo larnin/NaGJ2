@@ -16,6 +16,9 @@ public class GameLevel
     GameBeltSystem m_beltSystem;
     public GameBeltSystem beltSystem { get { return m_beltSystem; } }
 
+    GameLevelResources m_resources;
+    public GameLevelResources resources { get { return m_resources; } }
+
     bool m_active;
     public bool active { get { return m_active; } set { m_active = value; } }
 
@@ -24,6 +27,7 @@ public class GameLevel
         m_grid = new GameGrid(this);
         m_buildingList = new GameBuildingList(this);
         m_beltSystem = new GameBeltSystem(this);
+        m_resources = new GameLevelResources();
     }
 
     public void Load(JsonDocument doc)
@@ -31,6 +35,7 @@ public class GameLevel
         m_grid.Load(doc);
         m_buildingList.Load(doc);
         m_beltSystem.Load(doc);
+        m_resources.Load(doc);
 
         m_beltSystem.AfterLoad();
     }
@@ -40,6 +45,7 @@ public class GameLevel
         m_grid.Save(doc);
         m_buildingList.Save(doc);
         m_beltSystem.Save(doc);
+        m_resources.Save(doc);
     }
 
     public void Reset()
@@ -47,6 +53,7 @@ public class GameLevel
         m_grid.Reset();
         m_buildingList.Reset();
         m_beltSystem.Reset();
+        m_resources.Reset();
     }
 
     public void Process(float deltaTime)

@@ -1082,6 +1082,18 @@ public static class BlockDataEx
         }
     }
 
+    public static bool CanPump(BlockType type)
+    {
+        switch(type)
+        {
+            case BlockType.river:
+            case BlockType.lake:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public static Sprite GetVariantSprite(List<SimpleBlockVariant> variants, int value)
     {
         if (value >= variants.Count || value == 0)
@@ -1118,6 +1130,27 @@ public static class BlockDataEx
                 return GetVariantSprite(blocks.crystal.variants, value);
             case BlockType.tree:
                 return GetVariantSprite(blocks.tree.variants, value);
+        }
+
+        return null;
+    }
+
+    public static BlockCollectResourceData GetCollectData(BlockType type)
+    {
+        var blocks = Global.instance.allBlocks;
+
+        switch(type)
+        {
+            case BlockType.river:
+                return blocks.river.collect;
+            case BlockType.lake:
+                return blocks.lake.collect;
+            case BlockType.ironOre:
+                return blocks.ironOre.collect;
+            case BlockType.copperOre:
+                return blocks.copperOre.collect;
+            case BlockType.crystal:
+                return blocks.crystal.collect;
         }
 
         return null;

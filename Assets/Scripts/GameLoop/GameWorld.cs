@@ -133,6 +133,10 @@ public class GameWorld
                 m_worlds.Remove(nextWorld);
             }
         }
+    }
 
+    public GameOneWorld GetCurrentLevel()
+    {
+        return m_currentWorld;
     }
 }

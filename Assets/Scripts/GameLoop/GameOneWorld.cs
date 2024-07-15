@@ -13,6 +13,7 @@ public class GameOneWorld
     OneLevelDatas m_levelInitialData;
 
     GameLevel m_level = new GameLevel();
+    public GameLevel level { get { return m_level; } }
 
     bool m_visited = false;
     float m_time = 0;

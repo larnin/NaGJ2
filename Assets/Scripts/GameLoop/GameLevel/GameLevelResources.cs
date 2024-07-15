@@ -79,6 +79,30 @@ public class GameLevelResources
         }
     }
 
+    public int GetResourceNb()
+    {
+        return m_resources.Count;
+    }
+
+    public ResourceType GetResourceTypeFromIndex(int index)
+    {
+        if (index < 0 || index >= m_resources.Count)
+            return ResourceType.Iron;
+        return m_resources[index].type;
+    }
+
+    public float GetResourceNbFromIndex(int index)
+    {
+        if (index < 0 || index >= m_resources.Count)
+            return 0;
+        return m_resources[index].count;
+    }
+
+    public int GetResourceNbIntFromIndex(int index)
+    {
+        return (int)GetResourceNbFromIndex(index);
+    }
+
     public float GetNb(ResourceType type)
     {
         foreach(var r in m_resources)

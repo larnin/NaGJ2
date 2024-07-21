@@ -54,14 +54,16 @@ public class CursorPlaceBuilding : CursorBase
 
         m_buildingInstance = Instantiate(prefab);
         m_buildingInstance.transform.parent = transform;
-
-        var colliders = m_buildingInstance.GetComponentsInChildren<Collider>();
-        foreach (var col in colliders)
-            col.enabled = false;
     }
 
     bool CanPlaceAt(Vector3Int pos)
     {
+        GameGetCurrentLevelEvent level = new GameGetCurrentLevelEvent();
+        Event<GameGetCurrentLevelEvent>.Broadcast(level);
+
+        if (level.level == null)
+            return false;
+
         if (m_buildingType == BuildingType.Belt)
             return CanPlaceBelt(pos);
         else if (m_buildingType == BuildingType.Pipe)
@@ -76,22 +78,19 @@ public class CursorPlaceBuilding : CursorBase
                 {
                     for (int j = bounds.min.y; j < bounds.max.y; j++)
                     {
-                        GetBlockEvent eBlock = new GetBlockEvent(new Vector3Int(i, j, k));
-                        Event<GetBlockEvent>.Broadcast(eBlock);
+                        var block = level.level.grid.GetBlock(new Vector3Int(i, j, k));
 
-                        if (eBlock.type != BlockType.air)
+                        if (block.id != BlockType.air)
                             return false;
 
-                        GetBuildingAtEvent eBuilding = new GetBuildingAtEvent(new Vector3Int(i, j, k));
-                        Event<GetBuildingAtEvent>.Broadcast(eBuilding);
-                        if (eBuilding.element != null)
+                        var building = level.level.buildingList.GetBuildingAt(new Vector3Int(i, j, k));
+                        if (building != null)
                             return false;
                     }
 
-                    GetBlockEvent eGround = new GetBlockEvent(new Vector3Int(i, bounds.min.y - 1, k));
-                    Event<GetBlockEvent>.Broadcast(eGround);
+                    var ground = level.level.grid.GetBlock(new Vector3Int(i, bounds.min.y - 1, k));
 
-                    if (!BlockDataEx.CanPlaceBuildingOnBlock(eGround.type))
+                    if (!BlockDataEx.CanPlaceBuildingOnBlock(ground.id))
                         return false;
                 }
             }
@@ -101,18 +100,20 @@ public class CursorPlaceBuilding : CursorBase
 
     bool CanPlaceBelt(Vector3Int pos)
     {
-        var currentBlock = new GetBlockEvent(pos);
-        Event<GetBlockEvent>.Broadcast(currentBlock);
-        if (currentBlock.type != BlockType.air)
+        GameGetCurrentLevelEvent level = new GameGetCurrentLevelEvent();
+        Event<GameGetCurrentLevelEvent>.Broadcast(level);
+        if (level.level == null)
             return false;
 
-        var downBlock = new GetBlockEvent(new Vector3Int(pos.x, pos.y - 1, pos.z));
-        Event<GetBlockEvent>.Broadcast(downBlock);
+        var currentBlock = level.level.grid.GetBlock(pos);
+        if (currentBlock.id != BlockType.air)
+            return false;
 
-        if (BlockDataEx.CanPlaceBuildingOnBlock(downBlock.type))
+        var downBlock = level.level.grid.GetBlock(new Vector3Int(pos.x, pos.y - 1, pos.z));
+        if (BlockDataEx.CanPlaceBuildingOnBlock(downBlock.id))
             return true;
 
-        if (downBlock.type == BlockType.groundSlope)
+        if (downBlock.id == BlockType.groundSlope)
         {
             var blockRot = BlockDataEx.ExtractDataRotation(downBlock.data);
             return blockRot == m_rotation || blockRot == RotationEx.Add(m_rotation, Rotation.rot_180);
@@ -123,31 +124,33 @@ public class CursorPlaceBuilding : CursorBase
 
     bool CanPlacePipe(Vector3Int pos)
     {
-        var currentBlock = new GetBlockEvent(pos);
-        Event<GetBlockEvent>.Broadcast(currentBlock);
-        if (currentBlock.type != BlockType.air)
+        GameGetCurrentLevelEvent level = new GameGetCurrentLevelEvent();
+        Event<GameGetCurrentLevelEvent>.Broadcast(level);
+        if (level.level == null)
             return false;
 
-        var downBlock = new GetBlockEvent(new Vector3Int(pos.x, pos.y - 1, pos.z));
-        Event<GetBlockEvent>.Broadcast(downBlock);
+        var currentBlock = level.level.grid.GetBlock(pos);
+        if (currentBlock.id != BlockType.air)
+            return false;
 
-        if (BlockDataEx.CanPlaceBuildingOnBlock(downBlock.type))
+        var downBlock = level.level.grid.GetBlock(new Vector3Int(pos.x, pos.y - 1, pos.z));
+        if (BlockDataEx.CanPlaceBuildingOnBlock(downBlock.id))
             return true;
 
-        GetNearPipesEvent pipes = new GetNearPipesEvent(pos);
-        Event<GetNearPipesEvent>.Broadcast(pipes);
+        NearMatrix3<bool> pipes = new NearMatrix3<bool>();
+        level.level.buildingList.GetNearPipes(pos, pipes);
 
-        if (pipes.matrix.Get(0, 1, 0))
+        if (pipes.Get(0, 1, 0))
             return true;
-        if (pipes.matrix.Get(0, -1, 0))
+        if (pipes.Get(0, -1, 0))
             return true;
-        if (pipes.matrix.Get(1, 0, 0))
+        if (pipes.Get(1, 0, 0))
             return true;
-        if (pipes.matrix.Get(-1, 0, 0))
+        if (pipes.Get(-1, 0, 0))
             return true;
-        if (pipes.matrix.Get(0, 0, 1))
+        if (pipes.Get(0, 0, 1))
             return true;
-        if (pipes.matrix.Get(0, 0, -1))
+        if (pipes.Get(0, 0, -1))
             return true;
 
         return false;
@@ -181,14 +184,24 @@ public class CursorPlaceBuilding : CursorBase
 
     void PlaceBuilding()
     {
+        GameGetCurrentLevelEvent level = new GameGetCurrentLevelEvent();
+        Event<GameGetCurrentLevelEvent>.Broadcast(level);
+        if (level.level == null)
+            return;
+
         var pos = GetCursorPosition();
         if (!CanPlaceAt(pos))
             return;
         if (!HaveResources())
             return;
 
-        PlaceBuildingEvent buildingData = new PlaceBuildingEvent(pos, m_buildingType, m_level, m_rotation, Team.player);
-        Event<PlaceBuildingEvent>.Broadcast(buildingData);
+        BuildingInfos infos = new BuildingInfos();
+        infos.team = Team.player;
+        infos.level = m_level;
+        infos.pos = pos;
+        infos.rotation = m_rotation;
+        var building = BuildingBase.Create(infos, level.level);
+        level.level.buildingList.Add(building);
     }
 
     bool HaveResources()

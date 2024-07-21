@@ -19,18 +19,14 @@ public class CursorSelect : CursorBase
         public SelectedType selectedType;
         public int selectedID = 0;
         public GameObject cursor = null;
-        public Vector3 cursorOffset = Vector3.zero;
-        public GameObject selectedObject = null;
     }
 
     class NewSelectedElement
     {
         public SelectedType selectedType;
         public int selectedID = 0;
-        public GameObject selectedObject = null;
         public Vector3 selectionScale = Vector3.zero;
         public bool alreadyInSelection = false;
-        public Vector3 cursorOffset = Vector3.zero;
     }
 
     List<SelectedElement> m_selection = new List<SelectedElement>();
@@ -104,10 +100,16 @@ public class CursorSelect : CursorBase
     {
         Event<HideSelectionRectangleEvent>.Broadcast(new HideSelectionRectangleEvent());
 
-        foreach(var s in m_selection)
+        GameGetCurrentLevelEvent level = new GameGetCurrentLevelEvent();
+        Event<GameGetCurrentLevelEvent>.Broadcast(level);
+
+        if (level.level != null)
         {
-            if (s.selectedType == SelectedType.building)
-                Event<RemoveBuildingEvent>.Broadcast(new RemoveBuildingEvent(s.selectedID));
+            foreach (var s in m_selection)
+            {
+                if (s.selectedType == SelectedType.building)
+                    level.level.buildingList.Remove(s.selectedID);
+            }
         }
 
         ClearSelection();
@@ -124,25 +126,25 @@ public class CursorSelect : CursorBase
 
         Shape s = GetMouseSelectionShape();
 
-        GetBuildingNbEvent buildingNb = new GetBuildingNbEvent();
-        Event<GetBuildingNbEvent>.Broadcast(buildingNb);
+        GameGetCurrentLevelEvent level = new GameGetCurrentLevelEvent();
+        Event<GameGetCurrentLevelEvent>.Broadcast(level);
+        if (level.level == null)
+            return;
+
+        int buildingNb = level.level.buildingList.GetBuildingNb();
 
         var size = Global.instance.allBlocks.blockSize;
         
         List<NewSelectedElement> newSelectedElements = new List<NewSelectedElement>();
 
-        GetBuildingByIndexEvent buildingData = new GetBuildingByIndexEvent(0);
-        for(int i = 0; i < buildingNb.nb; i++)
+        for(int i = 0; i < buildingNb; i++)
         {
-            buildingData.index = i;
-            buildingData.element = null;
-
-            Event<GetBuildingByIndexEvent>.Broadcast(buildingData);
-
-            if (buildingData.element == null)
+            var building = level.level.buildingList.GetBuildingFromIndex(i);
+            if (building == null)
                 continue;
+            var infos = building.GetInfos();
 
-            var boundsInt = BuildingDataEx.GetBuildingBounds(buildingData.element.buildingType, buildingData.element.pos, buildingData.element.rotation, buildingData.element.level);
+            var boundsInt = BuildingDataEx.GetBuildingBounds(infos.buildingType, infos.pos, infos.rotation, infos.level);
             
             var sizeInt = boundsInt.size;
             var posInt = boundsInt.center;
@@ -154,13 +156,10 @@ public class CursorSelect : CursorBase
             if (Collisions.Intersect(s, s2))
             {
                 var element = new NewSelectedElement();
-                element.selectedObject = buildingData.element.instance;
-                var scale = BuildingDataEx.GetBuildingSize(buildingData.element.buildingType, buildingData.element.level);
+                var scale = BuildingDataEx.GetBuildingSize(infos.buildingType, infos.level);
                 element.selectionScale = new Vector3(scale.x, scale.y, scale.z);
-                element.cursorOffset = bounds.center - element.selectedObject.transform.position;
-                element.cursorOffset.y = 0;
                 element.selectedType = SelectedType.building;
-                element.selectedID = buildingData.element.ID;
+                element.selectedID = building.GetID();
                 newSelectedElements.Add(element);
             }
         }
@@ -169,7 +168,7 @@ public class CursorSelect : CursorBase
         {
             foreach(var selection in m_selection)
             {
-                if (selection.selectedObject == newSelectedElements[i].selectedObject)
+                if (selection.selectedID == newSelectedElements[i].selectedID)
                     newSelectedElements[i].alreadyInSelection = true;
             }
         }
@@ -177,20 +176,17 @@ public class CursorSelect : CursorBase
         for(int i = 0; i < m_selection.Count; i++)
         {
             bool found = false;
-            if (m_selection[i].selectedObject != null)
+            foreach (var e in newSelectedElements)
             {
-                foreach (var e in newSelectedElements)
+                if (e.selectedID == m_selection[i].selectedID)
                 {
-                    if (e.selectedObject == m_selection[i].selectedObject)
-                    {
-                        found = true;
-                        break;
-                    }
+                    found = true;
+                    break;
                 }
             }
             if (!found)
             {
-                m_selection[i].selectedObject = null;
+                m_selection[i].selectedID = 0;
                 Destroy(m_selection[i].cursor);
                 m_selection.RemoveAt(i);
                 i--;
@@ -203,12 +199,10 @@ public class CursorSelect : CursorBase
                 continue;
 
             var newSelect = new SelectedElement();
-            newSelect.selectedObject = newSelectedElements[i].selectedObject;
-
             newSelect.cursor = Instantiate(m_cursorPrefab);
+
             newSelect.cursor.transform.parent = transform;
             newSelect.cursor.transform.localScale = newSelectedElements[i].selectionScale;
-            newSelect.cursorOffset = newSelectedElements[i].cursorOffset;
             newSelect.selectedType = newSelectedElements[i].selectedType;
             newSelect.selectedID = newSelectedElements[i].selectedID;
 
@@ -260,13 +254,28 @@ public class CursorSelect : CursorBase
     
     void UpdateSelectionBox()
     {
+        GameGetCurrentLevelEvent level = new GameGetCurrentLevelEvent();
+        Event<GameGetCurrentLevelEvent>.Broadcast(level);
+
+        var size = Global.instance.allBlocks.blockSize;
+
         foreach (var e in m_selection)
         {
-            if (e.selectedObject == null)
-                return;
+            var building = level.level.buildingList.GetBuilding(e.selectedID);
+            if (building == null)
+                continue;
+            var infos = building.GetInfos();
 
-            e.cursor.transform.position = e.selectedObject.transform.position + e.cursorOffset;
-            e.cursor.transform.rotation = e.selectedObject.transform.rotation;
+            Vector3 pos = new Vector3(infos.pos.x * size.x, infos.pos.y * size.y, infos.pos.z * size.z);
+
+            var buildingbounds = BuildingDataEx.GetBuildingBounds(infos.buildingType, infos.pos, infos.rotation, infos.level);
+            if (buildingbounds.x % 2 != 0)
+                pos.x += size.x / 2;
+            if (buildingbounds.z % 2 != 0)
+                pos.y += size.z / 2;
+
+            e.cursor.transform.position = pos;
+            e.cursor.transform.rotation = RotationEx.ToQuaternion(infos.rotation);
         }
     }
 

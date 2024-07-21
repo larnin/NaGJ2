@@ -70,6 +70,9 @@ MonoBehaviour:
       lakeIn: {fileID: 3680626247911190041, guid: f7e1bcfc2bd9e0c42b6bc36107186516, type: 3}
       lakeOut: {fileID: 64746744192597758, guid: 6a4f7a28c24da6b4696b54b50616584a, type: 3}
       sprite: {fileID: 21300000, guid: f048d563bc9f43a49a19b70afc708238, type: 3}
+      collect:
+        resource: 0
+        speed: 0
     river:
       line: {fileID: 4650325058061426538, guid: 285a91a4e3a13674589a8ec9ce21832b, type: 3}
       cornerRight: {fileID: 6419804331209503673, guid: 2a9a1b1f41c4ec84484173a4a97551d9, type: 3}
@@ -86,6 +89,9 @@ MonoBehaviour:
       waterfallSize: 5
       riverSprite: {fileID: 21300000, guid: 2af2b864aafae3c4a9f31ca39d4740a9, type: 3}
       waterfallSprite: {fileID: 0}
+      collect:
+        resource: 0
+        speed: 0
     road:
       single: {fileID: 2454492567947961080, guid: 41aa18aba4d08234087132585562d669, type: 3}
       start: {fileID: 9053168988011746481, guid: 59409c37f1cf6344684683253f036f91, type: 3}
@@ -103,20 +109,6 @@ MonoBehaviour:
         sprite: {fileID: 21300000, guid: 06fcae06a8cecb24585d4d65c8fbb44b, type: 3}
       - instance: {fileID: 1797872309044152712, guid: d15fd059907d78c4085e3ad1781f91ff, type: 3}
         sprite: {fileID: 21300000, guid: 91e6e8ecbb1b5fc409c07e0bee9a9b6a, type: 3}
-    ironOre:
-      variants:
-      - instance: {fileID: 1053624260744082883, guid: fc79ae251a8b8bf44bb664b9681a6efe, type: 3}
-        sprite: {fileID: 21300000, guid: dbba39572e1dcc64ea0885e2912cf6f3, type: 3}
-    copperOre:
-      variants:
-      - instance: {fileID: 1927427942470581613, guid: 67309c9b86577e241be1bd635f412585, type: 3}
-        sprite: {fileID: 21300000, guid: 6f225e165d5f9214c8ceee58eaeb272a, type: 3}
-    crystal:
-      variants:
-      - instance: {fileID: 2529202727124458788, guid: 39da2dba811005348835c7909ecd0d08, type: 3}
-        sprite: {fileID: 21300000, guid: 0eabeee364a93e24785bb3068d7c73cc, type: 3}
-      - instance: {fileID: 5884493882779455304, guid: f5b1ffb94762e814392d65806a9222fa, type: 3}
-        sprite: {fileID: 21300000, guid: 0eabeee364a93e24785bb3068d7c73cc, type: 3}
     tree:
       variants:
       - instance: {fileID: 3566894212013922056, guid: 267ed8446dd3683458dd3a6600b447ff, type: 3}
@@ -125,6 +117,29 @@ MonoBehaviour:
         sprite: {fileID: 21300000, guid: 0e0994efae5387447ba55f68293f5563, type: 3}
       - instance: {fileID: 9116754217208307827, guid: ded4cb87c36d19b489eb182a79da18ac, type: 3}
         sprite: {fileID: 21300000, guid: 3763942e63c1b064b96c00b3020b05b0, type: 3}
+    ironOre:
+      variants:
+      - instance: {fileID: 1053624260744082883, guid: fc79ae251a8b8bf44bb664b9681a6efe, type: 3}
+        sprite: {fileID: 21300000, guid: dbba39572e1dcc64ea0885e2912cf6f3, type: 3}
+      collect:
+        resource: 0
+        speed: 0
+    copperOre:
+      variants:
+      - instance: {fileID: 1927427942470581613, guid: 67309c9b86577e241be1bd635f412585, type: 3}
+        sprite: {fileID: 21300000, guid: 6f225e165d5f9214c8ceee58eaeb272a, type: 3}
+      collect:
+        resource: 0
+        speed: 0
+    crystal:
+      variants:
+      - instance: {fileID: 2529202727124458788, guid: 39da2dba811005348835c7909ecd0d08, type: 3}
+        sprite: {fileID: 21300000, guid: 0eabeee364a93e24785bb3068d7c73cc, type: 3}
+      - instance: {fileID: 5884493882779455304, guid: f5b1ffb94762e814392d65806a9222fa, type: 3}
+        sprite: {fileID: 21300000, guid: 0eabeee364a93e24785bb3068d7c73cc, type: 3}
+      collect:
+        resource: 0
+        speed: 0
   m_allBuildings:
     tower0:
       name:
@@ -220,6 +235,7 @@ MonoBehaviour:
       mineDistance: 2
       containers: []
       sprite: {fileID: 0}
+      efficiency: 0
     mediumMiningCenter:
       name:
         m_id: -1
@@ -234,6 +250,7 @@ MonoBehaviour:
       mineDistance: 1
       containers: []
       sprite: {fileID: 0}
+      efficiency: 0
     smallMiningCenter:
       name:
         m_id: -1
@@ -248,6 +265,7 @@ MonoBehaviour:
       mineDistance: 1
       containers: []
       sprite: {fileID: 0}
+      efficiency: 0
     drill:
       prefab: {fileID: 0}
       size: {x: 1, y: 1, z: 1}
@@ -319,15 +337,18 @@ MonoBehaviour:
     m_resources:
     - type: 0
       prefab: {fileID: 77937368576623179, guid: e4800c0131a6dd042baa34e8298ff2b5, type: 3}
-      sprite: {fileID: 0}
+      sprite: {fileID: 21300000, guid: 8400a97eb87ae2946a2e677794eb88d1, type: 3}
     - type: 1
       prefab: {fileID: 3243818941550011481, guid: d0a9c9b537d134145a2b9bf9d63dd612, type: 3}
-      sprite: {fileID: 0}
+      sprite: {fileID: 21300000, guid: 9a30f3c25cf672e4883ae2e1e214063b, type: 3}
     - type: 2
       prefab: {fileID: 760831928678333270, guid: 8375eaa3dc565334387167f46fe15dbb, type: 3}
-      sprite: {fileID: 0}
+      sprite: {fileID: 21300000, guid: 78d6d0c8f83b4d14cbc2a255190a23d9, type: 3}
     - type: 3
       prefab: {fileID: 8598079328801901074, guid: fcf6d97175fb21645b815c4e1e4f69d1, type: 3}
-      sprite: {fileID: 0}
+      sprite: {fileID: 21300000, guid: 860c8d8e686e9b54da51f752fa757051, type: 3}
+    - type: 4
+      prefab: {fileID: 8598079328801901074, guid: 45c901e93ef7a1b4aa5d557be2ab1af3, type: 3}
+      sprite: {fileID: 21300000, guid: a2253d251c665934d881ffeb32ff91d8, type: 3}
   m_levels:
     levels: []

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class ResourceView : MonoBehaviour
+public class GameResourceView : MonoBehaviour
 {
     [SerializeField] float m_resourceOffset;
 

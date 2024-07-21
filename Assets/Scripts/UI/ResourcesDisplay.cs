@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class ResourcesDisplay : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class ResourcesDisplay : MonoBehaviour
     {
         public GameObject instance;
         public TMP_Text valueTxt;
-        public SpriteRenderer renderer;
+        public Image renderer;
     }
 
     List<OneResourceInstance> m_resources = new List<OneResourceInstance>();
@@ -73,7 +74,7 @@ public class ResourcesDisplay : MonoBehaviour
         resource.instance.transform.SetParent(m_resourcePos, true);
         resource.instance.transform.localPosition = Vector3.zero;
 
-        resource.renderer = resource.instance.GetComponentInChildren<SpriteRenderer>();
+        resource.renderer = resource.instance.GetComponentInChildren<Image>();
         resource.valueTxt = resource.instance.GetComponentInChildren<TMP_Text>();
 
         return resource;

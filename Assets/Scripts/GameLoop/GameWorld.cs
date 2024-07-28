@@ -123,6 +123,7 @@ public class GameWorld
         {
             if (m_currentWorld != null)
             {
+                m_currentWorld.SetActive(false);
                 m_worlds.Add(m_currentWorld);
                 m_currentWorld = null;
             }
@@ -130,6 +131,7 @@ public class GameWorld
             if (nextWorld != null)
             {
                 m_currentWorld = nextWorld;
+                m_currentWorld.SetActive(true);
                 m_worlds.Remove(nextWorld);
             }
         }

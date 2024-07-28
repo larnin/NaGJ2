@@ -87,6 +87,8 @@ public class GameGrid
 
     public void Load(JsonDocument doc)
     {
+        Reset();
+
         var root = doc.GetRoot();
         if (root != null && root.IsJsonObject())
         {

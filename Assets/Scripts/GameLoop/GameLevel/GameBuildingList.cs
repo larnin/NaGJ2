@@ -11,6 +11,8 @@ public class GameBuildingList
     Dictionary<ulong, int> m_posDictionary = new Dictionary<ulong, int>();
     Dictionary<int, int> m_idDictionary = new Dictionary<int, int>();
 
+    List<int> m_toRemoveIndexs = new List<int>();
+
     int m_nextID = 1;
 
     GameLevel m_level;
@@ -22,6 +24,8 @@ public class GameBuildingList
 
     public void Load(JsonDocument doc)
     {
+        Reset();
+
         var root = doc.GetRoot();
         if (root != null && root.IsJsonObject())
         {
@@ -50,8 +54,8 @@ public class GameBuildingList
 
         CreateDictionaties();
 
-        foreach(var b in m_buildings)
-            b.Start();
+        for(int i = 0; i < m_buildings.Count; i++)
+            m_buildings[i].Start();
     }
 
     void CreateDictionaties()
@@ -115,8 +119,10 @@ public class GameBuildingList
 
     public void Process(float deltaTime)
     {
-        foreach (var b in m_buildings)
-            b.Process(deltaTime);
+        for (int i = 0; i < m_buildings.Count; i++)
+            m_buildings[i].Process(deltaTime);
+
+        ProcessRemove();
     }
 
     public bool Add(BuildingBase building)
@@ -174,6 +180,31 @@ public class GameBuildingList
         if (!m_idDictionary.TryGetValue(ID, out index))
             return false;
 
+        if (m_toRemoveIndexs.Contains(index))
+            return false;
+
+        m_toRemoveIndexs.Add(index);
+        return true;
+    }
+
+    void ProcessRemove()
+    {
+        for(int i = 0; i < m_toRemoveIndexs.Count; i++)
+        {
+            RemoveReal(m_toRemoveIndexs[i]);
+
+            for(int j = i + 1; j < m_toRemoveIndexs.Count; j++)
+            {
+                if (m_toRemoveIndexs[j] > m_toRemoveIndexs[i])
+                    m_toRemoveIndexs[j]--;
+            }
+        }
+
+        m_toRemoveIndexs.Clear();
+    }
+
+    void RemoveReal(int index)
+    { 
         var building = m_buildings[index];
         m_buildings.RemoveAt(index);
 
@@ -192,7 +223,7 @@ public class GameBuildingList
             }
         }
 
-        m_idDictionary.Remove(ID);
+        m_idDictionary.Remove(building.GetID());
 
         //move next keys
         foreach (var k in m_idDictionary.Keys.ToList())
@@ -211,9 +242,7 @@ public class GameBuildingList
 
         building.Destroy(false);
 
-        m_level.OnBuildingUpdate(ID, ElementUpdateType.removed);
-
-        return true;
+        m_level.OnBuildingUpdate(building.GetID(), ElementUpdateType.removed);
     }
 
     public int GetBuildingIndex(int ID)
@@ -221,6 +250,9 @@ public class GameBuildingList
         int index = -1;
 
         if (!m_idDictionary.TryGetValue(ID, out index))
+            return -1;
+
+        if (m_toRemoveIndexs.Contains(index))
             return -1;
 
         return index;
@@ -231,6 +263,9 @@ public class GameBuildingList
         int index = -1;
 
         if (!m_idDictionary.TryGetValue(ID, out index))
+            return null;
+
+        if (m_toRemoveIndexs.Contains(index))
             return null;
 
         return m_buildings[index];
@@ -246,6 +281,9 @@ public class GameBuildingList
         if (index < 0 || index >= m_buildings.Count)
             return null;
 
+        if (m_toRemoveIndexs.Contains(index))
+            return null;
+
         return m_buildings[index];
     }
 
@@ -257,6 +295,9 @@ public class GameBuildingList
         if (!m_posDictionary.TryGetValue(id, out index))
             return -1;
 
+        if (m_toRemoveIndexs.Contains(index))
+            return -1;
+
         return index;
     }
 
@@ -266,6 +307,9 @@ public class GameBuildingList
 
         int index = -1;
         if (!m_posDictionary.TryGetValue(id, out index))
+            return null;
+
+        if (m_toRemoveIndexs.Contains(index))
             return null;
 
         return m_buildings[index];
@@ -332,8 +376,13 @@ public class GameBuildingList
     {
         List<int> ids = new List<int>();
 
-        foreach(var b in m_buildings)
+        for(int i = 0; i < m_buildings.Count; i++)
         {
+            if (m_toRemoveIndexs.Contains(i))
+                continue;
+
+            var b = m_buildings[i];
+
             var infos = b.GetInfos();
             if (infos.buildingType != BuildingType.Belt)
                 continue;
@@ -348,8 +397,13 @@ public class GameBuildingList
     {
         List<int> ids = new List<int>();
 
-        foreach (var b in m_buildings)
+        for (int i = 0; i < m_buildings.Count; i++)
         {
+            if (m_toRemoveIndexs.Contains(i))
+                continue;
+
+            var b = m_buildings[i];
+
             var infos = b.GetInfos();
             if(BuildingDataEx.GetContainer(infos.buildingType) == null)
                 continue;
@@ -373,8 +427,13 @@ public class GameBuildingList
         bool haveHit = false;
         float distance = 0;
 
-        foreach(var b in m_buildings)
+        for (int i = 0; i < m_buildings.Count; i++)
         {
+            if (m_toRemoveIndexs.Contains(i))
+                continue;
+
+            var b = m_buildings[i];
+
             var infos = b.GetInfos();
 
             var boundint = BuildingDataEx.GetBuildingBounds(infos.buildingType, infos.pos, infos.rotation, infos.level);

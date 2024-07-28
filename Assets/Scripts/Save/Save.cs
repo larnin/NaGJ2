@@ -76,6 +76,9 @@ public class Save
 
     public string GetSavePath(int index)
     {
+        if(index < 0)
+            return Application.persistentDataPath + "\\Default\\";
+
         return Application.persistentDataPath + "\\Slot_" + index + "\\";
     }
 

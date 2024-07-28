@@ -33,6 +33,8 @@ public static class SaveEx
     {
         try
         {
+            string directory = GetFilePath(path);
+            CreatePath(directory);
             File.WriteAllText(path, data);
         }
         catch(Exception e)
@@ -139,6 +141,26 @@ public static class SaveEx
 
         var json = Json.ReadFromString(obj.data);
         return json;
+    }
+
+    public static string GetFilePath(string path)
+    {
+        if (path.EndsWith('\\') || path.EndsWith('/'))
+            return path;
+
+        int index = path.LastIndexOf('/');
+        int index2 = path.LastIndexOf('\\');
+        if (index2 > index)
+            index = index2;
+
+        if (index <= 0)
+            return "";
+        return path.Substring(0, index);
+    }
+
+    public static void CreatePath(string path)
+    {
+        Directory.CreateDirectory(path);
     }
 }
 

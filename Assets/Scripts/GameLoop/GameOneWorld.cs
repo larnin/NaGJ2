@@ -63,8 +63,8 @@ public class GameOneWorld
         float maxTimer = m_active ? saveTimeActive : saveTimeInactive;
         if(m_saveTimer >= maxTimer)
         {
-            WriteSave();
             m_saveTimer = 0;
+            WriteSave();
         }
     }
 
@@ -81,8 +81,6 @@ public class GameOneWorld
     string GetSaveNameWithoutExt()
     {
         int slot = Save.instance.GetCurrentSlot();
-        if (slot < 0)
-            return null;
 
         string path = Save.instance.GetSavePath(slot);
 
@@ -167,6 +165,7 @@ public class GameOneWorld
         else
         {
             var doc = new JsonDocument();
+            doc.SetRoot(new JsonObject());
 
             m_level.Save(doc);
 

@@ -624,6 +624,8 @@ public class GameBeltSystem
     public void Process(float deltaTime)
     {
         ProcessBelts(deltaTime);
+
+        Debug();
     }
 
     public void Save(JsonDocument doc)
@@ -651,6 +653,8 @@ public class GameBeltSystem
 
     public void Load(JsonDocument doc)
     {
+        Reset();
+
         var root = doc.GetRoot();
         if (root != null && root.IsJsonObject())
         {
@@ -920,5 +924,35 @@ public class GameBeltSystem
         m_resources.Add(r.ID, r);
 
         m_level.OnResourceUpdate(r.ID, ElementUpdateType.added);
+    }
+
+    void Debug()
+    {
+        if (!m_level.active)
+            return;
+
+        var size = Global.instance.allBlocks.blockSize;
+
+        foreach(var cont in m_containers)
+        {
+            foreach(var p in cont.buildingContainer.ports)
+            {
+                var pos = new Vector3(size.x * p.pos.x, size.y * (p.pos.y + 0.5f), size.z * p.pos.z);
+                var dir = RotationEx.ToVector3(p.rotation);
+                var pos2 = pos + dir;
+                var othoDir = new Vector3(-dir.z, dir.y, dir.x);
+
+                Color c = Color.red;
+                if (p.direction == BuildingPortDirection.input)
+                    c = Color.blue;
+                if (p.direction == BuildingPortDirection.inout)
+                    c = Color.magenta;
+                DebugDraw.Line(pos, pos2, c);
+                var pos3 = pos2 + (pos - pos2) / 4 + othoDir / 4;
+                DebugDraw.Line(pos2, pos3, c);
+                pos3 -= othoDir / 2;
+                DebugDraw.Line(pos2, pos3, c);
+            }
+        }
     }
 }

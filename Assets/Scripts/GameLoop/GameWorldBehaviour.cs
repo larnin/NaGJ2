@@ -9,15 +9,11 @@ public class GameWorldBehaviour : MonoBehaviour
 {
     [SerializeField] float m_threadUpdate = 0.1f;
 
-    GameWorld m_behaviour;
+    GameWorld m_behaviour = new GameWorld();
 
     static GameWorldBehaviour m_instance;
 
     SubscriberList m_subscriberList = new SubscriberList();
-
-    bool m_clicked = false;
-    int m_currentList = -1;
-    string m_currentPath = "";
 
     private void Awake()
     {
@@ -34,6 +30,20 @@ public class GameWorldBehaviour : MonoBehaviour
 
         m_subscriberList.Add(new Event<GameGetCurrentLevelEvent>.Subscriber(GetLevel));
         m_subscriberList.Subscribe();
+    }
+
+    private void OnEnable()
+    {
+        m_behaviour.SetCurrentWorldIndex(0);
+
+        var oneLvl = m_behaviour.GetCurrentLevel();
+
+        if (oneLvl != null)
+            Event<GameSetCurrentLevelEvent>.Broadcast(new GameSetCurrentLevelEvent(oneLvl.level));
+
+        Event<GameResetEvent>.Broadcast(new GameResetEvent());
+        Event<GameLoadEvent>.Broadcast(new GameLoadEvent());
+
     }
 
     private void Update()

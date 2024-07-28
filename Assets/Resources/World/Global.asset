@@ -122,15 +122,15 @@ MonoBehaviour:
       - instance: {fileID: 1053624260744082883, guid: fc79ae251a8b8bf44bb664b9681a6efe, type: 3}
         sprite: {fileID: 21300000, guid: dbba39572e1dcc64ea0885e2912cf6f3, type: 3}
       collect:
-        resource: 0
-        speed: 0
+        resource: 1
+        speed: 1
     copperOre:
       variants:
       - instance: {fileID: 1927427942470581613, guid: 67309c9b86577e241be1bd635f412585, type: 3}
         sprite: {fileID: 21300000, guid: 6f225e165d5f9214c8ceee58eaeb272a, type: 3}
       collect:
-        resource: 0
-        speed: 0
+        resource: 2
+        speed: 1
     crystal:
       variants:
       - instance: {fileID: 2529202727124458788, guid: 39da2dba811005348835c7909ecd0d08, type: 3}
@@ -138,8 +138,8 @@ MonoBehaviour:
       - instance: {fileID: 5884493882779455304, guid: f5b1ffb94762e814392d65806a9222fa, type: 3}
         sprite: {fileID: 21300000, guid: 0eabeee364a93e24785bb3068d7c73cc, type: 3}
       collect:
-        resource: 0
-        speed: 0
+        resource: 3
+        speed: 1
   m_allBuildings:
     tower0:
       name:
@@ -219,7 +219,49 @@ MonoBehaviour:
         m_textID: 
       prefab: {fileID: 5759554216005528630, guid: b06ee74c9d891a04bb479dd096499d3a, type: 3}
       size: {x: 3, y: 2, z: 3}
-      containers: []
+      containers:
+      - filter:
+          type: 0
+          liquid: 0
+          resources: 
+        count: -1
+        ports:
+        - pos: {x: 1, y: 0, z: 0}
+          rotation: 0
+          direction: 0
+        - pos: {x: 1, y: 0, z: 1}
+          rotation: 0
+          direction: 0
+        - pos: {x: 1, y: 0, z: -1}
+          rotation: 0
+          direction: 0
+        - pos: {x: -1, y: 0, z: 0}
+          rotation: 2
+          direction: 0
+        - pos: {x: -1, y: 0, z: 1}
+          rotation: 2
+          direction: 0
+        - pos: {x: -1, y: 0, z: -1}
+          rotation: 2
+          direction: 0
+        - pos: {x: 0, y: 0, z: 1}
+          rotation: 1
+          direction: 0
+        - pos: {x: 1, y: 0, z: 1}
+          rotation: 1
+          direction: 0
+        - pos: {x: -1, y: 0, z: 1}
+          rotation: 1
+          direction: 0
+        - pos: {x: 0, y: 0, z: -1}
+          rotation: 3
+          direction: 0
+        - pos: {x: 1, y: 0, z: -1}
+          rotation: 3
+          direction: 0
+        - pos: {x: -1, y: 0, z: -1}
+          rotation: 3
+          direction: 0
       sprite: {fileID: 0}
     bigMiningCenter:
       name:
@@ -233,9 +275,18 @@ MonoBehaviour:
       prefab: {fileID: 3619161916175125052, guid: 04db2099d619be3498e878be5aa5cc70, type: 3}
       size: {x: 2, y: 1, z: 2}
       mineDistance: 2
-      containers: []
+      containers:
+      - filter:
+          type: 0
+          liquid: 0
+          resources: 
+        count: 10
+        ports:
+        - pos: {x: 0, y: 0, z: 0}
+          rotation: 0
+          direction: 1
       sprite: {fileID: 0}
-      efficiency: 0
+      efficiency: 1
     mediumMiningCenter:
       name:
         m_id: -1
@@ -248,9 +299,18 @@ MonoBehaviour:
       prefab: {fileID: 4356035782417431393, guid: 5027ba4ce40e0444a94c294084c2cac6, type: 3}
       size: {x: 1, y: 1, z: 2}
       mineDistance: 1
-      containers: []
+      containers:
+      - filter:
+          type: 0
+          liquid: 0
+          resources: 
+        count: 10
+        ports:
+        - pos: {x: 0, y: 0, z: 1}
+          rotation: 1
+          direction: 1
       sprite: {fileID: 0}
-      efficiency: 0
+      efficiency: 1
     smallMiningCenter:
       name:
         m_id: -1
@@ -263,11 +323,20 @@ MonoBehaviour:
       prefab: {fileID: 218631143579773238, guid: 764274524090d4c4a9ea6e9371297f16, type: 3}
       size: {x: 1, y: 1, z: 1}
       mineDistance: 1
-      containers: []
+      containers:
+      - filter:
+          type: 0
+          liquid: 0
+          resources: 
+        count: 10
+        ports:
+        - pos: {x: 0, y: 0, z: 0}
+          rotation: 0
+          direction: 1
       sprite: {fileID: 0}
-      efficiency: 0
+      efficiency: 1
     drill:
-      prefab: {fileID: 0}
+      prefab: {fileID: 9181829637750588657, guid: 6e151475162f2ae4881f2ed3e457f432, type: 3}
       size: {x: 1, y: 1, z: 1}
       sprite: {fileID: 0}
     belt:
@@ -351,4 +420,14 @@ MonoBehaviour:
       prefab: {fileID: 8598079328801901074, guid: 45c901e93ef7a1b4aa5d557be2ab1af3, type: 3}
       sprite: {fileID: 21300000, guid: a2253d251c665934d881ffeb32ff91d8, type: 3}
   m_levels:
-    levels: []
+    levels:
+    - ID: LVL_Test
+      name:
+        m_id: -1
+        m_textID: 
+      description:
+        m_id: -1
+        m_textID: 
+      level: {fileID: 11400000, guid: 56418e541e0b3a5459012bae76633e4a, type: 2}
+      preview: {fileID: 0}
+      difficulty: 0

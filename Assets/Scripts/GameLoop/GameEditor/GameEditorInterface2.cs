@@ -7,10 +7,10 @@ using UnityEngine;
 
 public enum GameEditorWindowType
 {
-    Window_File,
-    Window_Blocks,
-    Window_Buildings,
-    Window_Entities,
+    File,
+    Blocks,
+    Buildings,
+    Entities,
 }
 
 public class GameEditorInterface2 : MonoBehaviour
@@ -18,6 +18,10 @@ public class GameEditorInterface2 : MonoBehaviour
     const float minWindowSize = 100;
     const float handleSize = 25;
     const float toolbarHeight = 30;
+
+    GameLevel m_level = new GameLevel();
+
+    SubscriberList m_subscriberList = new SubscriberList();
 
     class ResizeInfo
     {
@@ -69,14 +73,20 @@ public class GameEditorInterface2 : MonoBehaviour
             GameEditorWindowType type = (GameEditorWindowType)i;
             m_windows.Add(new WindowInfo(i, type.ToString(), CreateInstance(type)));
         }
+
+        m_subscriberList.Add(new Event<GameGetCurrentLevelEvent>.Subscriber(GetLevel));
+
+        m_subscriberList.Subscribe();
     }
 
     GameEditorWindowBase CreateInstance(GameEditorWindowType type)
     {
         switch(type)
         {
-            case GameEditorWindowType.Window_File:
+            case GameEditorWindowType.File:
                 return new GameEditorWindowFile();
+            case GameEditorWindowType.Blocks:
+                return new GameEditorWindowBlocks();
             default:
                 return null;
         }
@@ -89,6 +99,11 @@ public class GameEditorInterface2 : MonoBehaviour
             if (w.instance != null)
                 w.instance.Start();
         }
+
+        Event<GameSetCurrentLevelEvent>.Broadcast(new GameSetCurrentLevelEvent(m_level));
+
+        Event<GameResetEvent>.Broadcast(new GameResetEvent());
+        Event<GameLoadEvent>.Broadcast(new GameLoadEvent());
     }
 
     private void OnDestroy()
@@ -98,6 +113,8 @@ public class GameEditorInterface2 : MonoBehaviour
             if (w.instance != null)
                 w.instance.OnDestroy();
         }
+
+        m_subscriberList.Unsubscribe();
     }
 
     private void Update()
@@ -258,6 +275,10 @@ public class GameEditorInterface2 : MonoBehaviour
                 m_popupOpen[i] = false;
     }
 
+    void GetLevel(GameGetCurrentLevelEvent e)
+    {
+        e.level = m_level;
+    }
 }
 
 

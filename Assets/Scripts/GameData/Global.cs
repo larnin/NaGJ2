@@ -23,7 +23,10 @@ public class Global : ScriptableObject
     public AllResources allResources { get { return m_allResources; } }
 
     [SerializeField] LevelListDatas m_levels;
-    public LevelListDatas allLevels { get { return m_levels; } } 
+    public LevelListDatas allLevels { get { return m_levels; } }
+
+    [SerializeField] EditorElements m_editor;
+    public EditorElements editor { get { return m_editor; } }
 
     static Global m_instance;
 

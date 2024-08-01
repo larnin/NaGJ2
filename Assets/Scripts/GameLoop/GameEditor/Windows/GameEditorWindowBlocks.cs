@@ -7,7 +7,8 @@ using UnityEngine;
 
 public class GameEditorWindowBlocks : GameEditorWindowBase
 {
-    string filter = "";
+    string m_filter = ""; 
+    Vector2 m_scrollPos = Vector2.zero;
 
     public override void OnGUI()
     {
@@ -16,11 +17,29 @@ public class GameEditorWindowBlocks : GameEditorWindowBase
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("Filter ", GUILayout.MaxWidth(30));
-        GUILayout.TextField(filter);
+        m_filter = GUILayout.TextField(m_filter);
         GUILayout.EndHorizontal();
 
         var blocks = Global.instance.editor.blocks;
-        //todo
+
+        m_scrollPos = GUILayout.BeginScrollView(m_scrollPos);
+
+        if (GUILayout.Button("Empty"))
+            OnClickEmpty();
+
+        foreach (var b in blocks)
+        {
+            bool valid = CheckFilter(m_filter, b.type.ToString());
+            valid |= CheckFilter(m_filter, b.name);
+
+            if (!valid)
+                continue;
+
+            if (GUILayout.Button(b.name + " (" + b.type + " - " + b.data + ")"))
+                OnClick(b);
+
+        }
+        GUILayout.EndScrollView();
     }
 
     bool CheckFilter(string filter, string name)
@@ -37,5 +56,15 @@ public class GameEditorWindowBlocks : GameEditorWindowBase
             return true;
 
         return name.Contains(filterData) == contains;
+    }
+
+    void OnClickEmpty()
+    {
+        Event<EditorSetCursorBlockEvent>.Broadcast(new EditorSetCursorBlockEvent(BlockType.air, 0));
+    }
+
+    void OnClick(EditorBlock b)
+    {
+        Event<EditorSetCursorBlockEvent>.Broadcast(new EditorSetCursorBlockEvent(b.type, b.data));
     }
 }

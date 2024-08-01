@@ -431,3 +431,44 @@ MonoBehaviour:
       level: {fileID: 11400000, guid: 56418e541e0b3a5459012bae76633e4a, type: 2}
       preview: {fileID: 0}
       difficulty: 0
+  m_editor:
+    blocks:
+    - name: Ground
+      type: 1
+      data: 0
+    - name: Ground Slope
+      type: 2
+      data: 0
+    - name: River
+      type: 4
+      data: 0
+    - name: Lake
+      type: 3
+      data: 0
+    - name: Road
+      type: 6
+      data: 0
+    - name: Iron
+      type: 8
+      data: 0
+    - name: Copper
+      type: 9
+      data: 0
+    - name: Crystal
+      type: 10
+      data: 0
+    - name: Stump
+      type: 11
+      data: 0
+    - name: Pine
+      type: 11
+      data: 1
+    - name: Tree
+      type: 11
+      data: 2
+    - name: Grass
+      type: 7
+      data: 0
+    - name: Flowers
+      type: 7
+      data: 1

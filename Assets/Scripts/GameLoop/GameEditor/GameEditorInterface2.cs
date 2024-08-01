@@ -77,6 +77,8 @@ public class GameEditorInterface2 : MonoBehaviour
         m_subscriberList.Add(new Event<GameGetCurrentLevelEvent>.Subscriber(GetLevel));
 
         m_subscriberList.Subscribe();
+
+        m_level.active = true;
     }
 
     GameEditorWindowBase CreateInstance(GameEditorWindowType type)
@@ -219,7 +221,7 @@ public class GameEditorInterface2 : MonoBehaviour
 
 
     const int popupID_Debug = 0;
-    const int popupID_Draw = 1;
+    const int cursor_Draw = 1;
 
     void DrawToolbar()
     {
@@ -252,6 +254,8 @@ public class GameEditorInterface2 : MonoBehaviour
                 }
             }
         }
+
+        GUI.Label(new Rect(labelspacing + (labelspacing + labelWidth) * cursor_Draw, 2, labelWidth, toolbarHeight - 4), "Cursor: " + GetCursorText());
     }
 
     bool GetPopupOpen(int index)
@@ -278,6 +282,30 @@ public class GameEditorInterface2 : MonoBehaviour
     void GetLevel(GameGetCurrentLevelEvent e)
     {
         e.level = m_level;
+    }
+
+    string GetCursorText()
+    {
+        EditorGetCursorTypeEvent cursorType = new EditorGetCursorTypeEvent();
+        Event<EditorGetCursorTypeEvent>.Broadcast(cursorType);
+
+        Sprite s = null;
+        if (cursorType.cursorType == EditorCursorType.Block)
+        {
+            EditorGetCursorBlockEvent b = new EditorGetCursorBlockEvent();
+            Event<EditorGetCursorBlockEvent>.Broadcast(b);
+
+            return b.type.ToString() + " " + b.blockData;
+        }
+        else if (cursorType.cursorType == EditorCursorType.Building)
+        {
+            EditorGetCursorBuildingEvent b = new EditorGetCursorBuildingEvent();
+            Event<EditorGetCursorBuildingEvent>.Broadcast(b);
+
+            return b.type.ToString() + " " + b.level;
+        }
+
+        return "Empty";
     }
 }
 

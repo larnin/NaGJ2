@@ -20,6 +20,7 @@ public class GameEditorCursorVisual : MonoBehaviour
     int m_blockData = 0;
     BuildingType m_buildingType = BuildingType.Belt;
     int m_buildingLevel = 0;
+    Team m_buildingTeam = Team.player;
     Rotation m_rotation = Rotation.rot_0;
 
     SubscriberList m_subscriberList = new SubscriberList();
@@ -177,8 +178,9 @@ public class GameEditorCursorVisual : MonoBehaviour
             var infos = new BuildingInfos();
             infos.pos = pos;
             infos.buildingType = m_buildingType;
+            infos.level = m_buildingLevel;
             infos.rotation = m_rotation;
-            infos.team = Team.player;
+            infos.team = m_buildingTeam;
 
             var building = BuildingBase.Create(infos, getLevel.level); ;
 
@@ -230,6 +232,8 @@ public class GameEditorCursorVisual : MonoBehaviour
         m_cursorType = EditorCursorType.Building;
 
         m_buildingType = e.type;
+        m_buildingLevel = e.level;
+        m_buildingTeam = e.team;
 
         UpdateBuildingCursor();
 
@@ -241,6 +245,7 @@ public class GameEditorCursorVisual : MonoBehaviour
         e.type = m_buildingType;
         e.rotation = m_rotation;
         e.level = m_buildingLevel;
+        e.team = m_buildingTeam;
     }
 
     void GetCursorType(EditorGetCursorTypeEvent e)

@@ -128,7 +128,7 @@ public class EditorInterface : MonoBehaviour
         {
             var b = m_buildings[buildingIndex];
 
-            Event<EditorSetCursorBuildingEvent>.Broadcast(new EditorSetCursorBuildingEvent(b.building, 0));
+            Event<EditorSetCursorBuildingEvent>.Broadcast(new EditorSetCursorBuildingEvent(b.building, 0, Team.player));
         }
     }
 

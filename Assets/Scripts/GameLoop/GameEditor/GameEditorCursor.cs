@@ -85,10 +85,15 @@ class GameEditorCursor : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0) && !Utility.MouseOverUI())
-            Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.leftClick));
-        if (Input.GetMouseButtonDown(1) && !Utility.MouseOverUI())
-            Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.rightClick));
+        EditorCursorOnUIEvent cursorData = new EditorCursorOnUIEvent(Input.mousePosition);
+        Event<EditorCursorOnUIEvent>.Broadcast(cursorData);
+        if (!cursorData.onUI)
+        {
+            if (Input.GetMouseButtonDown(0) && !Utility.MouseOverUI())
+                Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.leftClick));
+            if (Input.GetMouseButtonDown(1) && !Utility.MouseOverUI())
+                Event<EditorCursorClickEvent>.Broadcast(new EditorCursorClickEvent(EditorCursorClickType.rightClick));
+        }
     }
 
     void GetStatus(EditorCurstorGetPosEvent e)

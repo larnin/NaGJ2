@@ -18,7 +18,9 @@ public class EditorCursorVisual : MonoBehaviour
 
     BlockType m_blockType = BlockType.air;
     BuildingType m_buildingType = BuildingType.Belt;
+    Team m_buildingTeam = Team.player;
     int m_blockData = 0;
+    int m_buildingLevel = 0;
     Rotation m_rotation = Rotation.rot_0;
 
     SubscriberList m_subscriberList = new SubscriberList();
@@ -154,7 +156,7 @@ public class EditorCursorVisual : MonoBehaviour
             if (!CanPlaceBuilding(pos, m_buildingType, m_rotation))
                 return;
 
-            Event<EditorPlaceBuildingEvent>.Broadcast(new EditorPlaceBuildingEvent(pos, m_buildingType, m_rotation, Team.player));
+            Event<EditorPlaceBuildingEvent>.Broadcast(new EditorPlaceBuildingEvent(pos, m_buildingType, m_rotation, m_buildingTeam, m_buildingLevel));
         }
         else if (click == EditorCursorClickType.rightClick)
             DeleteBuilding(pos, blockPos);
@@ -199,6 +201,8 @@ public class EditorCursorVisual : MonoBehaviour
         m_cursorType = CursorType.Building;
 
         m_buildingType = e.type;
+        m_buildingLevel = e.level;
+        m_buildingTeam = e.team;
 
         UpdateBuildingCursor();
 
@@ -208,6 +212,8 @@ public class EditorCursorVisual : MonoBehaviour
     void GetBuildingType(EditorGetCursorBuildingEvent e)
     {
         e.type = m_buildingType;
+        e.level = m_buildingLevel;
+        e.team = m_buildingTeam;
         e.rotation = m_rotation;
     }
 
@@ -302,7 +308,7 @@ public class EditorCursorVisual : MonoBehaviour
             return CanPlacePipe(pos, rotation);
         else
         {
-            var bounds = BuildingDataEx.GetBuildingBounds(m_buildingType, pos, m_rotation);
+            var bounds = BuildingDataEx.GetBuildingBounds(m_buildingType, pos, m_rotation, m_buildingLevel);
 
             for (int i = bounds.min.x; i < bounds.max.x; i++)
             {

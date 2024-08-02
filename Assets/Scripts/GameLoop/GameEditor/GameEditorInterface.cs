@@ -130,7 +130,7 @@ public  class GameEditorInterface : MonoBehaviour
 
     void OnClickBuilding(EditorSelectBuildingTypeEvent e)
     {
-        Event<EditorSetCursorBuildingEvent>.Broadcast(new EditorSetCursorBuildingEvent(e.type, e.level));
+        Event<EditorSetCursorBuildingEvent>.Broadcast(new EditorSetCursorBuildingEvent(e.type, e.level, Team.player));
     }
 
     public void OnEmptyClick()

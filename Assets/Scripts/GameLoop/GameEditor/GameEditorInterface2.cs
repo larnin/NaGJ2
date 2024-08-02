@@ -75,6 +75,7 @@ public class GameEditorInterface2 : MonoBehaviour
         }
 
         m_subscriberList.Add(new Event<GameGetCurrentLevelEvent>.Subscriber(GetLevel));
+        m_subscriberList.Add(new Event<EditorCursorOnUIEvent>.Subscriber(IsCursorOnUI));
 
         m_subscriberList.Subscribe();
 
@@ -89,6 +90,8 @@ public class GameEditorInterface2 : MonoBehaviour
                 return new GameEditorWindowFile();
             case GameEditorWindowType.Blocks:
                 return new GameEditorWindowBlocks();
+            case GameEditorWindowType.Buildings:
+                return new GameEditorWindowBuilding();
             default:
                 return null;
         }
@@ -284,12 +287,35 @@ public class GameEditorInterface2 : MonoBehaviour
         e.level = m_level;
     }
 
+    void IsCursorOnUI(EditorCursorOnUIEvent e)
+    {
+        Vector3 pos = e.pos;
+        pos.y = Screen.height - pos.y;
+
+        if(pos.y < toolbarHeight)
+        {
+            e.onUI = true;
+            return;
+        }
+
+        foreach(var w in m_windows)
+        {
+            if (!w.enabled)
+                continue;
+
+            if(w.rect.Contains(pos))
+            {
+                e.onUI = true;
+                return;
+            }
+        }
+    }
+
     string GetCursorText()
     {
         EditorGetCursorTypeEvent cursorType = new EditorGetCursorTypeEvent();
         Event<EditorGetCursorTypeEvent>.Broadcast(cursorType);
-
-        Sprite s = null;
+        
         if (cursorType.cursorType == EditorCursorType.Block)
         {
             EditorGetCursorBlockEvent b = new EditorGetCursorBlockEvent();
@@ -302,7 +328,7 @@ public class GameEditorInterface2 : MonoBehaviour
             EditorGetCursorBuildingEvent b = new EditorGetCursorBuildingEvent();
             Event<EditorGetCursorBuildingEvent>.Broadcast(b);
 
-            return b.type.ToString() + " " + b.level;
+            return b.type.ToString() + " " + b.level + " " + b.team.ToString();
         }
 
         return "Empty";

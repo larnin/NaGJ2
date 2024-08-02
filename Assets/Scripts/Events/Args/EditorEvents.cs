@@ -56,8 +56,9 @@ public class EditorSetCursorBuildingEvent
 {
     public BuildingType type;
     public int level;
+    public Team team;
 
-    public EditorSetCursorBuildingEvent(BuildingType _type, int _level)
+    public EditorSetCursorBuildingEvent(BuildingType _type, int _level, Team _team)
     {
         type = _type;
         level = _level;
@@ -69,6 +70,7 @@ public class EditorGetCursorBuildingEvent
     public BuildingType type;
     public Rotation rotation;
     public int level;
+    public Team team;
 }
 
 public class EditorHaveBuildingEvent
@@ -130,15 +132,17 @@ public class EditorPlaceBuildingEvent
     public BuildingType buildingType;
     public Rotation rotation;
     public Team team;
+    public int level;
 
     public int ID;
 
-    public EditorPlaceBuildingEvent(Vector3Int _pos, BuildingType _type, Rotation _rot, Team _team)
+    public EditorPlaceBuildingEvent(Vector3Int _pos, BuildingType _type, Rotation _rot, Team _team, int _level)
     {
         pos = _pos;
         buildingType = _type;
         rotation = _rot;
         team = _team;
+        level = _level;
     }
 }
 
@@ -185,5 +189,17 @@ public class EditorSelectBuildingTypeEvent
     {
         type = _type;
         level = _level;
+    }
+}
+
+public class EditorCursorOnUIEvent
+{
+    public Vector3 pos;
+    public bool onUI;
+
+    public EditorCursorOnUIEvent(Vector3 _pos)
+    {
+        pos = _pos;
+        onUI = false;
     }
 }

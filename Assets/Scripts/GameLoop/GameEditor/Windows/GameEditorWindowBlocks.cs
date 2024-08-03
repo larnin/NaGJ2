@@ -10,7 +10,7 @@ public class GameEditorWindowBlocks : GameEditorWindowBase
     string m_filter = ""; 
     Vector2 m_scrollPos = Vector2.zero;
 
-    public override void OnGUI()
+    public override void OnGUI(Vector2 position)
     {
         if (Global.instance == null)
             return;

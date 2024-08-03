@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class GameEditorWindowBuilding : GameEditorWindowBase
@@ -10,10 +7,41 @@ public class GameEditorWindowBuilding : GameEditorWindowBase
     string m_filter = "";
     Vector2 m_scrollPos = Vector2.zero;
 
-    public override void OnGUI()
+    Team m_team = Team.player;
+    int m_level = 0;
+
+    GUIDropdown m_teamDropdown;
+
+    public GameEditorWindowBuilding()
+    {
+        m_teamDropdown = new GUIDropdown();
+        List<string> names = new List<string>();
+        int nbNames = Enum.GetValues(typeof(Team)).Length;
+        for (int i = 0; i < nbNames; i++)
+            names.Add(((Team)i).ToString());
+        m_teamDropdown.SetDatas(names);
+        m_teamDropdown.SetLabel(m_team.ToString());
+    }
+
+    public override void OnGUI(Vector2 position)
     {
         if (Global.instance == null)
             return;
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Team");
+        int teamSelect = m_teamDropdown.OnGUI(position);
+        if(teamSelect >= 0)
+        {
+            m_team = (Team)teamSelect;
+            m_teamDropdown.SetLabel(m_team.ToString());
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Level");
+        m_level = GUIEx.IntField(m_level);
+        GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("Filter ", GUILayout.MaxWidth(30));
@@ -64,6 +92,6 @@ public class GameEditorWindowBuilding : GameEditorWindowBase
 
     void OnClick(BuildingType b)
     {
-        //Event<EditorSetCursorBlockEvent>.Broadcast(new EditorSetCursorBlockEvent(b.type, b.data));
+        Event<EditorSetCursorBuildingEvent>.Broadcast(new EditorSetCursorBuildingEvent(b, m_level, m_team));
     }
 }

@@ -11,7 +11,7 @@ public class GameEditorWindowFile : GameEditorWindowBase
 
     bool m_clicked = false;
 
-    public override void OnGUI()
+    public override void OnGUI(Vector2 position)
     {
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();

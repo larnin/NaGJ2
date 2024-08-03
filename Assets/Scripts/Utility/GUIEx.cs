@@ -5,30 +5,51 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class DebugPopupData
+public static class GUIEx
 {
-    public string name;
-    public bool selected;
-
-    public DebugPopupData(string _name, bool _selected = false)
+    static int m_nextWindowID;
+    public static int GetNextWindowID()
     {
-        name = _name;
-        selected = _selected;
+        int nextID = m_nextWindowID;
+        m_nextWindowID++;
+        return nextID;
     }
-}
 
-public static class DebugLayout
-{
+    public static int IntField(int value, params GUILayoutOption[] options)
+    {
+        string newValue = GUILayout.TextField(value.ToString(), options);
+        int newInt = 0;
+
+        if (!Int32.TryParse(newValue, out newInt))
+            return 0;
+        return newInt;
+    }
+
     //return new selected state
-    public static int DrawPopup(Rect rect, ref bool selected, string label, DebugPopupData[] datas)
+    public static int DrawDropdown(Rect rect, ref bool selected, string label, GUIDropdownData[] datas)
+    {
+        if (GUI.Button(rect, label))
+            selected = !selected;
+
+        return DrawDropdownData(rect, ref selected, datas);
+    }
+
+    public static int DrawDropdown(ref bool selected, string label, GUIDropdownData[] datas)
+    {
+        if (GUILayout.Button(label))
+            selected = !selected;
+
+        var rect = GUILayoutUtility.GetLastRect();
+
+        return DrawDropdownData(rect, ref selected, datas);
+    }
+
+    static int DrawDropdownData(Rect rect, ref bool selected, GUIDropdownData[] datas)
     {
         int returnValue = -1;
 
         const float buttonSpacing = 2;
         const float buttonHeight = 20;
-
-        if (GUI.Button(rect, label))
-            selected = !selected;
 
         if (selected)
         {

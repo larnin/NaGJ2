@@ -203,3 +203,21 @@ public class EditorCursorOnUIEvent
         onUI = false;
     }
 }
+
+public class EditorDrawWindowNextFrameEvent
+{
+    public int windowID;
+    public Rect rect;
+    public GUI.WindowFunction func;
+    public string label;
+    public bool modal;
+
+    public EditorDrawWindowNextFrameEvent(int _windowID, Rect _rect, GUI.WindowFunction _func, string _label, bool _modal = false)
+    {
+        windowID = _windowID;
+        rect = _rect;
+        func = _func;
+        label = _label;
+        modal = _modal;
+    }
+}

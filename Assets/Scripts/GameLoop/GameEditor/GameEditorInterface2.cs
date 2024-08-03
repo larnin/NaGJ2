@@ -23,6 +23,15 @@ public class GameEditorInterface2 : MonoBehaviour
 
     SubscriberList m_subscriberList = new SubscriberList();
 
+    class TempWindowData
+    {
+        public int windowID;
+        public Rect rect;
+        public GUI.WindowFunction func;
+        public string label;
+        public bool modal;
+    }
+
     class ResizeInfo
     {
         public int id;
@@ -61,8 +70,8 @@ public class GameEditorInterface2 : MonoBehaviour
     List<WindowInfo> m_windows = new List<WindowInfo>();
     ResizeInfo m_resize = new ResizeInfo();
     List<bool> m_popupOpen = new List<bool>();
-
-    bool[] m_debugDraws = new bool[Enum.GetValues(typeof(GameEditorWindowType)).Length];
+    List<TempWindowData> m_tempWindows = new List<TempWindowData>();
+    List<TempWindowData> m_tempWindowsNextFrame = new List<TempWindowData>();
 
     private void Awake()
     {
@@ -71,11 +80,12 @@ public class GameEditorInterface2 : MonoBehaviour
         for (int i = 0; i < nbWindow; i++)
         {
             GameEditorWindowType type = (GameEditorWindowType)i;
-            m_windows.Add(new WindowInfo(i, type.ToString(), CreateInstance(type)));
+            m_windows.Add(new WindowInfo(GUIEx.GetNextWindowID(), type.ToString(), CreateInstance(type)));
         }
 
         m_subscriberList.Add(new Event<GameGetCurrentLevelEvent>.Subscriber(GetLevel));
         m_subscriberList.Add(new Event<EditorCursorOnUIEvent>.Subscriber(IsCursorOnUI));
+        m_subscriberList.Add(new Event<EditorDrawWindowNextFrameEvent>.Subscriber(DrawWindow));
 
         m_subscriberList.Subscribe();
 
@@ -133,6 +143,9 @@ public class GameEditorInterface2 : MonoBehaviour
                 w.instance.AlwaysUpdate();
             }
         }
+
+        m_tempWindows = m_tempWindowsNextFrame;
+        m_tempWindowsNextFrame = new List<TempWindowData>();
     }
 
     private void OnGUI()
@@ -148,6 +161,13 @@ public class GameEditorInterface2 : MonoBehaviour
                 w.rect = GUI.Window(w.id, w.rect, DrawWindow, w.name);
             }
         }
+
+        foreach (var w in m_tempWindows)
+        {
+            if (w.modal)
+                GUI.ModalWindow(w.windowID, w.rect, w.func, w.label);
+            else GUI.Window(w.windowID, w.rect, w.func, w.label);
+        }
     }
 
     void DrawWindow(int id)
@@ -159,7 +179,7 @@ public class GameEditorInterface2 : MonoBehaviour
         GUI.Box(new Rect(w.rect.width - handleSize, w.rect.height - handleSize, handleSize, handleSize), "");
 
         if (w.instance != null)
-            w.instance.OnGUI();
+            w.instance.OnGUI(w.rect.position);
 
         if (m_resize.id != id)
             GUI.DragWindow();
@@ -235,12 +255,12 @@ public class GameEditorInterface2 : MonoBehaviour
 
         // window
         {
-            DebugPopupData[] windowsDatas = new DebugPopupData[Enum.GetValues(typeof(GameEditorWindowType)).Length];
+            GUIDropdownData[] windowsDatas = new GUIDropdownData[Enum.GetValues(typeof(GameEditorWindowType)).Length];
             for (int i = 0; i < windowsDatas.Length; i++)
-                windowsDatas[i] = new DebugPopupData(((GameEditorWindowType)i).ToString(), m_windows[i].enabled);
+                windowsDatas[i] = new GUIDropdownData(((GameEditorWindowType)i).ToString(), m_windows[i].enabled);
 
             bool selected = GetPopupOpen(popupID_Debug);
-            int clicked = DebugLayout.DrawPopup(new Rect(labelspacing + (labelspacing + labelWidth) * popupID_Debug, 2, labelWidth, toolbarHeight - 4), ref selected, "Windows", windowsDatas);
+            int clicked = GUIEx.DrawDropdown(new Rect(labelspacing + (labelspacing + labelWidth) * popupID_Debug, 2, labelWidth, toolbarHeight - 4), ref selected, "Windows", windowsDatas);
             if (selected)
                 CloseOthersPopup(popupID_Debug);
             SetPopupOpen(popupID_Debug, selected);
@@ -309,6 +329,21 @@ public class GameEditorInterface2 : MonoBehaviour
                 return;
             }
         }
+    }
+
+    void DrawWindow(EditorDrawWindowNextFrameEvent e)
+    {
+        if (m_tempWindowsNextFrame.Exists(x => x.windowID == e.windowID))
+            return;
+
+        TempWindowData data = new TempWindowData();
+        data.func = e.func;
+        data.label = e.label;
+        data.rect = e.rect;
+        data.windowID = e.windowID;
+        data.modal = e.modal;
+
+        m_tempWindowsNextFrame.Add(data);
     }
 
     string GetCursorText()

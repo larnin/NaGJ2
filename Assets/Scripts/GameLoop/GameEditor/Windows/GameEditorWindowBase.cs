@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public abstract class GameEditorWindowBase
 {
@@ -18,5 +19,5 @@ public abstract class GameEditorWindowBase
 
     public virtual void AlwaysUpdate() { }
 
-    public virtual void OnGUI() { }
+    public virtual void OnGUI(Vector2 position) { }
 }

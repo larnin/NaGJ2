@@ -76,7 +76,7 @@ public class GameBuildingList
                 for (int j = bounds.yMin; j < bounds.yMax; j++)
                 {
                     for (int k = bounds.zMin; k < bounds.zMax; k++)
-                        m_posDictionary.Add(PosToID(new Vector3Int(i, j, k)), x);
+                        m_posDictionary.Add(Utility.PosToID(new Vector3Int(i, j, k)), x);
                 }
             }
         }
@@ -140,7 +140,7 @@ public class GameBuildingList
             {
                 for (int k = bounds.zMin; k < bounds.zMax; k++)
                 {
-                    var id = PosToID(new Vector3Int(i, j, k));
+                    var id = Utility.PosToID(new Vector3Int(i, j, k));
                     if (m_posDictionary.ContainsKey(id))
                         return false;
                 }
@@ -161,7 +161,7 @@ public class GameBuildingList
             {
                 for (int k = bounds.zMin; k < bounds.zMax; k++)
                 {
-                    var id = PosToID(new Vector3Int(i, j, k));
+                    var id = Utility.PosToID(new Vector3Int(i, j, k));
                     m_posDictionary.Add(id, index);
                 }
             }
@@ -217,7 +217,7 @@ public class GameBuildingList
             {
                 for (int k = bounds.zMin; k < bounds.zMax; k++)
                 {
-                    var id = PosToID(new Vector3Int(i, j, k));
+                    var id = Utility.PosToID(new Vector3Int(i, j, k));
                     m_posDictionary.Remove(id);
                 }
             }
@@ -289,7 +289,7 @@ public class GameBuildingList
 
     public int GetBuildingIndexAt(Vector3Int pos)
     {
-        var id = PosToID(pos);
+        var id = Utility.PosToID(pos);
 
         int index = -1;
         if (!m_posDictionary.TryGetValue(id, out index))
@@ -303,7 +303,7 @@ public class GameBuildingList
 
     public BuildingBase GetBuildingAt(Vector3Int pos)
     {
-        var id = PosToID(pos);
+        var id = Utility.PosToID(pos);
 
         int index = -1;
         if (!m_posDictionary.TryGetValue(id, out index))
@@ -458,26 +458,5 @@ public class GameBuildingList
         }
 
         return haveHit;
-    }
-
-    ulong PosToID(Vector3Int pos)
-    {
-        const int powLimit = 20;
-        const int absLimit = 1 << powLimit;
-
-        for (int i = 0; i < 3; i++)
-        {
-            if (Mathf.Abs(pos[i]) > absLimit - 1)
-                pos[i] = (absLimit - 1) * ((pos[i] > 0) ? 1 : -1);
-            pos[i] += absLimit - 1;
-        }
-
-        ulong ID = (ulong)pos.x;
-        ID <<= powLimit;
-        ID += (ulong)pos.y;
-        ID <<= powLimit;
-        ID += (ulong)pos.z;
-
-        return ID;
     }
 }

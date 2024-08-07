@@ -19,6 +19,9 @@ public class Global : ScriptableObject
     [SerializeField] AllBuildings m_allBuildings;
     public AllBuildings allBuildings { get { return m_allBuildings; } }
 
+    [SerializeField] AllEntities m_allEntities;
+    public AllEntities allEntities { get { return m_allEntities; } }
+
     [SerializeField] AllResources m_allResources;
     public AllResources allResources { get { return m_allResources; } }
 

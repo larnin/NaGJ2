@@ -127,4 +127,25 @@ public static class Utility
             current += 180.0f;
         return current;
     }
+
+    public static ulong PosToID(Vector3Int pos)
+    {
+        const int powLimit = 20;
+        const int absLimit = 1 << powLimit;
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (Mathf.Abs(pos[i]) > absLimit - 1)
+                pos[i] = (absLimit - 1) * ((pos[i] > 0) ? 1 : -1);
+            pos[i] += absLimit - 1;
+        }
+
+        ulong ID = (ulong)pos.x;
+        ID <<= powLimit;
+        ID += (ulong)pos.y;
+        ID <<= powLimit;
+        ID += (ulong)pos.z;
+
+        return ID;
+    }
 }

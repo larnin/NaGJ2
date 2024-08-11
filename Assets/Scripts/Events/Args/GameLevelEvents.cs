@@ -29,6 +29,18 @@ public class ResourceUpdateEvent
     }
 }
 
+public class EntityUpdateEvent
+{
+    public int ID;
+    public ElementUpdateType type;
+
+    public EntityUpdateEvent(int _ID, ElementUpdateType _type)
+    {
+        ID = _ID;
+        type = _type;
+    }
+}
+
 public class BlockUpdateEvent
 {
     public Vector3Int pos;

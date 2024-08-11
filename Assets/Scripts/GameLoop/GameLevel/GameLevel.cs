@@ -19,6 +19,9 @@ public class GameLevel
     GameLevelResources m_resources;
     public GameLevelResources resources { get { return m_resources; } }
 
+    GameEntityList m_entityList;
+    public GameEntityList entityList { get { return m_entityList; } }
+
     bool m_active;
     public bool active { get { return m_active; } set { m_active = value; } }
 
@@ -28,6 +31,7 @@ public class GameLevel
         m_buildingList = new GameBuildingList(this);
         m_beltSystem = new GameBeltSystem(this);
         m_resources = new GameLevelResources();
+        m_entityList = new GameEntityList(this);
     }
 
     public void Load(JsonDocument doc)
@@ -36,6 +40,7 @@ public class GameLevel
         m_buildingList.Load(doc);
         m_beltSystem.Load(doc);
         m_resources.Load(doc);
+        m_entityList.Load(doc);
 
         m_beltSystem.AfterLoad();
     }
@@ -46,6 +51,7 @@ public class GameLevel
         m_buildingList.Save(doc);
         m_beltSystem.Save(doc);
         m_resources.Save(doc);
+        m_entityList.Save(doc);
     }
 
     public void Reset()
@@ -54,6 +60,7 @@ public class GameLevel
         m_buildingList.Reset();
         m_beltSystem.Reset();
         m_resources.Reset();
+        m_entityList.Reset();
     }
 
     public void Process(float deltaTime)
@@ -63,6 +70,7 @@ public class GameLevel
 
         m_buildingList.Process(deltaTime);
         m_beltSystem.Process(deltaTime);
+        m_entityList.Process(deltaTime);
     }
 
     public void OnBuildingUpdate(int buildingID, ElementUpdateType type)
@@ -83,5 +91,11 @@ public class GameLevel
     {
         if (m_active)
             Event<BlockUpdateEvent>.Broadcast(new BlockUpdateEvent(pos));
+    }
+
+    public void OnEntityUpdate(int entityID, ElementUpdateType type)
+    {
+        if (m_active)
+            Event<EntityUpdateEvent>.Broadcast(new EntityUpdateEvent(entityID, type));
     }
 }

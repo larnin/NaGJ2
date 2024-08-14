@@ -176,7 +176,7 @@ public class GameEntityList
         return m_entities[index];
     }
 
-    public int GetBuildingNb()
+    public int GetEntityNb()
     {
         return m_entities.Count;
     }

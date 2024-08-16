@@ -32,9 +32,35 @@ public static class GamePathMaker
 
     static NearMatrix3<float> m_neighborsMatrix = new NearMatrix3<float>();
 
-    public static List<Vector3Int> MakeGroundPath(GameLevel level, Vector3Int start, Vector3Int end, int width = 1, int height = 1)
+
+    public static List<Vector3> MakeGroundPath(GameLevel level, Vector3 start, Vector3 end, int width = 1, int height = 1)
+    {
+        return MakePath(level, start, end, width, height, true);
+    }
+
+    public static List<Vector3> MakeWaterPath(GameLevel level, Vector3 start, Vector3 end, int width = 1, int height = 1)
     {
         return MakePath(level, start, end, width, height, false);
+    }
+
+    static List<Vector3> MakePath(GameLevel level, Vector3 start, Vector3 end, int width, int height, bool onGround)
+    {
+        Vector3Int realStart = new Vector3Int(Mathf.RoundToInt(start.x), Mathf.FloorToInt(start.y), Mathf.RoundToInt(start.z));
+        Vector3Int realEnd = new Vector3Int(Mathf.RoundToInt(end.x), Mathf.FloorToInt(end.y), Mathf.RoundToInt(end.z));
+
+        var tempPath = MakePath(level, realStart, realEnd, width, height, onGround);
+
+        var path = new List<Vector3>();
+        foreach (var p in tempPath)
+            path.Add(p);
+
+        return path;
+    }
+
+
+    public static List<Vector3Int> MakeGroundPath(GameLevel level, Vector3Int start, Vector3Int end, int width = 1, int height = 1)
+    {
+        return MakePath(level, start, end, width, height, true);
     }
 
     public static List<Vector3Int> MakeWaterPath(GameLevel level, Vector3Int start, Vector3Int end, int width = 1, int height = 1)

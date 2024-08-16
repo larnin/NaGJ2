@@ -61,4 +61,9 @@ public class GameEntity
     {
         return m_path.GetSeeDir();
     }
+
+    public GameLevel GetLevel()
+    {
+        return m_level;
+    }
 }

@@ -18,6 +18,12 @@ public class GamePath
         m_currentIndex = 0;
     }
 
+    public void Reset()
+    {
+        m_path.Clear();
+        m_currentIndex = 0;
+    }
+
     public Vector3 GetNextPos(Vector3 current)
     {
         if (m_path.Count == 0)

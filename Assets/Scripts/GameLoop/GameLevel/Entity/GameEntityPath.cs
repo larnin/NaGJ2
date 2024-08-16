@@ -50,6 +50,27 @@ public class GameEntityPath
 
     void RebuildPath()
     {
+        var type = m_entity.GetEntityType();
+        var entityData = EntityDataEx.Get(type);
 
+        if(entityData == null || !m_target.IsValid())
+        {
+            m_path.Reset();
+            return;
+        }    
+
+        switch(entityData.behaviour)
+        {
+            case EntityBehaviourType.Ground:
+                m_path.SetPath(GamePathMaker.MakeGroundPath(m_entity.GetLevel(), m_pos, m_target.GetTargetPos(), Mathf.CeilToInt(entityData.radius + 0.5f), Mathf.CeilToInt(entityData.height)));
+                break;
+            case EntityBehaviourType.Water:
+                m_path.SetPath(GamePathMaker.MakeWaterPath(m_entity.GetLevel(), m_pos, m_target.GetTargetPos(), Mathf.CeilToInt(entityData.radius + 0.5f), Mathf.CeilToInt(entityData.height)));
+                break;
+            case EntityBehaviourType.Air:
+                //todo !
+                m_path.Reset();
+                break;
+        }
     }
 }

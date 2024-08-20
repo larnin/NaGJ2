@@ -27,6 +27,7 @@ public class OneEntityData
     public GameObject prefab;
     public float maxLife;
     public float moveSpeed;
+    public float acceleration;
     public float rotationSpeed;
     public float radius;
     public float height;

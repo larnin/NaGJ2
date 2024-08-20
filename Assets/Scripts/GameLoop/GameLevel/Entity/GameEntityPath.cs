@@ -16,6 +16,8 @@ public class GameEntityPath
     Vector3 m_velocity;
     float m_seeDir;
 
+    bool m_moving = false;
+
     public GameEntityPath(GameEntity entity)
     {
         m_entity = entity;

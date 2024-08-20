@@ -112,7 +112,23 @@ public class GameEntityList
 
     public bool Add(GameEntity entity)
     {
-        return false;
+        if (entity.GetID() > 0)
+            return false;
+
+        entity.SetID(m_nextID);
+        m_nextID++;
+
+        int index = m_entities.Count();
+        m_entities.Add(entity);
+
+        m_idDictionary.Add(entity.GetID(), index);
+
+        //todo entity start
+
+        m_level.OnEntityUpdate(entity.GetID(), ElementUpdateType.added);
+
+        return true;
+
     }
 
     public bool Remove(int ID)
@@ -146,8 +162,23 @@ public class GameEntityList
 
     void RemoveReal(int index)
     {
-        //todo
-        
+        var entity = m_entities[index];
+        m_entities.RemoveAt(index);
+
+        m_idDictionary.Remove(entity.GetID());
+
+        //move next keys
+        foreach (var k in m_idDictionary.Keys.ToList())
+        {
+            int value = m_idDictionary[k];
+            if (value > index)
+                m_idDictionary[k] = value - 1;
+        }
+
+        // todo entity destroy
+
+        m_level.OnEntityUpdate(entity.GetID(), ElementUpdateType.removed);
+
     }
 
     public int GetEntityIndex(int ID)

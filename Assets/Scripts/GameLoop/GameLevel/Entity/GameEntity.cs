@@ -57,9 +57,35 @@ public class GameEntity
         return m_path.GetPos();
     }
 
+    public Vector3 GetViewPos()
+    {
+        var size = Global.instance.allBlocks.blockSize;
+        var pos = m_path.GetPos();
+
+        return new Vector3(size.x * pos.x, size.y * pos.y, size.z * pos.z);
+    }
+
+    public Vector3 GetVelocity()
+    {
+        return m_path.GetVelocity();
+    }
+
+    public Vector3 GetViewVelocity()
+    {
+        var size = Global.instance.allBlocks.blockSize;
+        var velocity = m_path.GetVelocity();
+
+        return new Vector3(size.x * velocity.x, size.y * velocity.y, size.z * velocity.z);
+    }
+
     public float GetSeeDir()
     {
         return m_path.GetSeeDir();
+    }
+
+    public Quaternion GetViewRotation()
+    {
+        return Quaternion.Euler(0, m_path.GetSeeDir() * Mathf.Rad2Deg, 0);
     }
 
     public GameLevel GetLevel()

@@ -22,6 +22,9 @@ public class GameLevel
     GameEntityList m_entityList;
     public GameEntityList entityList { get { return m_entityList; } }
 
+    Gamemode m_gamemode;
+    public Gamemode gamemode { get { return m_gamemode; } }
+
     bool m_active;
     public bool active { get { return m_active; } set { m_active = value; } }
 
@@ -32,6 +35,7 @@ public class GameLevel
         m_beltSystem = new GameBeltSystem(this);
         m_resources = new GameLevelResources();
         m_entityList = new GameEntityList(this);
+        m_gamemode = new Gamemode(this);
     }
 
     public void Load(JsonDocument doc)
@@ -41,6 +45,7 @@ public class GameLevel
         m_beltSystem.Load(doc);
         m_resources.Load(doc);
         m_entityList.Load(doc);
+        m_gamemode.Load(doc);
 
         m_beltSystem.AfterLoad();
     }
@@ -52,6 +57,7 @@ public class GameLevel
         m_beltSystem.Save(doc);
         m_resources.Save(doc);
         m_entityList.Save(doc);
+        m_gamemode.Save(doc);
     }
 
     public void Reset()
@@ -61,6 +67,7 @@ public class GameLevel
         m_beltSystem.Reset();
         m_resources.Reset();
         m_entityList.Reset();
+        m_gamemode.Reset();
     }
 
     public void Process(float deltaTime)
@@ -71,6 +78,7 @@ public class GameLevel
         m_buildingList.Process(deltaTime);
         m_beltSystem.Process(deltaTime);
         m_entityList.Process(deltaTime);
+        m_gamemode.Process(deltaTime);
     }
 
     public void OnBuildingUpdate(int buildingID, ElementUpdateType type)

@@ -65,27 +65,19 @@ public class GameEntity
         return new Vector3(size.x * pos.x, size.y * pos.y, size.z * pos.z);
     }
 
-    public Vector3 GetVelocity()
+    public float GetVelocity()
     {
         return m_path.GetVelocity();
     }
-
-    public Vector3 GetViewVelocity()
+    
+    public float GetMoveDir()
     {
-        var size = Global.instance.allBlocks.blockSize;
-        var velocity = m_path.GetVelocity();
-
-        return new Vector3(size.x * velocity.x, size.y * velocity.y, size.z * velocity.z);
+        return m_path.GetMoveDir();
     }
 
-    public float GetSeeDir()
+    public Quaternion GetViewMoveRotation()
     {
-        return m_path.GetSeeDir();
-    }
-
-    public Quaternion GetViewRotation()
-    {
-        return Quaternion.Euler(0, m_path.GetSeeDir() * Mathf.Rad2Deg, 0);
+        return Quaternion.Euler(0, m_path.GetMoveDir() * Mathf.Rad2Deg, 0);
     }
 
     public GameLevel GetLevel()

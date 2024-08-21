@@ -122,7 +122,7 @@ public class GameEntityListView : MonoBehaviour
             var size = Global.instance.allBlocks.blockSize;
             instance.transform.parent = transform;
             instance.transform.localPosition = entity.GetViewPos();
-            instance.transform.localRotation = entity.GetViewRotation();
+            instance.transform.localRotation = entity.GetViewMoveRotation();
 
             SetEntity(instance, entity);
         }

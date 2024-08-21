@@ -13,8 +13,8 @@ public class GameEntityPath
     GamePath m_path;
 
     Vector3 m_pos;
-    Vector3 m_velocity;
-    float m_seeDir;
+    float m_velocity;
+    float m_moveDir;
 
     bool m_moving = false;
 
@@ -25,7 +25,64 @@ public class GameEntityPath
 
     public void Process(float deltaTime)
     {
+        var type = m_entity.GetEntityType();
+        var data = EntityDataEx.Get(type);
+        if (data == null)
+            return;
+        
+        var dir = new Vector3(Mathf.Cos(m_moveDir), 0, Mathf.Sin(m_moveDir));
 
+        if (m_moving)
+        {
+            var nextPos = m_path.GetNextPos(m_pos);
+
+            dir = nextPos - m_pos;
+            dir.y = 0;
+            float dist = dir.magnitude;
+            dir /= dist;
+
+            if (dist < 0.2f)
+                m_moving = false;
+
+            float dirAngle = Mathf.Atan2(dir.z, dir.x);
+
+            if (m_velocity < 0.001f)
+                m_moveDir = dirAngle;
+            else
+            {
+                float offsetAngle = dirAngle - m_moveDir;
+                while (offsetAngle < Mathf.PI)
+                    offsetAngle += 2 * Mathf.PI;
+                while (offsetAngle > Mathf.PI)
+                    offsetAngle -= 2 * Mathf.PI;
+
+                float realOffset = data.rotationSpeed * deltaTime;
+                if (realOffset > Mathf.Abs(offsetAngle))
+                    realOffset = offsetAngle;
+                else if (offsetAngle < 0)
+                    realOffset *= -1;
+
+                m_moveDir += realOffset;
+            }
+
+            m_velocity += data.acceleration * deltaTime;
+            if (m_velocity > data.moveSpeed)
+                m_velocity = data.moveSpeed;
+        }
+        else
+        {
+            m_velocity -= data.acceleration * deltaTime * 2;
+            if (m_velocity < 0)
+                m_velocity = 0;
+        }
+
+        if (m_velocity > 0)
+        {
+            var nextPos = m_pos + m_velocity * deltaTime * dir;
+            //todo collisions & physics
+
+            m_pos = nextPos;
+        }
     }
 
     public void SetTarget(GameTarget target)
@@ -40,14 +97,14 @@ public class GameEntityPath
         return m_pos;
     }
 
-    public Vector3 GetVelocity()
+    public float GetVelocity()
     {
         return m_velocity;
     }
 
-    public float GetSeeDir()
+    public float GetMoveDir()
     {
-        return m_seeDir;
+        return m_moveDir;
     }
 
     void RebuildPath()

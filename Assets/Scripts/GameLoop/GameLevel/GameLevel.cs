@@ -22,8 +22,8 @@ public class GameLevel
     GameEntityList m_entityList;
     public GameEntityList entityList { get { return m_entityList; } }
 
-    Gamemode m_gamemode;
-    public Gamemode gamemode { get { return m_gamemode; } }
+    GamemodeList m_gamemode;
+    public GamemodeList gamemode { get { return m_gamemode; } }
 
     bool m_active;
     public bool active { get { return m_active; } set { m_active = value; } }
@@ -35,7 +35,7 @@ public class GameLevel
         m_beltSystem = new GameBeltSystem(this);
         m_resources = new GameLevelResources();
         m_entityList = new GameEntityList(this);
-        m_gamemode = new Gamemode(this);
+        m_gamemode = new GamemodeList(this);
     }
 
     public void Load(JsonDocument doc)

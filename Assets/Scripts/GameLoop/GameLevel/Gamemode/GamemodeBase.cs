@@ -78,6 +78,8 @@ public abstract class GamemodeBase
 
     protected virtual void Load(JsonObject obj)
     {
+        Reset();
+
         string str = obj.GetElement("Status")?.String();
         if (str != null)
         {

@@ -298,6 +298,9 @@ public class Gismos : MonoBehaviour
 
         m_pos += offset;
 
+        if (m_callback != null)
+            m_callback();
+
         UpdateRender();
     }
 

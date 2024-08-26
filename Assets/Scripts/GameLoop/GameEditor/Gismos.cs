@@ -41,6 +41,10 @@ public class Gismos : MonoBehaviour
     Vector3 m_oldMousePos;
     GismoAxis m_clickedAxis = GismoAxis.axisNone;
 
+    bool[] m_lockAxisPos = { false, false, false };
+    bool[] m_lockAxisRot = { false, false, false };
+    bool[] m_lockAxisScale = { false, false, false };
+
     Camera m_camera;
 
     private void Start()
@@ -48,6 +52,7 @@ public class Gismos : MonoBehaviour
         m_pos = transform.position;
         m_rot = Quaternion.identity;
         m_scale = Vector3.one;
+        m_gismosScale = Vector3.one;
 
         m_camera = Camera.main;
 
@@ -153,6 +158,37 @@ public class Gismos : MonoBehaviour
         return m_gismosScale;
     }
 
+    public void SetAxisLock(GismoType type, GismoAxis axis, bool locked)
+    {
+        if (type == GismoType.none || axis == GismoAxis.axisNone)
+            return;
+
+        if (type == GismoType.pos)
+            m_lockAxisPos[axis - GismoAxis.axisX] = locked;
+        else if (type == GismoType.rot)
+            m_lockAxisRot[axis - GismoAxis.axisX] = locked;
+        else if (type == GismoType.scale)
+            m_lockAxisScale[axis - GismoAxis.axisX] = locked;
+
+        UpdateRender();
+        UpdateColors();
+    }
+
+    public bool IsAxisLocked(GismoType type, GismoAxis axis)
+    {
+        if (type == GismoType.none || axis == GismoAxis.axisNone)
+            return false;
+
+        if (type == GismoType.pos)
+            return m_lockAxisPos[axis - GismoAxis.axisX];
+        else if (type == GismoType.rot)
+            return m_lockAxisRot[axis - GismoAxis.axisX];
+        else if (type == GismoType.scale)
+            return m_lockAxisScale[axis - GismoAxis.axisX];
+
+        return false;
+    }
+
     void UpdateRender()
     {
         var posObject = transform.Find("Pos");
@@ -185,19 +221,22 @@ public class Gismos : MonoBehaviour
 
     void UpdateColors()
     {
-        int nbChild = transform.childCount;
-
-        for(int i = 0; i < nbChild; i++)
-        {
-            var c = transform.GetChild(i);
-
-            UpdateColor(c, "X", new Color(1, 0, 0), m_hoveredAxis == GismoAxis.axisX || m_hoveredAxisLastFrame == GismoAxis.axisX);
-            UpdateColor(c, "Y", new Color(0, 1, 0), m_hoveredAxis == GismoAxis.axisY || m_hoveredAxisLastFrame == GismoAxis.axisY);
-            UpdateColor(c, "Z", new Color(0.2f, 0.3f, 1), m_hoveredAxis == GismoAxis.axisZ || m_hoveredAxisLastFrame == GismoAxis.axisZ);
-        }
+        UpdateColors(transform.Find("Pos"), GismoType.pos);
+        UpdateColors(transform.Find("Scale"), GismoType.scale);
+        UpdateColors(transform.Find("Rot"), GismoType.rot);
     }
 
-    void UpdateColor(Transform parent, string name, Color c, bool selected)
+    void UpdateColors(Transform group, GismoType type)
+    {
+        if (group == null)
+            return;
+
+        UpdateColor(group, "X", new Color(1, 0, 0), m_hoveredAxis == GismoAxis.axisX || m_hoveredAxisLastFrame == GismoAxis.axisX, IsAxisLocked(type, GismoAxis.axisX));
+        UpdateColor(group, "Y", new Color(0, 1, 0), m_hoveredAxis == GismoAxis.axisY || m_hoveredAxisLastFrame == GismoAxis.axisY, IsAxisLocked(type, GismoAxis.axisY));
+        UpdateColor(group, "Z", new Color(0.2f, 0.3f, 1), m_hoveredAxis == GismoAxis.axisZ || m_hoveredAxisLastFrame == GismoAxis.axisZ, IsAxisLocked(type, GismoAxis.axisZ));
+    }
+
+    void UpdateColor(Transform parent, string name, Color c, bool selected, bool locked)
     {
         var elem = parent.Find(name);
         if (elem == null)
@@ -206,6 +245,8 @@ public class Gismos : MonoBehaviour
         var comp = elem.GetComponentInChildren<MeshRenderer>();
         if (comp == null)
             return;
+
+        comp.gameObject.SetActive(!locked);
 
         if(!selected)
         {
@@ -224,6 +265,9 @@ public class Gismos : MonoBehaviour
     public void OnDrag(GismoType type, GismoAxis axis)
     {
         if (type != m_currentType)
+            return;
+
+        if (IsAxisLocked(type, axis))
             return;
 
         m_clickedAxis = axis;
@@ -306,11 +350,97 @@ public class Gismos : MonoBehaviour
 
     void OnDragScale(GismoAxis axis)
     {
+        if (m_clickedAxis == GismoAxis.axisNone)
+            return;
 
+        var rayOld = m_camera.ScreenPointToRay(m_oldMousePos);
+        var rayNew = m_camera.ScreenPointToRay(Input.mousePosition);
+
+        var up = Vector3.zero;
+        if (m_clickedAxis == GismoAxis.axisX)
+            up = new Vector3(1, 0, 0);
+        else if (m_clickedAxis == GismoAxis.axisY)
+            up = new Vector3(0, 1, 0);
+        else if (m_clickedAxis == GismoAxis.axisZ)
+            up = new Vector3(0, 0, 1);
+
+        var planeNormal = Vector3.Cross(up, rayNew.direction);
+        planeNormal = Vector3.Cross(up, planeNormal);
+
+        var plane = new Plane(planeNormal, transform.position);
+
+        float enterOld = 0, enterNew = 0;
+
+        if (!plane.Raycast(rayOld, out enterOld))
+            return;
+        if (!plane.Raycast(rayNew, out enterNew))
+            return;
+        Vector3 posOld = rayOld.GetPoint(enterOld);
+        Vector3 posNew = rayNew.GetPoint(enterNew);
+
+        Vector3 offset = posNew - posOld;
+        offset.x *= up.x;
+        offset.y *= up.y;
+        offset.z *= up.z;
+
+        m_scale.x += offset.x / 2;
+        m_scale.y += offset.y / 2;
+        m_scale.z += offset.z / 2;
+
+        if (m_scale.x < 0.01f)
+            m_scale.x = 0.01f;
+        if (m_scale.y < 0.01f)
+            m_scale.y = 0.01f;
+        if (m_scale.z < 0.01f)
+            m_scale.z = 0.01f;
+
+        if (m_callback != null)
+            m_callback();
+
+        UpdateRender();
     }
 
     void OnDragRot(GismoAxis axis)
     {
+        if (m_clickedAxis == GismoAxis.axisNone)
+            return;
 
+        var rayOld = m_camera.ScreenPointToRay(m_oldMousePos);
+        var rayNew = m_camera.ScreenPointToRay(Input.mousePosition);
+
+        var up = Vector3.zero;
+        if (m_clickedAxis == GismoAxis.axisX)
+            up = new Vector3(1, 0, 0);
+        else if (m_clickedAxis == GismoAxis.axisY)
+            up = new Vector3(0, 1, 0);
+        else if (m_clickedAxis == GismoAxis.axisZ)
+            up = new Vector3(0, 0, 1);
+
+        if (!m_axisAlligned)
+            up = m_rot * up;
+
+        var plane = new Plane(up, transform.position);
+
+        float enterOld = 0, enterNew = 0;
+
+        if (!plane.Raycast(rayOld, out enterOld))
+            return;
+        if (!plane.Raycast(rayNew, out enterNew))
+            return;
+        Vector3 posOld = rayOld.GetPoint(enterOld);
+        Vector3 posNew = rayNew.GetPoint(enterNew);
+
+        Vector3 dirOld = posOld - transform.position;
+        Vector3 dirNew = posNew - transform.position;
+
+        var angle = Vector3.SignedAngle(dirOld, dirNew, up);
+
+        var offsetRot = Quaternion.Euler(angle * up);
+        m_rot *= offsetRot;
+
+        if (m_callback != null)
+            m_callback();
+
+        UpdateRender();
     }
 }

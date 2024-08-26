@@ -109,7 +109,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3525476541598874187}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -221,14 +221,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3904027182069665550}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0.01, y: 0, z: -0.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5210913320037618188}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!33 &8286157699310402280
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -334,14 +334,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5052548349488852868}
-  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5210913320037618188}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5855764856964232831
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -550,7 +550,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6437502, y: 0.25000006, z: 0.25000006}
+  m_Size: {x: 0.6437502, y: 0.12, z: 0.12}
   m_Center: {x: -0.009375008, y: -3.2733397e-10, z: 7.90254e-10}
 --- !u!114 &3797742104614713226
 MonoBehaviour:
@@ -662,7 +662,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6437502, y: 0.25000006, z: 0.25000006}
+  m_Size: {x: 0.6437502, y: 0.12, z: 0.12}
   m_Center: {x: -0.009375008, y: -3.2733397e-10, z: 7.90254e-10}
 --- !u!114 &9129666708569932637
 MonoBehaviour:
@@ -774,7 +774,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6437503, y: 0.25000003, z: 0.2500001}
+  m_Size: {x: 0.6437503, y: 0.12, z: 0.12}
   m_Center: {x: -0.009375011, y: 0, z: 0}
 --- !u!114 &1769727917302450589
 MonoBehaviour:
@@ -886,7 +886,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6437502, y: 0.25000006, z: 0.25000006}
+  m_Size: {x: 0.6437502, y: 0.12, z: 0.12}
   m_Center: {x: -0.009375008, y: 7.90254e-10, z: -3.2733397e-10}
 --- !u!114 &4426908256620184652
 MonoBehaviour:
@@ -1032,7 +1032,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6437503, y: 0.25000003, z: 0.2500001}
+  m_Size: {x: 0.6437503, y: 0.12, z: 0.12}
   m_Center: {x: -0.009375011, y: 0, z: 0}
 --- !u!114 &3743720854859239186
 MonoBehaviour:
@@ -1144,7 +1144,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.6437502, y: 0.25000006, z: 0.25000006}
+  m_Size: {x: 0.6437502, y: 0.12, z: 0.12}
   m_Center: {x: -0.009375008, y: 7.90254e-10, z: -3.2733397e-10}
 --- !u!114 &7199135608493816263
 MonoBehaviour:

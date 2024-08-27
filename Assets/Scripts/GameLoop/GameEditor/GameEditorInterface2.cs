@@ -11,6 +11,7 @@ public enum GameEditorWindowType
     Blocks,
     Buildings,
     Entities,
+    Gamemodes,
 }
 
 public class GameEditorInterface2 : MonoBehaviour
@@ -102,6 +103,10 @@ public class GameEditorInterface2 : MonoBehaviour
                 return new GameEditorWindowBlocks();
             case GameEditorWindowType.Buildings:
                 return new GameEditorWindowBuilding();
+            case GameEditorWindowType.Entities:
+                return new GameEditorWindowEntity();
+            case GameEditorWindowType.Gamemodes:
+                return new GameEditorWindowGamemodes();
             default:
                 return null;
         }

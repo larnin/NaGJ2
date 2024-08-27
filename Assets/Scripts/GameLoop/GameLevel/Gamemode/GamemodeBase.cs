@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public enum GamemodeType
 {
@@ -93,4 +94,6 @@ public abstract class GamemodeBase
         obj.AddElement("Type", m_type.ToString());
         obj.AddElement("Status", m_status.ToString());
     }
+
+    public virtual void OnGUI(Vector2 position) { }
 }

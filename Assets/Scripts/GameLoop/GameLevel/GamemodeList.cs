@@ -79,4 +79,29 @@ public class GamemodeList
                 mode.Process(deltaTime);
         }
     }
+
+    public int GetGamemodeNb()
+    {
+        return m_modes.Count();
+    }
+
+    public GamemodeBase GetGamemode(int index)
+    {
+        return m_modes[index];
+    }
+
+    public void AddGamemode(GamemodeBase gamemode)
+    {
+        m_modes.Add(gamemode);
+    }
+
+    public void RemoveGamemode(GamemodeBase gamemode)
+    {
+        m_modes.Remove(gamemode);
+    }
+
+    public void RemoveGamemodeAt(int index)
+    {
+        m_modes.RemoveAt(index);
+    }
 }

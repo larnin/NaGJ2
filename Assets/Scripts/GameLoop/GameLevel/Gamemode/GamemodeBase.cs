@@ -95,5 +95,5 @@ public abstract class GamemodeBase
         obj.AddElement("Status", m_status.ToString());
     }
 
-    public virtual void OnGUI(Vector2 position) { }
+    public abstract GamemodeViewBase CreateView();
 }

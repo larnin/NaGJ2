@@ -11,6 +11,7 @@ public class GamemodeWaves : GamemodeBase
     {
         public List<GameEntityWave> waves = new List<GameEntityWave>();
         public Vector3Int spawnPoint;
+        public float spawnPointRot;
         public float spawnRadius;
         public int startIndex;
     }
@@ -51,6 +52,7 @@ public class GamemodeWaves : GamemodeBase
                 {
                     GamemodeWavesInfos point = new GamemodeWavesInfos();
                     point.spawnPoint = Json.ToVector3Int(pointObject.GetElement("Pos")?.JsonArray());
+                    point.spawnPointRot = pointObject.GetElement("Rot")?.Float() ?? 0;
                     point.spawnRadius = pointObject.GetElement("Radius")?.Float() ?? 0;
                     point.startIndex = pointObject.GetElement("Start")?.Int() ?? 0;
 
@@ -88,6 +90,7 @@ public class GamemodeWaves : GamemodeBase
             dataArray.Add(pointObject);
 
             pointObject.AddElement("Pos", Json.FromVector3Int(point.spawnPoint));
+            pointObject.AddElement("Rot", point.spawnPointRot);
             pointObject.AddElement("Radius", point.spawnRadius);
             pointObject.AddElement("Start", point.startIndex);
 
@@ -101,5 +104,10 @@ public class GamemodeWaves : GamemodeBase
                 w.Save(waveObject);
             }
         }
+    }
+
+    public override GamemodeViewBase CreateView()
+    {
+        return new GamemodeViewWaves(this);
     }
 }

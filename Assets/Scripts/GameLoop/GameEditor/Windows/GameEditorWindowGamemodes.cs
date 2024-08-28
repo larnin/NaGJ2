@@ -55,7 +55,18 @@ public class GameEditorWindowGamemodes : GameEditorWindowBase
     {
         if(DrawOneGamemodeHeader(gamemode, index))
         {
-            gamemode.OnGUI(position);
+            var editor = EditorGamemodeListView.GetCurrent();
+            if(editor != null)
+            {
+                var view = editor.GetGamemodeView(gamemode);
+                if (view != null)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUIEx.DrawVerticalLine(Color.white, 2, false);
+                    view.OnGui(position);
+                    GUILayout.EndHorizontal();
+                }
+            }
         }
     }
 

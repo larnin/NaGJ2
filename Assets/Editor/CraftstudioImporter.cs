@@ -215,7 +215,7 @@ public class CraftstudioImporter : OdinEditorWindow
         OnEntityListDrawGUI();
         GUILayout.EndVertical();
 
-        EditorGUIEx.DrawVerticalLine(EditorGUIEx.White, 1);
+        GUIEx.DrawVerticalLine(EditorGUIEx.White, 1);
 
         GUILayout.BeginVertical();
         if (m_currentModel != null)
@@ -276,7 +276,7 @@ public class CraftstudioImporter : OdinEditorWindow
 
         m_currentTool = GUILayout.Toolbar(m_currentTool, new string[] { "Model", "Export" });
 
-        EditorGUIEx.DrawHorizontalLine(EditorGUIEx.White, 1);
+        GUIEx.DrawHorizontalLine(EditorGUIEx.White, 1);
 
         if (m_currentTool == 0)
             OnDrawCurrentModelDisplayGUI();
@@ -290,14 +290,14 @@ public class CraftstudioImporter : OdinEditorWindow
         GUILayout.BeginVertical();
         OnDrawCurrentModelPreviewGUI();
         GUILayout.EndVertical();
-        EditorGUIEx.DrawVerticalLine(EditorGUIEx.White, 1);
+        GUIEx.DrawVerticalLine(EditorGUIEx.White, 1);
         GUILayout.BeginVertical(GUILayout.MaxWidth(200));
         m_currentTreeTool = GUILayout.Toolbar(m_currentTreeTool, new string[] { "Submesh", "Bones" });
         if(m_currentTreeTool == 0)
             OnDrawSubmeshGUI();
         GUILayout.Label("Blocks");
         OnDrawBlockListGUI();
-        EditorGUIEx.DrawHorizontalLine(EditorGUIEx.White, 1);
+        GUIEx.DrawHorizontalLine(EditorGUIEx.White, 1);
         GUILayout.Label("Animations");
         OnDrawAnimationListGUI();
         GUILayout.EndVertical();

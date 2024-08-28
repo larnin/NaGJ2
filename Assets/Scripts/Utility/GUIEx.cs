@@ -74,4 +74,32 @@ public static class GUIEx
 
         return returnValue;
     }
+
+    public static void DrawHorizontalLine(Color color, int tickness = 1, bool expand = true)
+    {
+        GUIStyle horizontalLine;
+        horizontalLine = new GUIStyle();
+        horizontalLine.normal.background = Texture2D.whiteTexture;
+        horizontalLine.margin = new RectOffset(0, 0, 4, 4);
+        horizontalLine.fixedHeight = tickness;
+
+        var c = GUI.color;
+        GUI.color = color;
+        GUILayout.Box(GUIContent.none, horizontalLine, GUILayout.ExpandWidth(expand));
+        GUI.color = c;
+    }
+
+    public static void DrawVerticalLine(Color color, int tickness = 1, bool expand = true)
+    {
+        GUIStyle verticalLine;
+        verticalLine = new GUIStyle();
+        verticalLine.normal.background = Texture2D.whiteTexture;
+        verticalLine.margin = new RectOffset(0, 0, 4, 4);
+        verticalLine.fixedWidth = tickness;
+
+        var c = GUI.color;
+        GUI.color = color;
+        GUILayout.Box(GUIContent.none, verticalLine, GUILayout.ExpandHeight(expand));
+        GUI.color = c;
+    }
 }

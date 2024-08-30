@@ -25,6 +25,40 @@ public static class GUIEx
         return newInt;
     }
 
+    public static float FloatField(float value, params GUILayoutOption[] options)
+    {
+        string newValue = GUILayout.TextField(value.ToString(), options);
+        float newFloat = 0;
+
+        if (!Single.TryParse(newValue, out newFloat))
+            return 0;
+        return newFloat;
+    }
+
+    public static Vector3 Vector3Field(Vector3 value, params GUILayoutOption[] options)
+    {
+        GUILayout.BeginHorizontal();
+
+        for (int i = 0; i < 3; i++)
+            value[i] = FloatField(value[i], options);
+
+        GUILayout.EndHorizontal();
+
+        return value;
+    }
+
+    public static Vector3Int Vector3IntField(Vector3Int value, params GUILayoutOption[] options)
+    {
+        GUILayout.BeginHorizontal();
+
+        for (int i = 0; i < 3; i++)
+            value[i] = IntField(value[i], options);
+
+        GUILayout.EndHorizontal();
+
+        return value;
+    }
+
     //return new selected state
     public static int DrawDropdown(Rect rect, ref bool selected, string label, GUIDropdownData[] datas)
     {

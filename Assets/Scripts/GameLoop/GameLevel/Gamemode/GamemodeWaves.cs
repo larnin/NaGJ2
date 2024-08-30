@@ -110,4 +110,32 @@ public class GamemodeWaves : GamemodeBase
     {
         return new GamemodeViewWaves(this);
     }
+
+    public int GetPointNb()
+    {
+        return m_points.Count();
+    }
+
+    public GamemodeWavesInfos GetPointFromIndex(int index)
+    {
+        if (index < 0 || index >= m_points.Count())
+            return null;
+
+        return m_points[index];
+    }
+
+    public void AddPoint(GamemodeWavesInfos point)
+    {
+        m_points.Add(point);
+    }
+
+    public void RemovePoint(GamemodeWavesInfos point)
+    {
+        m_points.Remove(point);
+    }
+
+    public void RemovePointAt(int index)
+    {
+        m_points.RemoveAt(index);
+    }
 }

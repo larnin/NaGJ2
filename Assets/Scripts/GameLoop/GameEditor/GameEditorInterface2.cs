@@ -62,7 +62,7 @@ public class GameEditorInterface2 : MonoBehaviour
         {
             name = _name;
             id = _id;
-            rect = new Rect(0, toolbarHeight, 200, 200);
+            rect = new Rect(0, toolbarHeight, 300, 400);
             enabled = false;
             instance = _instance;
         }

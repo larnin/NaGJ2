@@ -114,7 +114,7 @@ public static class GUIEx
         GUIStyle horizontalLine;
         horizontalLine = new GUIStyle();
         horizontalLine.normal.background = Texture2D.whiteTexture;
-        horizontalLine.margin = new RectOffset(0, 0, 4, 4);
+        horizontalLine.margin = new RectOffset(4, 4, 4, 4);
         horizontalLine.fixedHeight = tickness;
 
         var c = GUI.color;
@@ -128,7 +128,7 @@ public static class GUIEx
         GUIStyle verticalLine;
         verticalLine = new GUIStyle();
         verticalLine.normal.background = Texture2D.whiteTexture;
-        verticalLine.margin = new RectOffset(0, 0, 4, 4);
+        verticalLine.margin = new RectOffset(4, 4, 4, 4);
         verticalLine.fixedWidth = tickness;
 
         var c = GUI.color;

@@ -62,9 +62,12 @@ public class GameEditorWindowGamemodes : GameEditorWindowBase
                 if (view != null)
                 {
                     GUILayout.BeginHorizontal();
-                    GUIEx.DrawVerticalLine(Color.white, 2, false);
+                    GUIEx.DrawVerticalLine(Color.white, 2, true);
+                    GUILayout.BeginVertical();
                     view.OnGui(position);
+                    GUILayout.EndVertical();
                     GUILayout.EndHorizontal();
+                    GUILayout.Space(10);
                 }
             }
         }

@@ -10,10 +10,10 @@ public class GamemodeWaves : GamemodeBase
     public class GamemodeWavesInfos
     {
         public List<GameEntityWave> waves = new List<GameEntityWave>();
-        public Vector3Int spawnPoint;
-        public float spawnPointRot;
-        public float spawnRadius;
-        public int startIndex;
+        public Vector3Int spawnPoint = Vector3Int.zero;
+        public float spawnPointRot = 0;
+        public float spawnRadius = 1;
+        public int startIndex = 0;
     }
 
     List<GamemodeWavesInfos> m_points = new List<GamemodeWavesInfos>();

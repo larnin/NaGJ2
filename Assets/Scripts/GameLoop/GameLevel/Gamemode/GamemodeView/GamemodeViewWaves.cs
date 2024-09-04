@@ -83,7 +83,7 @@ public class GamemodeViewWaves : GamemodeViewBase
             var wave = point.waves[i];
             GUILayout.BeginHorizontal();
             GUILayout.Label("Wave " + (i + point.startIndex).ToString());
-            if(GUILayout.Button("X", GUILayout.MaxWidth(20)))
+            if(GUILayout.Button("X", GUILayout.MaxWidth(25)))
             {
                 drawWave = false;
                 point.waves.RemoveAt(i);
@@ -123,7 +123,7 @@ public class GamemodeViewWaves : GamemodeViewBase
             int select = dropDown.OnGUI(position);
             if (select >= 0)
                 wave.groups[i].type = (EntityType)select;
-            if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
+            if (GUILayout.Button("X", GUILayout.MaxWidth(25)))
             {
                 draw = false;
                 wave.groups.RemoveAt(i);
@@ -185,6 +185,11 @@ public class GamemodeViewWaves : GamemodeViewBase
             m_openList[index] = opened;
         }
 
+        if(GUILayout.Button("Select", GUILayout.MaxWidth(50)))
+        {
+
+        }
+
         if (GUILayout.Button("X", GUILayout.Width(25)))
         {
             m_mode.RemovePointAt(index);
@@ -200,5 +205,10 @@ public class GamemodeViewWaves : GamemodeViewBase
     {
         //todo place point on an empty pos
         m_mode.AddPoint(new GamemodeWaves.GamemodeWavesInfos());
+    }
+
+    void SelectPoint()
+    {
+
     }
 }

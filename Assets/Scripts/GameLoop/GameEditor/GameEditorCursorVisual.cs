@@ -40,6 +40,7 @@ public class GameEditorCursorVisual : MonoBehaviour
         m_subscriberList.Add(new Event<EditorSetCursorBuildingEvent>.Subscriber(SetBuildingType));
         m_subscriberList.Add(new Event<EditorGetCursorBuildingEvent>.Subscriber(GetBuildingType));
         m_subscriberList.Add(new Event<EditorGetCursorTypeEvent>.Subscriber(GetCursorType));
+        m_subscriberList.Add(new Event<EditorHideGismosEvent>.Subscriber(HideGismos));
 
         m_subscriberList.Subscribe();
     }
@@ -212,6 +213,8 @@ public class GameEditorCursorVisual : MonoBehaviour
 
     void SetType(EditorSetCursorBlockEvent e)
     {
+        Event<EditorHideGismosEvent>.Broadcast(new EditorHideGismosEvent());
+
         m_cursorType = EditorCursorType.Block;
 
         m_blockType = e.type;
@@ -229,6 +232,8 @@ public class GameEditorCursorVisual : MonoBehaviour
 
     void SetBuildingType(EditorSetCursorBuildingEvent e)
     {
+        Event<EditorHideGismosEvent>.Broadcast(new EditorHideGismosEvent());
+
         m_cursorType = EditorCursorType.Building;
 
         m_buildingType = e.type;
@@ -438,5 +443,12 @@ public class GameEditorCursorVisual : MonoBehaviour
             return true;
 
         return false;
+    }
+
+    void HideGismos(EditorHideGismosEvent e)
+    {
+        m_cursorType = EditorCursorType.None;
+
+        SetCursorPosition(Vector3Int.zero, false);
     }
 }

@@ -20,4 +20,6 @@ public abstract class GamemodeViewBase
 
     public abstract void Init();
     public abstract void OnDestroy();
+
+    public abstract void HideGismos();
 }

@@ -22,7 +22,8 @@ public class EditorGamemodeListView : MonoBehaviour
 
         m_subscriberList.Add(new Event<GameSetCurrentLevelEvent>.Subscriber(SetLevel));
         m_subscriberList.Add(new Event<GameResetEvent>.Subscriber(Reset));
-        m_subscriberList.Add(new Event<GameLoadEvent>.Subscriber(AfterLoad));
+        m_subscriberList.Add(new Event<GameLoadEvent>.Subscriber(AfterLoad)); 
+        m_subscriberList.Add(new Event<EditorHideGismosEvent>.Subscriber(OnHideGismos));
 
         m_subscriberList.Subscribe();
     }
@@ -52,11 +53,23 @@ public class EditorGamemodeListView : MonoBehaviour
 
     void ResetData()
     {
+        m_modeViews.Clear();
     }
 
     void AfterLoad(GameLoadEvent e)
     {
 
+    }
+
+    void OnHideGismos(EditorHideGismosEvent e)
+    {
+        if (m_level == null)
+            return;
+
+        foreach(var m in m_modeViews)
+        {
+            m.HideGismos();
+        }
     }
 
     private void Update()

@@ -25,13 +25,13 @@ public class GameEditorWindowGamemodes : GameEditorWindowBase
     }
 
     public override void OnEnable() 
-    { 
-    
+    {
+
     }
 
     public override void OnDisable() 
-    { 
-    
+    {
+
     }
 
     public override void OnGUI(Vector2 position)

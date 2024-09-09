@@ -13,6 +13,9 @@ public class GamemodeViewWaves : GamemodeViewBase
 
     GamemodeWaves m_mode;
 
+    int m_selectedPoint = -1;
+    GameObject m_selection;
+
     public GamemodeViewWaves(GamemodeWaves mode)
     {
         m_mode = mode;
@@ -186,14 +189,16 @@ public class GamemodeViewWaves : GamemodeViewBase
         }
 
         if(GUILayout.Button("Select", GUILayout.MaxWidth(50)))
-        {
-
-        }
+            SelectPoint(index);
 
         if (GUILayout.Button("X", GUILayout.Width(25)))
         {
             m_mode.RemovePointAt(index);
             opened = false;
+            if (m_selectedPoint == index)
+                SelectPoint(-1);
+            else if (m_selectedPoint > index)
+                SelectPoint(m_selectedPoint - 1);
         }
 
         GUILayout.EndHorizontal();
@@ -207,8 +212,52 @@ public class GamemodeViewWaves : GamemodeViewBase
         m_mode.AddPoint(new GamemodeWaves.GamemodeWavesInfos());
     }
 
-    void SelectPoint()
+    void SelectPoint(int index)
     {
+        m_selectedPoint = index;
 
+        if(m_selectedPoint < 0 && m_selection != null)
+            GameObject.Destroy(m_selection);
+        if (m_selectedPoint < 0)
+            return;
+
+        Event<EditorHideGismosEvent>.Broadcast(new EditorHideGismosEvent());
+
+        if(m_selectedPoint >= 0 && m_selection == null)
+            m_selection = GameObject.Instantiate(Global.instance.editor.gismosPrefab);
+
+        var gismos = m_selection.GetComponent<Gismos>();
+        if (gismos != null)
+        {
+            var point = m_mode.GetPointFromIndex(index);
+
+            Vector3 scale = Global.instance.allBlocks.blockSize;
+            Vector3 pos = new Vector3(point.spawnPoint.x * scale.x, point.spawnPoint.y * scale.y, point.spawnPoint.z * scale.z);
+
+            gismos.SetAxisAlligned(true);
+            gismos.SetPosRounded(true);
+            gismos.SetGismoType(GismoType.pos);
+            gismos.SetPos(point.spawnPoint);
+
+            gismos.SetUpdateCallback(OnGismosMove);
+        }
+    }
+
+    void OnGismosMove()
+    {
+        var gismos = m_selection.GetComponent<Gismos>();
+        if (gismos == null)
+            return;
+
+        if (m_selectedPoint < 0 || m_selectedPoint >= m_mode.GetPointNb())
+            return;
+
+        var point = m_mode.GetPointFromIndex(m_selectedPoint);
+        point.spawnPoint = gismos.GetGridPos();
+    }
+
+    public override void HideGismos()
+    {
+        SelectPoint(-1);
     }
 }

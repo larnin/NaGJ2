@@ -281,7 +281,12 @@ public class Gismos : MonoBehaviour
 
     private void Update()
     {
-        if(m_clickedAxis != GismoAxis.axisNone)
+        EditorCursorOnUIEvent cursorData = new EditorCursorOnUIEvent(Input.mousePosition);
+        Event<EditorCursorOnUIEvent>.Broadcast(cursorData);
+        if (cursorData.onUI)
+            return;
+
+        if (m_clickedAxis != GismoAxis.axisNone)
         {
             if (m_currentType == GismoType.pos)
                 OnDragPos(m_clickedAxis);

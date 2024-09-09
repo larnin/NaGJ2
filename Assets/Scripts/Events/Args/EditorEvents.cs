@@ -221,3 +221,5 @@ public class EditorDrawWindowNextFrameEvent
         modal = _modal;
     }
 }
+
+public class EditorHideGismosEvent { }

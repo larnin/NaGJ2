@@ -400,6 +400,8 @@ MonoBehaviour:
       airGoDown: {fileID: 966585965830540625, guid: f1ccdfcfbeeea9d4c88e2367137af070, type: 3}
       end: {fileID: 4923221076125534697, guid: f1d0c6cde44113c4b8d49ad89b1d068e, type: 3}
       sprite: {fileID: 0}
+  m_allEntities:
+    entities: []
   m_allResources:
     beltResourceSpacing: 0.5
     beltSpeed: 1
@@ -432,6 +434,7 @@ MonoBehaviour:
       preview: {fileID: 0}
       difficulty: 0
   m_editor:
+    gismosPrefab: {fileID: 218998340643468397, guid: eef3d67e6922d554b9bed744ddb3be0d, type: 3}
     blocks:
     - name: Ground
       type: 1

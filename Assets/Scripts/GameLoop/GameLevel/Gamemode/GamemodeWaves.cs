@@ -16,7 +16,24 @@ public class GamemodeWaves : GamemodeBase
         public int startIndex = 0;
     }
 
+    enum WaveState
+    {
+        starting,
+        spawning,
+        delay,
+    }
+
     List<GamemodeWavesInfos> m_points = new List<GamemodeWavesInfos>();
+    float m_delayBeforeFirstWave = 0;
+    public float delayBeforeFirstWave { get { return m_delayBeforeFirstWave; } set { m_delayBeforeFirstWave = value; } }
+    float m_delayBetweenWaves = 0;
+    public float delayBetweenWaves { get { return m_delayBetweenWaves; } set { m_delayBetweenWaves = value; } }
+    Team m_team = Team.ennemy1;
+    public Team team { get { return m_team; } set { m_team = value; } }
+
+    float m_timer = 0;
+    int m_currentWave = 0;
+    WaveState m_waveState = WaveState.starting;
 
     public GamemodeWaves(GameLevel level) : base(level)
     {
@@ -25,7 +42,82 @@ public class GamemodeWaves : GamemodeBase
 
     public override void Process(float deltaTime)
     {
+        if (m_status != GamemodeStatus.playing)
+            return;
 
+        float previousTime = m_timer;
+        m_timer += deltaTime;
+
+        switch(m_waveState)
+        {
+            case WaveState.starting:
+                if(m_timer >= m_delayBeforeFirstWave)
+                {
+                    m_timer = 0;
+                    m_currentWave = 0;
+                    m_waveState = WaveState.spawning;
+                }
+                break;
+            case WaveState.spawning:
+                bool goNext = true;
+                for(int i = 0; i < m_points.Count; i++)
+                {
+                    var point = m_points[i];
+                    if (point.startIndex > m_currentWave)
+                        continue;
+
+                    int waveIndex = m_currentWave - point.startIndex;
+                    if (waveIndex >= point.waves.Count)
+                        continue;
+
+                    foreach(var group in point.waves[waveIndex].groups)
+                    {
+                        int oldCount = group.GetNbSpawn(previousTime);
+                        int newCount = group.GetNbSpawn(m_timer);
+
+                        for(int j = oldCount; j < newCount; j++)
+                            SpawnEntity(group.type, i);
+
+                        if (newCount < group.count)
+                            goNext = false;
+                    }
+                }
+
+                if(goNext)
+                {
+                    m_timer = 0;
+                    m_waveState = WaveState.delay;
+                    if (IsEnded(m_currentWave + 1))
+                    {
+                        m_currentWave++;
+                        m_status = GamemodeStatus.completed;
+                    }
+                }
+                break;
+            case WaveState.delay:
+                if(m_timer >= m_delayBetweenWaves)
+                {
+                    m_timer = 0;
+                    m_currentWave++;
+
+                    if (IsEnded(m_currentWave))
+                        m_status = GamemodeStatus.completed;
+                    else m_waveState = WaveState.spawning;
+                }
+                break;
+        }
+    }
+
+    bool IsEnded(int wave)
+    {
+        foreach(var point in m_points)
+        {
+            int lastWave = point.waves.Count + point.startIndex;
+            if (lastWave >= wave)
+                return false;
+        }
+
+        return true;
     }
 
     public override void Reset()
@@ -35,12 +127,26 @@ public class GamemodeWaves : GamemodeBase
 
     public override void Start()
     {
-        
+        m_timer = 0;
+        m_currentWave = 0;
+
+        m_status = GamemodeStatus.playing;
+        m_waveState = WaveState.starting;
     }
 
     protected override void Load(JsonObject obj)
     {
         base.Load(obj);
+
+        m_delayBeforeFirstWave = obj.GetElement("DelayBeforeFirst")?.Float() ?? 0;
+        m_delayBetweenWaves = obj.GetElement("DelayBetween")?.Float() ?? 0;
+
+        string teamStr = obj.GetElement("Team")?.String();
+        if(teamStr != null)
+        {
+            if (!Enum.TryParse(teamStr, out m_team))
+                m_team = Team.ennemy1;
+        }
 
         var dataArray = obj.GetElement("Points")?.JsonArray();
         if (dataArray != null)
@@ -81,6 +187,10 @@ public class GamemodeWaves : GamemodeBase
     {
         base.Save(obj);
 
+        obj.AddElement("DelayBeforeFirst", m_delayBeforeFirstWave);
+        obj.AddElement("DelayBetween", m_delayBetweenWaves);
+        obj.AddElement("Team", m_team.ToString());
+
         var dataArray = new JsonArray();
         obj.AddElement("Points", dataArray);
 
@@ -106,9 +216,9 @@ public class GamemodeWaves : GamemodeBase
         }
     }
 
-    public override GamemodeViewBase CreateView()
+    public override EditorGamemodeViewBase CreateEditorView()
     {
-        return new GamemodeViewWaves(this);
+        return new EditorGamemodeViewWaves(this);
     }
 
     public int GetPointNb()
@@ -137,5 +247,10 @@ public class GamemodeWaves : GamemodeBase
     public void RemovePointAt(int index)
     {
         m_points.RemoveAt(index);
+    }
+
+    void SpawnEntity(EntityType type, int point)
+    {
+
     }
 }

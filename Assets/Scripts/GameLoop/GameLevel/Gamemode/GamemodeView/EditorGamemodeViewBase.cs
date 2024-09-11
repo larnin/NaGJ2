@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public abstract class GamemodeViewBase
+public abstract class EditorGamemodeViewBase
 {
     protected Transform m_parent = null;
 

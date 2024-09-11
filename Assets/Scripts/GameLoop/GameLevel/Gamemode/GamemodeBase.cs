@@ -95,5 +95,5 @@ public abstract class GamemodeBase
         obj.AddElement("Status", m_status.ToString());
     }
 
-    public abstract GamemodeViewBase CreateView();
+    public abstract EditorGamemodeViewBase CreateEditorView();
 }

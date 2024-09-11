@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class GamemodeViewWaves : GamemodeViewBase
+public class EditorGamemodeViewWaves : EditorGamemodeViewBase
 {
     List<bool> m_openList = new List<bool>();
     List<GUIDropdown> m_groupsDropdown = new List<GUIDropdown>();
@@ -16,7 +16,7 @@ public class GamemodeViewWaves : GamemodeViewBase
     int m_selectedPoint = -1;
     GameObject m_selection;
 
-    public GamemodeViewWaves(GamemodeWaves mode)
+    public EditorGamemodeViewWaves(GamemodeWaves mode)
     {
         m_mode = mode;
     }
@@ -38,6 +38,15 @@ public class GamemodeViewWaves : GamemodeViewBase
 
     public override void OnGui(Vector2 position)
     {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Delay before first wave :", GUILayout.MaxWidth(150));
+        m_mode.delayBeforeFirstWave = GUIEx.FloatField(m_mode.delayBeforeFirstWave);
+        GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Delay between waves :", GUILayout.MaxWidth(150));
+        m_mode.delayBetweenWaves = GUIEx.FloatField(m_mode.delayBetweenWaves);
+        GUILayout.EndHorizontal();
+
         m_currentDropdownIndex = 0;
         GUILayout.BeginHorizontal();
         GUILayout.Label("Spawn points :");

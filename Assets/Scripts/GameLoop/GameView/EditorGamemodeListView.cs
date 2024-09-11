@@ -12,7 +12,7 @@ public class EditorGamemodeListView : MonoBehaviour
 
     GameLevel m_level;
 
-    List<GamemodeViewBase> m_modeViews = new List<GamemodeViewBase>();
+    List<EditorGamemodeViewBase> m_modeViews = new List<EditorGamemodeViewBase>();
 
     SubscriberList m_subscriberList = new SubscriberList();
 
@@ -82,12 +82,12 @@ public class EditorGamemodeListView : MonoBehaviour
 
     void UpdateList()
     {
-        List<GamemodeViewBase> newList = new List<GamemodeViewBase>();
+        List<EditorGamemodeViewBase> newList = new List<EditorGamemodeViewBase>();
         int nbMode = m_level.gamemode.GetGamemodeNb();
         for (int i = 0; i < nbMode; i++)
         {
             GamemodeBase mode = m_level.gamemode.GetGamemode(i);
-            GamemodeViewBase view = null;
+            EditorGamemodeViewBase view = null;
 
             for (int j = 0; j < m_modeViews.Count; j++)
             {
@@ -103,7 +103,7 @@ public class EditorGamemodeListView : MonoBehaviour
 
             if (view == null)
             {
-                view = mode.CreateView();
+                view = mode.CreateEditorView();
                 view.SetParent(transform);
                 view.Init();
             }
@@ -125,14 +125,14 @@ public class EditorGamemodeListView : MonoBehaviour
         return m_modeViews.Count;
     }
 
-    public GamemodeViewBase GetGamemodeViewFromIndex(int index)
+    public EditorGamemodeViewBase GetGamemodeViewFromIndex(int index)
     {
         if (index < 0 || index >= m_modeViews.Count)
             return null;
         return m_modeViews[index];
     }
 
-    public GamemodeViewBase GetGamemodeView(GamemodeBase mode)
+    public EditorGamemodeViewBase GetGamemodeView(GamemodeBase mode)
     {
         foreach(var view in m_modeViews)
         {

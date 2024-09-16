@@ -35,6 +35,8 @@ public class GamemodeWaves : GamemodeBase
     int m_currentWave = 0;
     WaveState m_waveState = WaveState.starting;
 
+    List<int> m_spawnedEntities = new List<int>();
+
     public GamemodeWaves(GameLevel level) : base(level)
     {
         m_type = GamemodeType.waves;
@@ -42,6 +44,12 @@ public class GamemodeWaves : GamemodeBase
 
     public override void Process(float deltaTime)
     {
+        ProcessWaves(deltaTime);
+        ProcessEntities();
+    }
+
+    void ProcessWaves(float deltaTime)
+    { 
         if (m_status != GamemodeStatus.playing)
             return;
 
@@ -106,6 +114,31 @@ public class GamemodeWaves : GamemodeBase
                 }
                 break;
         }
+    }
+
+    void ProcessEntities()
+    {
+        List<int> nextEntities = new List<int>();
+        foreach(var e in m_spawnedEntities)
+        {
+            var entity = m_level.entityList.GetEntity(e);
+            if (entity == null)
+                continue;
+
+            nextEntities.Add(e);
+
+            if(!entity.GetPath().GetTarget().IsValid())
+            {
+                var pos = entity.GetPos();
+                var posInt = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.RoundToInt(pos.z));
+
+                var target = m_level.buildingList.GetNearestTargetBuilding(posInt, BuildingType.OperationCenter, entity.GetTeam());
+                if (target != null)
+                    entity.GetPath().SetTarget(GameTarget.FromBuilding(m_level, target.GetID()));
+            }
+        }
+
+        m_spawnedEntities = nextEntities;
     }
 
     bool IsEnded(int wave)
@@ -181,6 +214,16 @@ public class GamemodeWaves : GamemodeBase
                 }
             }
         }
+
+        var entitiesArray = obj.GetElement("Entities")?.JsonArray();
+        if(entitiesArray != null)
+        {
+            foreach(var elem in entitiesArray)
+            {
+                if (elem.IsJsonNumber())
+                    m_spawnedEntities.Add(elem.Int());
+            }
+        }
     }
 
     public override void Save(JsonObject obj)
@@ -214,6 +257,12 @@ public class GamemodeWaves : GamemodeBase
                 w.Save(waveObject);
             }
         }
+
+        var entitiesArray = new JsonArray();
+        obj.AddElement("Entities", entitiesArray);
+
+        foreach (var e in m_spawnedEntities)
+            entitiesArray.Add(e);
     }
 
     public override EditorGamemodeViewBase CreateEditorView()
@@ -251,6 +300,25 @@ public class GamemodeWaves : GamemodeBase
 
     void SpawnEntity(EntityType type, int point)
     {
+        var spawnPos = GetSpawnPos(point);
 
+        var entity = new GameEntity(type, m_team, spawnPos, m_level);
+
+        m_level.entityList.Add(entity);
+        m_spawnedEntities.Add(entity.GetID());
+
+        var spawnPosInt = new Vector3Int(Mathf.RoundToInt(spawnPos.x), Mathf.FloorToInt(spawnPos.y), Mathf.RoundToInt(spawnPos.z));
+
+        var target = m_level.buildingList.GetNearestTargetBuilding(spawnPosInt, BuildingType.OperationCenter, entity.GetTeam());
+        if(target != null)
+            entity.GetPath().SetTarget(GameTarget.FromBuilding(m_level, target.GetID()));
+    }
+
+    Vector3 GetSpawnPos(int point)
+    {
+        if (point < 0 || point >= m_points.Count)
+            return Vector3.zero;
+
+        return m_points[point].spawnPoint;
     }
 }

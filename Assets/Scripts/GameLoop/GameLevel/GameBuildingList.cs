@@ -459,4 +459,78 @@ public class GameBuildingList
 
         return haveHit;
     }
+
+    public BuildingBase GetNearestTargetBuilding(Vector3Int pos, Team casterTeam)
+    {
+        BuildingBase bestBuilding = null;
+        float bestDistance = 0;
+
+        foreach(var b in m_buildings)
+        {
+            var infos = b.GetInfos();
+            if (infos.team == casterTeam)
+                continue;
+
+            var bounds = BuildingDataEx.GetBuildingBounds(infos.buildingType, infos.pos, infos.rotation, infos.level);
+
+            for(int i = 0; i < 3; i++)
+            {
+                if (pos[i] > bounds.min[i])
+                {
+                    if (pos[i] < bounds.max[i])
+                        pos[i] = bounds.min[i];
+                    else pos[i] -= bounds.size[i];
+                }
+            }
+
+            float dist = (pos - bounds.min).sqrMagnitude;
+
+            if(bestBuilding == null || bestDistance > dist)
+            {
+                bestDistance = dist;
+                bestBuilding = b;
+            }
+        }
+
+        return bestBuilding;
+    }
+
+    public BuildingBase GetNearestTargetBuilding(Vector3Int pos, BuildingType type, Team casterTeam)
+    {
+        BuildingBase bestBuilding = null;
+        float bestDistance = 0;
+
+        foreach (var b in m_buildings)
+        {
+            var infos = b.GetInfos();
+
+            if (infos.buildingType != type)
+                continue;
+
+            if (infos.team == casterTeam)
+                continue;
+
+            var bounds = BuildingDataEx.GetBuildingBounds(infos.buildingType, infos.pos, infos.rotation, infos.level);
+
+            for (int i = 0; i < 3; i++)
+            {
+                if (pos[i] > bounds.min[i])
+                {
+                    if (pos[i] < bounds.max[i])
+                        pos[i] = bounds.min[i];
+                    else pos[i] -= bounds.size[i];
+                }
+            }
+
+            float dist = (pos - bounds.min).sqrMagnitude;
+
+            if (bestBuilding == null || bestDistance > dist)
+            {
+                bestDistance = dist;
+                bestBuilding = b;
+            }
+        }
+
+        return bestBuilding;
+    }
 }

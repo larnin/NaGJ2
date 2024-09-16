@@ -9,16 +9,18 @@ public class GameEntity
 {
     int m_ID = 0;
     EntityType m_type = default;
+    Team m_team;
 
     GameLevel m_level;
     GameEntityPath m_path;
 
-    public GameEntity(EntityType type, GameLevel level)
+    public GameEntity(EntityType type, Team team, Vector3 pos, GameLevel level)
     {
         m_type = type;
         m_level = level;
+        m_team = team;
 
-        m_path = new GameEntityPath(this);
+        m_path = new GameEntityPath(this, pos);
     }
 
     public void SetID(int id)
@@ -36,6 +38,11 @@ public class GameEntity
         return m_type;
     }
 
+    public Team GetTeam()
+    {
+        return m_team;
+    }
+
     public void Process(float deltaTime)
     {
         m_path.Process(deltaTime);
@@ -44,12 +51,34 @@ public class GameEntity
     public virtual void Load(JsonObject obj)
     {
         m_ID = obj.GetElement("ID")?.Int() ?? 0;
+
+        string str = obj.GetElement("Type")?.String();
+        if (str != null)
+        {
+            EntityType type;
+            if (!Enum.TryParse(str, out type))
+                m_type = type;
+        }
+
+        str = obj.GetElement("Team")?.String();
+        if (str != null)
+        {
+            Team team;
+            if (!Enum.TryParse(str, out team))
+                m_team = team;
+        }
     }
 
     public virtual void Save(JsonObject obj)
     {
         obj.AddElement("ID", m_ID);
         obj.AddElement("Type", m_type.ToString());
+        obj.AddElement("Team", m_team.ToString());
+    }
+
+    public GameEntityPath GetPath()
+    {
+        return m_path;
     }
 
     public Vector3 GetPos()
@@ -63,16 +92,6 @@ public class GameEntity
         var pos = m_path.GetPos();
 
         return new Vector3(size.x * pos.x, size.y * pos.y, size.z * pos.z);
-    }
-
-    public float GetVelocity()
-    {
-        return m_path.GetVelocity();
-    }
-    
-    public float GetMoveDir()
-    {
-        return m_path.GetMoveDir();
     }
 
     public Quaternion GetViewMoveRotation()

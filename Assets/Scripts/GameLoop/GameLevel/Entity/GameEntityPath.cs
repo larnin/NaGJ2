@@ -18,9 +18,10 @@ public class GameEntityPath
 
     bool m_moving = false;
 
-    public GameEntityPath(GameEntity entity)
+    public GameEntityPath(GameEntity entity, Vector3 pos)
     {
         m_entity = entity;
+        m_pos = pos;
     }
 
     public void Process(float deltaTime)
@@ -90,6 +91,11 @@ public class GameEntityPath
         m_target = target;
 
         RebuildPath();
+    }
+
+    public GameTarget GetTarget()
+    {
+        return m_target;
     }
 
     public Vector3 GetPos()

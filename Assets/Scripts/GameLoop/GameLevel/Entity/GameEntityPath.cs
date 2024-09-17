@@ -22,6 +22,8 @@ public class GameEntityPath
     {
         m_entity = entity;
         m_pos = pos;
+
+        m_target = GameTarget.FromPos(pos);
     }
 
     public void Process(float deltaTime)
@@ -137,5 +139,15 @@ public class GameEntityPath
                 m_path.Reset();
                 break;
         }
+    }
+
+    public void Load(JsonObject obj)
+    {
+        
+    }
+
+    public void Save(JsonObject obj)
+    {
+        
     }
 }

@@ -9,10 +9,18 @@ public class GameEntity
 {
     int m_ID = 0;
     EntityType m_type = default;
-    Team m_team;
+    Team m_team = Team.player;
 
     GameLevel m_level;
     GameEntityPath m_path;
+
+    public GameEntity(EntityType type, GameLevel level)
+    {
+        m_type = type;
+        m_level = level;
+
+        m_path = new GameEntityPath(this, Vector3.zero);
+    }
 
     public GameEntity(EntityType type, Team team, Vector3 pos, GameLevel level)
     {
@@ -48,7 +56,7 @@ public class GameEntity
         m_path.Process(deltaTime);
     }
 
-    public virtual void Load(JsonObject obj)
+    public void Load(JsonObject obj)
     {
         m_ID = obj.GetElement("ID")?.Int() ?? 0;
 
@@ -67,13 +75,21 @@ public class GameEntity
             if (!Enum.TryParse(str, out team))
                 m_team = team;
         }
+
+        var pathObj = obj.GetElement("Path")?.JsonObject();
+        if(pathObj != null)
+            m_path.Load(pathObj);
     }
 
-    public virtual void Save(JsonObject obj)
+    public void Save(JsonObject obj)
     {
         obj.AddElement("ID", m_ID);
         obj.AddElement("Type", m_type.ToString());
         obj.AddElement("Team", m_team.ToString());
+
+        var pathObj = new JsonObject();
+        obj.AddElement("Path", pathObj);
+        m_path.Save(pathObj);
     }
 
     public GameEntityPath GetPath()

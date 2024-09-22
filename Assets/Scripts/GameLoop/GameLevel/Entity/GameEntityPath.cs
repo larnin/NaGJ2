@@ -143,11 +143,33 @@ public class GameEntityPath
 
     public void Load(JsonObject obj)
     {
-        
+        var posObj = obj.GetElement("Pos")?.JsonArray();
+        if (posObj != null)
+            m_pos = Json.ToVector3(posObj);
+
+        m_velocity = obj.GetElement("Velocity")?.Float() ?? 0;
+        m_moveDir = obj.GetElement("MoveDir")?.Float() ?? 0;
+
+        string movingStr = obj.GetElement("Moving")?.String();
+        if (movingStr != null && movingStr == "True")
+            m_moving = true;
+        else m_moving = false;
+
+        var targetObj = obj.GetElement("Target")?.JsonObject();
+        if (targetObj != null)
+            m_target.Load(targetObj);
+        else m_target = GameTarget.FromPos(m_pos);
     }
 
     public void Save(JsonObject obj)
     {
-        
+        obj.AddElement("Pos", Json.FromVector3(m_pos));
+        obj.AddElement("Velocity", m_velocity);
+        obj.AddElement("MoveDir", m_moveDir);
+        obj.AddElement("Moving", m_moving ? "True" : "False");
+
+        var targetObj = new JsonObject();
+        obj.AddElement("Target", targetObj);
+        m_target.Save(targetObj);
     }
 }

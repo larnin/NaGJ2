@@ -114,4 +114,14 @@ public class GameTarget
 
         return m_level.entityList.GetEntity(m_ID);
     }
+
+    public void Load(JsonObject obj)
+    {
+
+    }
+
+    public void Save(JsonObject obj)
+    {
+
+    }
 }

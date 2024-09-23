@@ -41,14 +41,16 @@ public static class Json
         SaveEx.SaveToFile(path, data);
     }
 
-    public static string WriteToString(JsonDocument doc)
+    public static string WriteToString(JsonDocument doc, bool formated = false)
     {
         var builder = new StringBuilder();
         var writer = new StringWriter(builder);
         
         using (var jWriter = new JsonTextWriter(writer))
         {
-            jWriter.Formatting = Formatting.Indented;
+            if(formated)
+                jWriter.Formatting = Formatting.Indented;
+            else jWriter.Formatting = Formatting.None;
 
             doc.Write(jWriter);
         }

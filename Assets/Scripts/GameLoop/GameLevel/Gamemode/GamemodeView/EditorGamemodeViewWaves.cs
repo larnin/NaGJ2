@@ -232,7 +232,9 @@ public class EditorGamemodeViewWaves : EditorGamemodeViewBase
 
         Event<EditorHideGismosEvent>.Broadcast(new EditorHideGismosEvent());
 
-        if(m_selectedPoint >= 0 && m_selection == null)
+        m_selectedPoint = index;
+
+        if (m_selectedPoint >= 0 && m_selection == null)
             m_selection = GameObject.Instantiate(Global.instance.editor.gismosPrefab);
 
         var gismos = m_selection.GetComponent<Gismos>();

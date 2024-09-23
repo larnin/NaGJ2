@@ -27,6 +27,8 @@ public abstract class GamemodeBase
     protected GamemodeType m_type;
     protected GamemodeStatus m_status;
 
+    protected string m_name;
+
     public GamemodeBase(GameLevel level)
     {
         m_level = level;
@@ -73,6 +75,16 @@ public abstract class GamemodeBase
         return m_status;
     }
 
+    public string GetName()
+    {
+        return m_name;
+    }
+
+    public void SetName(string name)
+    {
+        m_name = name;
+    }
+
     public abstract void Reset();
     public abstract void Start();
     public abstract void Process(float deltaTime);
@@ -80,6 +92,8 @@ public abstract class GamemodeBase
     protected virtual void Load(JsonObject obj)
     {
         Reset();
+
+        m_name = obj.GetElement("Name")?.String();
 
         string str = obj.GetElement("Status")?.String();
         if (str != null)
@@ -92,6 +106,8 @@ public abstract class GamemodeBase
     public virtual void Save(JsonObject obj)
     {
         obj.AddElement("Type", m_type.ToString());
+
+        obj.AddElement("Name", m_name);
         obj.AddElement("Status", m_status.ToString());
     }
 

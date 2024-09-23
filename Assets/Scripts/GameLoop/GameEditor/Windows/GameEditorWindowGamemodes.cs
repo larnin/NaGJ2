@@ -61,9 +61,18 @@ public class GameEditorWindowGamemodes : GameEditorWindowBase
                 var view = editor.GetGamemodeView(gamemode);
                 if (view != null)
                 {
+                    var mode = view.GetGamemode();
                     GUILayout.BeginHorizontal();
                     GUIEx.DrawVerticalLine(Color.white, 2, true);
                     GUILayout.BeginVertical();
+                    if (mode != null)
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Name:", GUILayout.MaxWidth(50));
+                        string newName = GUILayout.TextField(mode.GetName());
+                        mode.SetName(newName);
+                        GUILayout.EndHorizontal();
+                    }
                     view.OnGui(position);
                     GUILayout.EndVertical();
                     GUILayout.EndHorizontal();

@@ -10,6 +10,7 @@ public enum GameTargetType
     position,
     entity,
     building,
+    invalid,
 }
 
 public class GameTarget
@@ -18,6 +19,14 @@ public class GameTarget
     int m_ID;
     Vector3 m_pos;
     GameLevel m_level;
+
+    private GameTarget()
+    {
+        m_targetType = GameTargetType.invalid;
+        m_pos = Vector3.zero;
+        m_ID = 0;
+        m_level = null;
+    }
 
     private GameTarget(Vector3 pos)
     {
@@ -33,6 +42,11 @@ public class GameTarget
         m_ID = id;
         m_pos = Vector3.zero;
         m_level = level;
+    }
+
+    public static GameTarget Invalid()
+    {
+        return new GameTarget();
     }
 
     public static GameTarget FromPos(Vector3 pos)
@@ -52,6 +66,9 @@ public class GameTarget
 
     public bool IsValid()
     {
+        if (m_targetType == GameTargetType.invalid)
+            return false;
+
         if (m_targetType == GameTargetType.position)
             return true;
 
@@ -115,13 +132,46 @@ public class GameTarget
         return m_level.entityList.GetEntity(m_ID);
     }
 
-    public void Load(JsonObject obj)
+    public void Load(JsonObject obj, GameLevel level)
     {
-
+        string typeStr = obj.GetElement("Type")?.String();
+        if(typeStr != null)
+        {
+            GameTargetType targetType;
+            if (Enum.TryParse(typeStr, out targetType))
+            {
+                m_targetType = targetType;
+                if(m_targetType == GameTargetType.position)
+                {
+                    var posObj = obj.GetElement("Pos")?.JsonArray();
+                    if (posObj != null)
+                        m_pos = Json.ToVector3(posObj);
+                    else m_pos = Vector3.zero;
+                }
+                else
+                {
+                    m_ID = obj.GetElement("ID")?.Int() ?? 0;
+                    m_level = level;
+                }
+            }
+            else
+            {
+                m_targetType = GameTargetType.invalid;
+                m_pos = Vector3.zero;
+            }
+        }
     }
 
     public void Save(JsonObject obj)
     {
+        obj.AddElement("Type", m_targetType.ToString());
+        if (m_targetType == GameTargetType.position)
+            obj.AddElement("Pos", Json.FromVector3(m_pos));
+        else obj.AddElement("ID", m_ID);
 
+        //GameTargetType m_targetType;
+        //int m_ID;
+        //Vector3 m_pos;
+        //GameLevel m_level;
     }
 }

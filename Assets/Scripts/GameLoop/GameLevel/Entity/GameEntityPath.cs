@@ -23,7 +23,7 @@ public class GameEntityPath
         m_entity = entity;
         m_pos = pos;
 
-        m_target = GameTarget.FromPos(pos);
+        m_target = GameTarget.Invalid();
     }
 
     public void Process(float deltaTime)
@@ -157,8 +157,8 @@ public class GameEntityPath
 
         var targetObj = obj.GetElement("Target")?.JsonObject();
         if (targetObj != null)
-            m_target.Load(targetObj);
-        else m_target = GameTarget.FromPos(m_pos);
+            m_target.Load(targetObj, m_entity.GetLevel());
+        else m_target = GameTarget.Invalid();
     }
 
     public void Save(JsonObject obj)

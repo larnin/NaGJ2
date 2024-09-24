@@ -75,16 +75,16 @@ public class GameEntityGroup
 
             GameEntityGroup group = new GameEntityGroup();
 
-            string str = obj.GetElement("Type")?.String();
+            string str = groupObj.GetElement("Type")?.String();
             if (str == null)
                 continue;
 
             if (!Enum.TryParse(str, out group.type))
                 continue;
 
-            group.count = obj.GetElement("Count")?.Int() ?? 0;
-            group.delay = obj.GetElement("Delay")?.Float() ?? 0;
-            group.timeSpacing = obj.GetElement("Spacing")?.Float() ?? 0;
+            group.count = groupObj.GetElement("Count")?.Int() ?? 0;
+            group.delay = groupObj.GetElement("Delay")?.Float() ?? 0;
+            group.timeSpacing = groupObj.GetElement("Spacing")?.Float() ?? 0;
 
             groups.Add(group);
         }

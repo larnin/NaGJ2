@@ -23,6 +23,8 @@ public class GameEntityPath
         m_entity = entity;
         m_pos = pos;
 
+        m_path = new GamePath();
+
         m_target = GameTarget.Invalid();
     }
 

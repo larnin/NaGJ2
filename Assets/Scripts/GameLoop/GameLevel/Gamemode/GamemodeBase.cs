@@ -101,6 +101,8 @@ public abstract class GamemodeBase
             if (!Enum.TryParse(str, out m_status))
                 m_status = GamemodeStatus.notStarted;
         }
+
+        m_status = GamemodeStatus.playing;
     }
 
     public virtual void Save(JsonObject obj)

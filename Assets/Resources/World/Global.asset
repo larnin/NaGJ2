@@ -401,7 +401,16 @@ MonoBehaviour:
       end: {fileID: 4923221076125534697, guid: f1d0c6cde44113c4b8d49ad89b1d068e, type: 3}
       sprite: {fileID: 0}
   m_allEntities:
-    entities: []
+    entities:
+    - type: 0
+      behaviour: 0
+      prefab: {fileID: 3573702937719994200, guid: c292ca0ea2284ce4c9d0d640d5db2f72, type: 3}
+      maxLife: 1
+      moveSpeed: 1
+      acceleration: 1
+      rotationSpeed: 1
+      radius: 0.5
+      height: 0.8
   m_allResources:
     beltResourceSpacing: 0.5
     beltSpeed: 1

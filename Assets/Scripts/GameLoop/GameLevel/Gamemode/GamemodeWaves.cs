@@ -224,6 +224,20 @@ public class GamemodeWaves : GamemodeBase
                     m_spawnedEntities.Add(elem.Int());
             }
         }
+
+        m_timer = obj.GetElement("Timer")?.Float() ?? 0;
+        m_currentWave = obj.GetElement("Wave")?.Int() ?? 0;
+
+        string stateStr = obj.GetElement("WaveState")?.String();
+        if (stateStr == null)
+            m_waveState = WaveState.starting;
+        else
+        {
+            WaveState waveState;
+            if (Enum.TryParse(stateStr, out waveState))
+                m_waveState = waveState;
+            else m_waveState = WaveState.starting;
+        }
     }
 
     public override void Save(JsonObject obj)
@@ -263,6 +277,10 @@ public class GamemodeWaves : GamemodeBase
 
         foreach (var e in m_spawnedEntities)
             entitiesArray.Add(e);
+
+        obj.AddElement("Timer", m_timer);
+        obj.AddElement("Wave", m_currentWave);
+        obj.AddElement("WaveState", m_waveState.ToString());
     }
 
     public override EditorGamemodeViewBase CreateEditorView()

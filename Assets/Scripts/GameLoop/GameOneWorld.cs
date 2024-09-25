@@ -30,7 +30,7 @@ public class GameOneWorld
     {
         Reset();
 
-        LoadSave();
+        //LoadSave();
     }
 
     public void Start()

@@ -17,4 +17,14 @@ public class GameEntityView : MonoBehaviour
     {
         return m_entity;
     }
+
+    private void Update()
+    {
+        var pos = m_entity.GetViewPos();
+
+        float moveDir = m_entity.GetPath().GetMoveDir();
+
+        transform.localPosition = pos;
+        transform.rotation = Quaternion.Euler(0, moveDir * Mathf.Rad2Deg, 0);
+    }
 }

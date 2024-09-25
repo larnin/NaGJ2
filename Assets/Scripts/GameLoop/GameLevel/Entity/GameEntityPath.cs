@@ -18,6 +18,8 @@ public class GameEntityPath
 
     bool m_moving = false;
 
+    const float minMoveDist = 0.2f;
+
     public GameEntityPath(GameEntity entity, Vector3 pos)
     {
         m_entity = entity;
@@ -46,7 +48,7 @@ public class GameEntityPath
             float dist = dir.magnitude;
             dir /= dist;
 
-            if (dist < 0.2f)
+            if (dist < minMoveDist)
                 m_moving = false;
 
             float dirAngle = Mathf.Atan2(dir.z, dir.x);
@@ -79,6 +81,7 @@ public class GameEntityPath
             m_velocity -= data.acceleration * deltaTime * 2;
             if (m_velocity < 0)
                 m_velocity = 0;
+            TryMove();
         }
 
         if (m_velocity > 0)
@@ -90,11 +93,27 @@ public class GameEntityPath
         }
     }
 
+    void TryMove()
+    {
+        if (!m_target.IsValid())
+            return;
+
+        var targetPos = m_target.GetTargetPos();
+
+        if ((targetPos - m_pos).magnitude < minMoveDist)
+            return;
+
+        m_moving = true;
+
+        RebuildPath();
+    }
+
     public void SetTarget(GameTarget target)
     {
         m_target = target;
 
-        RebuildPath();
+        if(m_moving)
+            RebuildPath();
     }
 
     public GameTarget GetTarget()

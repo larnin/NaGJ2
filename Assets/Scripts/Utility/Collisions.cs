@@ -75,11 +75,30 @@ public static class Collisions
         return s;
     }
 
+    struct RaycastElt
+    {
+        public Vector3 t1;
+        public Vector3 t2;
+        public Vector3 t3;
+        public Vector3 p1;
+        public Vector3 p2;
+
+        public RaycastElt(Vector3 _t1, Vector3 _t2, Vector3 _t3, Vector3 _p1, Vector3 _p2)
+        {
+            t1 = _t1;
+            t2 = _t2;
+            t3 = _t3;
+            p1 = _p1;
+            p2 = _p2;
+        }
+    }
+
     public static bool Intersect(Shape shape1, Shape shape2)
     {
         int nbTriangle1 = shape1.indexs.Count / 3;
         int nbTriangle2 = shape2.indexs.Count / 3;
 
+        //point - triangle
         foreach(var p in shape1.points)
         {
             bool left = true;
@@ -112,6 +131,46 @@ public static class Collisions
             }
             if (left)
                 return true;
+        }
+
+        //edge - triangle
+        for(int i = 0; i < nbTriangle1; i++)
+        {
+            var p11 = shape1.points[shape1.indexs[i * 3]];
+            var p12 = shape1.points[shape1.indexs[i * 3 + 1]];
+            var p13 = shape1.points[shape1.indexs[i * 3 + 2]];
+
+            for (int j = 0; j < nbTriangle2; j++)
+            {
+                var p21 = shape2.points[shape2.indexs[i * 3]];
+                var p22 = shape2.points[shape2.indexs[i * 3 + 1]];
+                var p23 = shape2.points[shape2.indexs[i * 3 + 2]];
+
+                var elems = new RaycastElt[]
+                {
+                    new RaycastElt(p11, p12, p13, p21, p22),
+                    new RaycastElt(p11, p12, p13, p21, p23),
+                    new RaycastElt(p11, p12, p13, p22, p23),
+
+                    new RaycastElt(p21, p22, p23, p11, p12),
+                    new RaycastElt(p21, p22, p23, p11, p13),
+                    new RaycastElt(p21, p22, p23, p12, p13)
+                };
+
+                foreach(var elem in elems)
+                {
+                    Vector3 dir = elem.p2 - elem.p1;
+                    float dist = dir.magnitude;
+                    dir /= dist;
+                    Vector3 hitPos;
+                    var hit = RaycastTriangle(elem.t1, elem.t2, elem.t3, elem.p1, dir, out hitPos);
+                    if (!hit)
+                        continue;
+                    float hitDist = (hitPos - elem.p1).sqrMagnitude;
+                    if (hitDist < dist * dist)
+                        return true;
+                }
+            }
         }
 
         return false;
@@ -217,5 +276,23 @@ public static class Collisions
         Vector3 norm = Normal(pos1, pos2, pos3);
 
         return Vector3.Dot(vect, norm) < 0;
+    }
+
+    public static void DrawShape(Shape shape, Vector3 scale, Color color)
+    {
+        int nbTriangle = shape.indexs.Count / 3;
+
+        for(int i = 0; i < nbTriangle; i++)
+        {
+            var pos1 = shape.points[shape.indexs[i * 3]];
+            var pos2 = shape.points[shape.indexs[i * 3 + 1]];
+            var pos3 = shape.points[shape.indexs[i * 3 + 2]];
+
+            pos1 = new Vector3(pos1.x * scale.x, pos1.y * scale.y, pos1.z * scale.z);
+            pos2 = new Vector3(pos2.x * scale.x, pos2.y * scale.y, pos2.z * scale.z);
+            pos3 = new Vector3(pos3.x * scale.x, pos3.y * scale.y, pos3.z * scale.z);
+
+            DebugDraw.Triangle(pos1, pos2, pos3, color);
+        }
     }
 }

@@ -125,6 +125,7 @@ public class CursorSelect : CursorBase
         Event<DisplaySelectionRectangleEvent>.Broadcast(new DisplaySelectionRectangleEvent(m_startMousePos, m_endMousePos, c));
 
         Shape s = GetMouseSelectionShape();
+        Collisions.DrawShape(s, Vector3.one, Color.cyan);
 
         GameGetCurrentLevelEvent level = new GameGetCurrentLevelEvent();
         Event<GameGetCurrentLevelEvent>.Broadcast(level);
@@ -151,7 +152,9 @@ public class CursorSelect : CursorBase
 
             Bounds bounds = new Bounds(new Vector3((posInt.x - 0.5f) * size.x, (posInt.y - 1) * size.y, (posInt.z - 0.5f) * size.z), new Vector3(sizeInt.x * size.x, sizeInt.y * size.y, sizeInt.z * size.z));
 
-            Shape s2 = Collisions.GetSelectionShape(bounds);
+            Shape s2 = Collisions.GetFullShape(bounds);
+
+            Collisions.DrawShape(s2, Vector3.one, Color.red);
 
             if (Collisions.Intersect(s, s2))
             {
@@ -245,9 +248,22 @@ public class CursorSelect : CursorBase
         s.points.Add(bottomRightFar);
 
         s.indexs.Add(0); s.indexs.Add(2); s.indexs.Add(1);
+        s.indexs.Add(3); s.indexs.Add(1); s.indexs.Add(2);
+
         s.indexs.Add(4); s.indexs.Add(5); s.indexs.Add(6);
+        s.indexs.Add(5); s.indexs.Add(7); s.indexs.Add(6);
+
         s.indexs.Add(0); s.indexs.Add(1); s.indexs.Add(4);
+        s.indexs.Add(5); s.indexs.Add(4); s.indexs.Add(1);
+
         s.indexs.Add(2); s.indexs.Add(6); s.indexs.Add(3);
+        s.indexs.Add(3); s.indexs.Add(6); s.indexs.Add(7);
+
+        s.indexs.Add(2); s.indexs.Add(6); s.indexs.Add(3);
+        s.indexs.Add(3); s.indexs.Add(6); s.indexs.Add(7);
+
+        s.indexs.Add(0); s.indexs.Add(4); s.indexs.Add(2);
+        s.indexs.Add(2); s.indexs.Add(4); s.indexs.Add(6);
 
         return s;
     }
